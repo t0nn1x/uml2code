@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}HTMX and Tailwind Test
+{% endblock %}
+
+{% block body %}
+	<div class="container mx-auto px-4 py-8">
+		<h1 class="text-3xl font-bold text-blue-600 mb-6">HTMX + Tailwind CSS Test</h1>
+
+		<div class="bg-white shadow-md rounded-lg p-6 mb-6">
+			<h2 class="text-xl font-semibold text-gray-800 mb-4">Tailwind CSS Test</h2>
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+				<div class="bg-red-100 p-4 rounded-md shadow">
+					<p class="text-red-800">Red card with Tailwind</p>
+				</div>
+				<div class="bg-green-100 p-4 rounded-md shadow">
+					<p class="text-green-800">Green card with Tailwind</p>
+				</div>
+				<div class="bg-blue-100 p-4 rounded-md shadow">
+					<p class="text-blue-800">Blue card with Tailwind</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="bg-white shadow-md rounded-lg p-6">
+			<h2 class="text-xl font-semibold text-gray-800 mb-4">HTMX Test</h2>
+			<p class="mb-4">Click the button below to increment the counter using HTMX:</p>
+
+			{% include 'test/_counter.html.twig' with {'counter': counter} %}
+
+			<div class="mt-8 text-sm text-gray-600">
+				<p>If the counter increases without a full page reload, HTMX is working correctly!</p>
+			</div>
+		</div>
+	</div>
+{% endblock %}
