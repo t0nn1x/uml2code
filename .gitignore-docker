@@ -1,0 +1,6 @@
+# Docker specific
+.docker-sync
+docker-compose.override.yml
+
+# PostgreSQL data
+postgres_data/
