@@ -87,9 +87,12 @@ class PlantUmlParser implements ParserInterface
 
         $content = $matches[1];
 
-        // Extract diagram title if present
-        if (preg_match('/title\s+(.+?)\s*\n/', $content, $titleMatches)) {
+        // Extract diagram title if present - handle titles that may contain dashes or special chars
+        if (preg_match('/^title\s+(.*?)$/m', $content, $titleMatches)) {
             $diagram->setTitle(trim($titleMatches[1]));
+            
+            // Remove the title line completely from content to prevent misinterpretation
+            $content = preg_replace('/^title\s+.*?$/m', '', $content);
         }
 
         // Parse classes
@@ -110,7 +113,8 @@ class PlantUmlParser implements ParserInterface
     private function parseClasses(string $content, ClassDiagram $diagram): void
     {
         // Remove title line to prevent it from being detected as a class
-        $content = preg_replace('/^title\s+.+$/m', '', $content);
+        // Use a more comprehensive pattern that handles potential dashes in titles
+        $content = preg_replace('/^title\s+.*$/m', '', $content);
         
         // Match all class definitions
         preg_match_all('/\b(class|interface|enum|abstract\s+class)\s+([A-Za-z][A-Za-z0-9_]*)/i', $content, $basicMatches, PREG_SET_ORDER);
@@ -120,12 +124,19 @@ class PlantUmlParser implements ParserInterface
             $type = trim($match[1]);
             $name = trim($match[2]);
             
+            // Skip if the name matches common title words
+            if (in_array(strtolower($name), ['title', 'domain', 'diagram', 'model'])) {
+                continue;
+            }
+            
             $class = new ClassEntity();
             $class->setName($name);
             
             // Set type
             if ($type === 'interface') {
                 $class->setInterface(true);
+                // Interfaces should not implement themselves
+                $class->setImplements([]);
             } elseif ($type === 'abstract class') {
                 $class->setAbstract(true);
             } elseif ($type === 'enum') {
@@ -382,6 +393,9 @@ class PlantUmlParser implements ParserInterface
             $classNames[] = $class->getName();
         }
         
+        // Remove title line completely before processing relationships
+        $content = preg_replace('/^title\s+.*$/m', '', $content);
+        
         // Match relationship patterns like: User "1" --> "*" Order: places
         preg_match_all('/([A-Za-z0-9_]+)\s*(?:"([^"]*)")?\s*([-.*o<>|]+)\s*(?:"([^"]*)")?\s*([A-Za-z0-9_]+)(?:\s*:\s*(.+))?/im', $content, $matches, PREG_SET_ORDER);
         
@@ -399,11 +413,25 @@ class PlantUmlParser implements ParserInterface
             }
             
             // Create classes if they don't exist and both sides are likely classes 
-            // (starting with uppercase letter, avoiding primitive types like int, string, etc.)
+            // (avoiding primitive types like int, string, etc.)
             $isPrimitiveType = in_array(strtolower($src), ['int', 'string', 'float', 'boolean', 'array', 'void', 'double', 'object']) || 
-                             in_array(strtolower($tgt), ['int', 'string', 'float', 'boolean', 'array', 'void', 'double', 'object']);
+                               in_array(strtolower($tgt), ['int', 'string', 'float', 'boolean', 'array', 'void', 'double', 'object']);
+            
+            // Skip words that are likely to be part of title text or metadata
+            $titleWords = ['title', 'diagram', 'domain', 'model'];
+            if (in_array(strtolower($src), $titleWords) || in_array(strtolower($tgt), $titleWords)) {
+                continue;
+            }
             
             if (!$isPrimitiveType) {
+                // Skip very short one-letter entities unless they already exist (likely from title text)
+                if (strlen($src) == 1 && !in_array($src, $classNames)) {
+                    continue;
+                }
+                if (strlen($tgt) == 1 && !in_array($tgt, $classNames)) {
+                    continue;
+                }
+                
                 if (!in_array($src, $classNames)) {
                     $srcClass = new ClassEntity();
                     $srcClass->setName($src);
