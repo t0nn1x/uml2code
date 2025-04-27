@@ -57,9 +57,13 @@ class PlantUmlParser implements ParserInterface
             case DiagramTypeDetector::TYPE_SEQUENCE:
                 throw new ParserException("Sequence diagram parsing not yet implemented");
             case DiagramTypeDetector::TYPE_ACTIVITY:
+                throw new ParserException("Activity diagram parsing not yet implemented");
             case DiagramTypeDetector::TYPE_USECASE:
+                throw new ParserException("Use case diagram parsing not yet implemented");
             case DiagramTypeDetector::TYPE_COMPONENT:
+                throw new ParserException("Component diagram parsing not yet implemented");
             case DiagramTypeDetector::TYPE_STATE:
+                throw new ParserException("State diagram parsing not yet implemented");
             case DiagramTypeDetector::TYPE_OBJECT:
                 throw new ParserException("Unsupported diagram type: " . $diagramType);
             case DiagramTypeDetector::TYPE_UNKNOWN:
