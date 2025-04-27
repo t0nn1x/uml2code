@@ -37,6 +37,16 @@ class Relationship
     private $label;
 
     /**
+     * @var string|null
+     */
+    private $sourceMultiplicity;
+
+    /**
+     * @var string|null
+     */
+    private $targetMultiplicity;
+
+    /**
      * @var array
      */
     private $metadata = [];
@@ -214,5 +224,49 @@ class Relationship
     public function isAggregation(): bool
     {
         return $this->type === self::TYPE_AGGREGATION;
+    }
+
+    /**
+     * Get source multiplicity
+     *
+     * @return string|null
+     */
+    public function getSourceMultiplicity(): ?string
+    {
+        return $this->sourceMultiplicity;
+    }
+
+    /**
+     * Set source multiplicity
+     *
+     * @param string|null $multiplicity
+     * @return self
+     */
+    public function setSourceMultiplicity(?string $multiplicity): self
+    {
+        $this->sourceMultiplicity = $multiplicity;
+        return $this;
+    }
+
+    /**
+     * Get target multiplicity
+     *
+     * @return string|null
+     */
+    public function getTargetMultiplicity(): ?string
+    {
+        return $this->targetMultiplicity;
+    }
+
+    /**
+     * Set target multiplicity
+     *
+     * @param string|null $multiplicity
+     * @return self
+     */
+    public function setTargetMultiplicity(?string $multiplicity): self
+    {
+        $this->targetMultiplicity = $multiplicity;
+        return $this;
     }
 }
