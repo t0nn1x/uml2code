@@ -72,7 +72,7 @@
 						{{ form_widget(registrationForm.agreeTerms) }}
 						<div class="ml-2">
 							{{ form_label(registrationForm.agreeTerms, 'I agree to the Terms and Conditions', {'label_attr': {'class': 'text-sm text-gray-900'}}) }}
-							{{ form_errors(registrationForm.agreeTerms) }}
+							<p class="text-red-800 text-sm">{{ form_errors(registrationForm.agreeTerms) }}</p>
 						</div>
 					</div>
 
