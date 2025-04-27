@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Password Reset Email - UML2Code
+{% endblock %}
+
+{% block body %}
+	<div class="bg-gray-100 min-h-screen flex flex-col">
+		<div class="bg-white p-6 shadow">
+			<h1 class="text-2xl font-bold text-indigo-600">UML2Code</h1>
+		</div>
+
+		<div class="flex-grow flex items-center justify-center p-6">
+			<div class="max-w-lg w-full bg-white rounded-lg shadow-md p-8">
+				<h2 class="text-xl font-bold text-gray-800 mb-6">Reset your password</h2>
+
+				<p class="text-gray-600 mb-6">
+					Hi there,
+				</p>
+
+				<p class="text-gray-600 mb-6">
+					To reset your password, please click the button below. If you didn't request a password reset, 
+					                you can safely ignore this email.
+				</p>
+
+				<div class="bg-gray-50 p-4 rounded-md border border-gray-200 text-center mb-6">
+					<a href="{{ resetToken.url }}" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-md">
+						Reset Password
+					</a>
+				</div>
+
+				<p class="text-gray-600 mb-2">
+					This password reset link will expire in
+					{{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
+				</p>
+
+				<p class="text-gray-600 mb-6">
+					If you're having trouble clicking the button, copy and paste the URL below into your web browser:
+				</p>
+
+				<div class="bg-gray-50 p-4 rounded-md border border-gray-200 overflow-x-auto mb-6">
+					<code class="text-sm text-gray-800">{{ resetToken.url }}</code>
+				</div>
+
+				<p class="text-gray-600">
+					Best regards,<br>
+					The UML2Code Team
+				</p>
+			</div>
+		</div>
+	</div>
+{% endblock %}
