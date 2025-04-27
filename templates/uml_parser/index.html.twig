@@ -1,0 +1,181 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}UML Parser - UML2Code
+{% endblock %}
+
+{% block stylesheets %}
+	<style>
+		.uml-editor {
+			min-height: 300px;
+			font-family: monospace;
+			resize: vertical;
+		}
+
+		.results {
+			max-height: 500px;
+			overflow-y: auto;
+		}
+
+		.json-key {
+			color: #e91e63;
+		}
+
+		.json-value {
+			color: #4caf50;
+		}
+
+		.json-string {
+			color: #ff9800;
+		}
+	</style>
+{% endblock %}
+
+{% block body %}
+	<div class="min-h-screen flex flex-col bg-gray-100">
+		<header class="bg-white shadow">
+			<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+				<h1 class="text-3xl font-bold text-gray-900">UML Parser</h1>
+			</div>
+		</header>
+
+		<main class="flex-grow">
+			<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+				<div class="px-4 py-6 sm:px-0">
+					<div class="bg-white overflow-hidden shadow rounded-lg divide-y divide-gray-200">
+						<div class="px-4 py-5 sm:p-6">
+							<div class="mb-4">
+								<label for="uml-input" class="block text-sm font-medium text-gray-700">
+									PlantUML Code
+								</label>
+								<textarea id="uml-input" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 uml-editor" rows="10" placeholder="Enter your PlantUML code here...">@startuml
+class User {
+    +id: int
+    -password: string
+    +login(password: string): bool
+}
+
+class Order {
+    +id: int
+    +date: DateTime
+    +calculateTotal(): float
+}
+
+User "1" --> "*" Order: places
+@enduml</textarea>
+							</div>
+
+							<div class="flex justify-end">
+								<button id="parse-button" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+									Parse UML
+								</button>
+							</div>
+						</div>
+
+						<div class="px-4 py-5 sm:p-6">
+							<h3 class="text-lg font-medium leading-6 text-gray-900">Results</h3>
+							<div id="loading" class="mt-4 hidden">
+								<div class="flex justify-center">
+									<svg class="animate-spin h-5 w-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24">
+										<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+										<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+									</svg>
+									<span class="ml-2">Parsing...</span>
+								</div>
+							</div>
+							<div id="error" class="mt-4 bg-red-50 p-4 rounded-md hidden">
+								<div class="flex">
+									<div class="flex-shrink-0">
+										<svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
+											<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+										</svg>
+									</div>
+									<div class="ml-3">
+										<h3 class="text-sm font-medium text-red-800" id="error-message">Error parsing UML</h3>
+									</div>
+								</div>
+							</div>
+							<div id="results" class="mt-4 bg-gray-50 p-4 rounded-md results hidden">
+								<pre id="result-json" class="whitespace-pre-wrap"></pre>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+const parseButton = document.getElementById('parse-button');
+const umlInput = document.getElementById('uml-input');
+const resultsDiv = document.getElementById('results');
+const resultJson = document.getElementById('result-json');
+const loadingDiv = document.getElementById('loading');
+const errorDiv = document.getElementById('error');
+const errorMessage = document.getElementById('error-message');
+
+// Function to format JSON with syntax highlighting
+function formatJSON(json) {
+if (typeof json !== 'string') {
+json = JSON.stringify(json, null, 2);
+}
+
+return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+let cls = 'json-value';
+if (/^"/.test(match)) {
+if (/:$/.test(match)) {
+cls = 'json-key';
+} else {
+cls = 'json-string';
+}
+}
+return '<span class="' + cls + '">' + match + '</span>';
+});
+}
+
+parseButton.addEventListener('click', function () {
+const umlCode = umlInput.value.trim();
+
+if (! umlCode) {
+errorDiv.classList.remove('hidden');
+errorMessage.textContent = 'Please enter some UML code';
+resultsDiv.classList.add('hidden');
+return;
+}
+
+// Show loading, hide results and errors
+loadingDiv.classList.remove('hidden');
+resultsDiv.classList.add('hidden');
+errorDiv.classList.add('hidden');
+
+// Make API request
+fetch('/api/uml/parse', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify(
+{uml: umlCode}
+)
+}).then(response => response.json()).then(data => {
+loadingDiv.classList.add('hidden');
+
+if (data.success === false) {
+errorDiv.classList.remove('hidden');
+errorMessage.textContent = data.error || 'Error parsing UML';
+return;
+}
+
+resultsDiv.classList.remove('hidden');
+resultJson.innerHTML = formatJSON(data);
+}).catch(error => {
+loadingDiv.classList.add('hidden');
+errorDiv.classList.remove('hidden');
+errorMessage.textContent = 'Network error: ' + error.message;
+});
+});
+});
+	</script>
+{% endblock %}
