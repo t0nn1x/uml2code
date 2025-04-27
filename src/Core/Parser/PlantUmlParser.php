@@ -109,26 +109,52 @@ class PlantUmlParser implements ParserInterface
      */
     private function parseClasses(string $content, ClassDiagram $diagram): void
     {
-        // Match class definitions with their bodies
-        $pattern = '/\b(class|interface|abstract\s+class|enum)\s+([A-Za-z0-9_]+)(?:\s+as\s+([A-Za-z0-9_]+))?(?:\s+([^{]*))?(?:\s*\{([^}]*)\})?/s';
-
-        preg_match_all($pattern, $content, $matches, PREG_SET_ORDER);
-
-        // Also match empty class definitions without braces
-        $emptyPattern = '/\b(class|interface|abstract\s+class|enum)\s+([A-Za-z0-9_]+)(?:\s+as\s+([A-Za-z0-9_]+))?(?:\s+([^{\n]*))?(?:\s*$|\s*\n)/m';
-        preg_match_all($emptyPattern, $content, $emptyMatches, PREG_SET_ORDER);
-
-        // Combine matches, but avoid duplicates
-        $processedClasses = [];
-        foreach (array_merge($matches, $emptyMatches) as $match) {
-            $name = $match[2];
-            if (!in_array($name, $processedClasses)) {
-                $this->processClassMatch($match, $diagram);
-                $processedClasses[] = $name;
+        // Remove title line to prevent it from being detected as a class
+        $content = preg_replace('/^title\s+.+$/m', '', $content);
+        
+        // Match all class definitions
+        preg_match_all('/\b(class|interface|enum|abstract\s+class)\s+([A-Za-z][A-Za-z0-9_]*)/i', $content, $basicMatches, PREG_SET_ORDER);
+        
+        foreach ($basicMatches as $match) {
+            // Create simple class with just the name
+            $type = trim($match[1]);
+            $name = trim($match[2]);
+            
+            $class = new ClassEntity();
+            $class->setName($name);
+            
+            // Set type
+            if ($type === 'interface') {
+                $class->setInterface(true);
+            } elseif ($type === 'abstract class') {
+                $class->setAbstract(true);
+            } elseif ($type === 'enum') {
+                $class->setEnum(true);
             }
+            
+            // Find extends and implements
+            if (preg_match('/\b' . preg_quote($type, '/') . '\s+' . preg_quote($name, '/') . '\s+extends\s+([A-Za-z][A-Za-z0-9_]*)/i', $content, $extendsMatch)) {
+                $class->setExtends($extendsMatch[1]);
+            }
+            
+            if (preg_match('/\b' . preg_quote($type, '/') . '\s+' . preg_quote($name, '/') . '.*?implements\s+([A-Za-z0-9_,\s]+)/i', $content, $implMatch)) {
+                $interfaces = explode(',', $implMatch[1]);
+                foreach ($interfaces as $interface) {
+                    $class->addImplements(trim($interface));
+                }
+            }
+            
+            // Try to find the class body
+            $bodyPattern = '/\b' . preg_quote($type, '/') . '\s+' . preg_quote($name, '/') . '.*?\{(.*?)\}/s';
+            if (preg_match($bodyPattern, $content, $bodyMatch)) {
+                $body = trim($bodyMatch[1]);
+                $this->parseClassBody($body, $class);
+            }
+            
+            $diagram->addClass($class);
         }
-
-        // Process relationships to update class types
+        
+        // Also check for inheritance and implementation relationships in the relationship format
         $this->updateClassTypesFromRelationships($content, $diagram);
     }
 
@@ -285,7 +311,7 @@ class PlantUmlParser implements ParserInterface
                 $processedLines[] = $line;
             }
             // Try to match a Java/C#-style attribute: +String name, +int[] ids, +List<User> users
-            else if (preg_match('/([+\-#~])?([\w\d_<>[\],\s]+)\s+([\w\d_]+)/', $line, $javaStyleMatch)) {
+            else if (preg_match('/([+\-#~])?([A-Za-z0-9_<>\\[\\]\\s,]+)\\s+([A-Za-z0-9_]+)/', $line, $javaStyleMatch)) {
                 $visibility = $javaStyleMatch[1] ?: '+';
                 $type = trim($javaStyleMatch[2]);
                 $attributeName = $javaStyleMatch[3];
@@ -344,80 +370,144 @@ class PlantUmlParser implements ParserInterface
      * Parse relationship definitions
      *
      * @param string $content PlantUML content
-     * @param ClassDiagram $diagram The diagram to add relationships to
+     * @param ClassDiagram $diagram The diagram to add entities to
      */
     private function parseRelationships(string $content, ClassDiagram $diagram): void
     {
-        // Match relationship patterns with multiplicity
-        $pattern = '/
-            ([A-Za-z0-9_]+)                     # Source class
-            \s*
-            (?:                                 # Optional source multiplicity
-                "([^"]*)"                      # Captures: "1", "0..*", "1..5", etc.
-            )?
-            \s*
-            (                                   # Relationship type
-                --|<\|--|o--|<\|\.\.|\.\.|
-                <\|--o|--o|<\.\.|\.\.>|\*--|
-                \*\.\.|-\*|<--|-->|\*-->|
-                <\.\*|o\.\.|\.\.o|--\*|\.\.>|
-                -->>|--|<-->>|<<-->>|
-                -+|<-+|>-+|<>-+|-+>|
-                <->|<-->|<--->|<---->|
-                <=>|<==>|<===>|<====>
-            )
-            \s*
-            (?:                                 # Optional target multiplicity
-                "([^"]*)"                      # Captures: "1", "0..*", "1..5", etc.
-            )?
-            \s*
-            ([A-Za-z0-9_]+)                     # Target class
-            (?:                                 # Optional relationship label
-                \s*:\s*
-                ([^\n]+)                       # Captures everything until newline
-            )?
-        /x';  // x modifier for verbose regex with comments
-
-        preg_match_all($pattern, $content, $matches, PREG_SET_ORDER);
-
-        $processedRelationships = [];
-
+        $processedKeys = [];
+        
+        // Get all class names for validating existing classes
+        $classNames = [];
+        foreach ($diagram->getClasses() as $class) {
+            $classNames[] = $class->getName();
+        }
+        
+        // Match relationship patterns like: User "1" --> "*" Order: places
+        preg_match_all('/([A-Za-z0-9_]+)\s*(?:"([^"]*)")?\s*([-.*o<>|]+)\s*(?:"([^"]*)")?\s*([A-Za-z0-9_]+)(?:\s*:\s*(.+))?/im', $content, $matches, PREG_SET_ORDER);
+        
         foreach ($matches as $match) {
-            $sourceClass = $match[1];
-            $sourceMultiplicity = isset($match[2]) ? trim($match[2]) : null;
-            $relationshipType = $match[3];
-            $targetMultiplicity = isset($match[4]) ? trim($match[4]) : null;
-            $targetClass = $match[5];
+            $src = $match[1];
+            $srcMul = isset($match[2]) ? $match[2] : '';
+            $syntax = $match[3];
+            $tgtMul = isset($match[4]) ? $match[4] : '';
+            $tgt = $match[5];
             $label = isset($match[6]) ? trim($match[6]) : null;
-
-            // Determine relationship type based on label and syntax
-            $type = $this->determineRelationshipType($relationshipType, $label);
-
-            // Create a unique key that considers direction, type, and label
-            $key = $this->createRelationshipKey($sourceClass, $targetClass, $type, $label);
-            if (in_array($key, $processedRelationships)) {
+            
+            // Skip if syntax isn't a valid relationship pattern
+            if (!$this->isValidRelationshipSyntax($syntax)) {
                 continue;
             }
-
-            // Create and configure the relationship
-            $relationship = new Relationship();
-            $relationship->setSource($sourceClass);
-            $relationship->setTarget($targetClass);
-            $relationship->setType($type);
-
-            if ($label) {
-                $relationship->setLabel($label);
+            
+            // Create classes if they don't exist and both sides are likely classes 
+            // (starting with uppercase letter, avoiding primitive types like int, string, etc.)
+            $isPrimitiveType = in_array(strtolower($src), ['int', 'string', 'float', 'boolean', 'array', 'void', 'double', 'object']) || 
+                             in_array(strtolower($tgt), ['int', 'string', 'float', 'boolean', 'array', 'void', 'double', 'object']);
+            
+            if (!$isPrimitiveType) {
+                if (!in_array($src, $classNames)) {
+                    $srcClass = new ClassEntity();
+                    $srcClass->setName($src);
+                    $diagram->addClass($srcClass);
+                    $classNames[] = $src;
+                }
+                
+                if (!in_array($tgt, $classNames)) {
+                    $tgtClass = new ClassEntity();
+                    $tgtClass->setName($tgt);
+                    $diagram->addClass($tgtClass);
+                    $classNames[] = $tgt;
+                }
+                
+                $type = $this->determineRelationshipType($syntax, $label);
+                $key = $this->createRelationshipKey($src, $tgt, $type, $label);
+                
+                if (isset($processedKeys[$key])) {
+                    continue;
+                }
+                
+                $rel = new Relationship();
+                $rel->setSource($src);
+                $rel->setTarget($tgt);
+                $rel->setType($type);
+                
+                if (!empty($label)) {
+                    $rel->setLabel($label);
+                }
+                
+                if (!empty($srcMul)) {
+                    $rel->setSourceMultiplicity(trim($srcMul));
+                }
+                
+                if (!empty($tgtMul)) {
+                    $rel->setTargetMultiplicity(trim($tgtMul));
+                }
+                
+                $diagram->addRelationship($rel);
+                $processedKeys[$key] = true;
             }
-            if ($sourceMultiplicity) {
-                $relationship->setSourceMultiplicity($sourceMultiplicity);
-            }
-            if ($targetMultiplicity) {
-                $relationship->setTargetMultiplicity($targetMultiplicity);
-            }
-
-            $diagram->addRelationship($relationship);
-            $processedRelationships[] = $key;
         }
+    }
+    
+    /**
+     * Check if the given syntax is a valid relationship pattern
+     */
+    private function isValidRelationshipSyntax(string $syntax): bool
+    {
+        $patterns = [
+            // Association - include more variations
+            '/^-+$/',
+            '/^--+$/',
+            '/^-+>$/',
+            '/^->$/',
+            '/^-->$/',
+            '/^--->$/',
+            '/^<-+$/',
+            '/^<--$/',
+            '/^<---$/',
+            
+            // Inheritance
+            '/^<\|-+$/',
+            '/^-+\|>$/',
+            '/^<\|--$/',
+            '/^--|>$/',
+            
+            // Implementation
+            '/^<\|\.\.+$/',
+            '/^\.\.+\|>$/',
+            '/^<\|\.\.$/',
+            '/^\.\.|>$/',
+            
+            // Dependency
+            '/^\.\.+>$/',
+            '/^<\.\.+>$/',
+            '/^\.\.>$/',
+            '/^<\.\.>$/',
+            
+            // Aggregation
+            '/^o-+$/',
+            '/^-+o$/',
+            '/^o--$/',
+            '/^--o$/',
+            
+            // Composition
+            '/^\*-+$/',
+            '/^-+\*$/',
+            '/^\*--$/',
+            '/^--\*$/',
+            
+            // Bidirectional
+            '/^<->$/',
+            '/^<-->$/',
+            '/^<==>$/'
+        ];
+        
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $syntax)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     /**
@@ -587,4 +677,4 @@ class PlantUmlParser implements ParserInterface
 
         return $input;
     }
-}
+} 
