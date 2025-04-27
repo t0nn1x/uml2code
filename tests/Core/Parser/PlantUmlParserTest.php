@@ -8,6 +8,9 @@ use App\Core\Parser\Models\ClassDiagram;
 use App\Core\Parser\Models\ClassEntity;
 use App\Core\Parser\Models\Relationship;
 use App\Core\Parser\PlantUmlParser;
+use App\Core\Parser\DiagramParserFactory;
+use App\Core\Parser\ClassEntityParser;
+use App\Core\Parser\RelationshipParser;
 use PHPUnit\Framework\TestCase;
 
 class PlantUmlParserTest extends TestCase
@@ -17,7 +20,10 @@ class PlantUmlParserTest extends TestCase
     protected function setUp(): void
     {
         $detector = new DiagramTypeDetector();
-        $this->parser = new PlantUmlParser($detector);
+        $classEntityParser = new ClassEntityParser();
+        $relationshipParser = new RelationshipParser();
+        $factory = new DiagramParserFactory($detector, $classEntityParser, $relationshipParser);
+        $this->parser = new PlantUmlParser($detector, $factory);
     }
 
     public function testParseBasicClassDiagram(): void

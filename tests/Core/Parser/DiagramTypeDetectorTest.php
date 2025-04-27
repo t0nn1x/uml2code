@@ -3,15 +3,24 @@
 namespace App\Tests\Core\Parser;
 
 use App\Core\Parser\DiagramTypeDetector;
+use App\Core\Parser\PlantUmlParser;
+use App\Core\Parser\DiagramParserFactory;
+use App\Core\Parser\ClassEntityParser;
+use App\Core\Parser\RelationshipParser;
 use PHPUnit\Framework\TestCase;
 
 class DiagramTypeDetectorTest extends TestCase
 {
     private DiagramTypeDetector $detector;
+    private PlantUmlParser $parser;
 
     protected function setUp(): void
     {
         $this->detector = new DiagramTypeDetector();
+        $classEntityParser = new ClassEntityParser();
+        $relationshipParser = new RelationshipParser();
+        $factory = new DiagramParserFactory($this->detector, $classEntityParser, $relationshipParser);
+        $this->parser = new PlantUmlParser($this->detector, $factory);
     }
 
     public function testDetectClassDiagram(): void
