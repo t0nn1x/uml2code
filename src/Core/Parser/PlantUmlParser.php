@@ -174,8 +174,8 @@ class PlantUmlParser implements ParserInterface
         $lines = array_filter($lines); // Remove empty lines
 
         foreach ($lines as $lineNum => $line) {
+            // Try to match a method with parameters and return type: +login(password: string): bool
             if (preg_match('/([+\-#~])?([\w\d_]+)\((.*?)\)(?:\s*:\s*([\w\d_<>]+))?/', $line, $methodMatch)) {
-
                 $visibility = $methodMatch[1] ?: '+';
                 $methodName = $methodMatch[2];
                 $parameters = trim($methodMatch[3]);
@@ -188,9 +188,8 @@ class PlantUmlParser implements ParserInterface
                     'returnType' => $returnType
                 ]);
             }
-            // Try to match an attribute
+            // Try to match an attribute with explicit type: +id: int
             else if (preg_match('/([+\-#~])?([\w\d_]+)\s*:\s*([\w\d_<>]+)/', $line, $attrMatch)) {
-
                 $visibility = $attrMatch[1] ?: '+';
                 $attributeName = $attrMatch[2];
                 $type = $attrMatch[3];
@@ -200,16 +199,37 @@ class PlantUmlParser implements ParserInterface
                     'visibility' => $this->mapVisibilitySymbol($visibility),
                     'type' => $type
                 ]);
+            }
+            // Try to match a Java/C#-style attribute: +String name, +int id
+            else if (preg_match('/([+\-#~])?([\w\d_<>]+)\s+([\w\d_]+)/', $line, $javaStyleMatch)) {
+                $visibility = $javaStyleMatch[1] ?: '+';
+                $type = $javaStyleMatch[2];
+                $attributeName = $javaStyleMatch[3];
+
+                $class->addAttribute([
+                    'name' => $attributeName,
+                    'visibility' => $this->mapVisibilitySymbol($visibility),
+                    'type' => $type
+                ]);
+            }
+            // Try to match a basic attribute with no type: +name
+            else if (preg_match('/([+\-#~])?([\w\d_]+)$/', $line, $basicAttrMatch)) {
+                $visibility = $basicAttrMatch[1] ?: '+';
+                $attributeName = $basicAttrMatch[2];
+
+                // Ignore if this looks like a method without parentheses (common mistake)
+                if (!in_array(strtolower($attributeName), ['get', 'set', 'is', 'has', 'find', 'load', 'save', 'delete', 'update', 'create', 'remove', 'add', 'process'])) {
+                    $class->addAttribute([
+                        'name' => $attributeName,
+                        'visibility' => $this->mapVisibilitySymbol($visibility),
+                        'type' => null
+                    ]);
+                }
             } else {
                 // Debug: Log unmatched lines
                 error_log("No match for line: '$line'");
             }
         }
-
-        // Debug: Log final counts
-        error_log("Final counts for " . $class->getName() . ": " . 
-                 count($class->getMethods()) . " methods, " . 
-                 count($class->getAttributes()) . " attributes");
     }
 
     private function mapVisibilitySymbol(string $symbol): string

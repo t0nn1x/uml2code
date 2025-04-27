@@ -140,6 +140,8 @@ class UmlParserController extends AbstractController
                         'target' => $relationship->getTarget(),
                         'type' => $relationship->getType(),
                         'label' => $relationship->getLabel(),
+                        'sourceMultiplicity' => $relationship->getSourceMultiplicity(),
+                        'targetMultiplicity' => $relationship->getTargetMultiplicity(),
                     ];
                 }
                 $result['relationships'] = $relationships;
