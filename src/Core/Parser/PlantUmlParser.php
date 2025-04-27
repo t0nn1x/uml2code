@@ -135,20 +135,19 @@ class PlantUmlParser implements ParserInterface
             // Set type
             if ($type === 'interface') {
                 $class->setInterface(true);
-                // Interfaces should not implement themselves
-                $class->setImplements([]);
             } elseif ($type === 'abstract class') {
                 $class->setAbstract(true);
             } elseif ($type === 'enum') {
                 $class->setEnum(true);
             }
             
-            // Find extends and implements
+            // Find extends and implements - only look for implements if not an interface
             if (preg_match('/\b' . preg_quote($type, '/') . '\s+' . preg_quote($name, '/') . '\s+extends\s+([A-Za-z][A-Za-z0-9_]*)/i', $content, $extendsMatch)) {
                 $class->setExtends($extendsMatch[1]);
             }
             
-            if (preg_match('/\b' . preg_quote($type, '/') . '\s+' . preg_quote($name, '/') . '.*?implements\s+([A-Za-z0-9_,\s]+)/i', $content, $implMatch)) {
+            // Only process 'implements' for non-interface types
+            if ($type !== 'interface' && preg_match('/\b' . preg_quote($type, '/') . '\s+' . preg_quote($name, '/') . '.*?implements\s+([A-Za-z0-9_,\s]+)/i', $content, $implMatch)) {
                 $interfaces = explode(',', $implMatch[1]);
                 foreach ($interfaces as $interface) {
                     $class->addImplements(trim($interface));
