@@ -127,6 +127,35 @@ class PlantUmlParser implements ParserInterface
                 $processedClasses[] = $name;
             }
         }
+
+        // Process relationships to update class types
+        $this->updateClassTypesFromRelationships($content, $diagram);
+    }
+
+    /**
+     * Update class types based on relationships
+     */
+    private function updateClassTypesFromRelationships(string $content, ClassDiagram $diagram): void
+    {
+        // Look for implementation and inheritance relationships
+        preg_match_all('/([A-Za-z0-9_]+)\s*(?:--|-->|\.\.>)\s*([A-Za-z0-9_]+)\s*:\s*(implements|extends)/i', $content, $matches, PREG_SET_ORDER);
+
+        foreach ($matches as $match) {
+            $sourceClass = $match[1];
+            $targetClass = $match[2];
+            $relationType = strtolower($match[3]);
+
+            if ($relationType === 'implements' && $diagram->hasClass($targetClass)) {
+                $targetEntity = $diagram->getClass($targetClass);
+                $targetEntity->setInterface(true);
+            }
+            if ($relationType === 'extends' && $diagram->hasClass($targetClass)) {
+                $targetEntity = $diagram->getClass($targetClass);
+                if ($targetEntity->isInterface()) {
+                    $targetEntity->setInterface(true);
+                }
+            }
+        }
     }
 
     private function processClassMatch(array $match, ClassDiagram $diagram): void
@@ -320,11 +349,6 @@ class PlantUmlParser implements ParserInterface
     private function parseRelationships(string $content, ClassDiagram $diagram): void
     {
         // Match relationship patterns with multiplicity
-        // Examples:
-        // User "1" --> "*" Order : places
-        // User "1..*" -- "0..1" Account
-        // Department "1" o-- "*" Employee : employs
-        // Company *-- "2..5" Department
         $pattern = '/
             ([A-Za-z0-9_]+)                     # Source class
             \s*
@@ -366,8 +390,11 @@ class PlantUmlParser implements ParserInterface
             $targetClass = $match[5];
             $label = isset($match[6]) ? trim($match[6]) : null;
 
-            // Create a unique key that considers direction and type
-            $key = $this->createRelationshipKey($sourceClass, $targetClass, $relationshipType);
+            // Determine relationship type based on label and syntax
+            $type = $this->determineRelationshipType($relationshipType, $label);
+
+            // Create a unique key that considers direction, type, and label
+            $key = $this->createRelationshipKey($sourceClass, $targetClass, $type, $label);
             if (in_array($key, $processedRelationships)) {
                 continue;
             }
@@ -376,13 +403,7 @@ class PlantUmlParser implements ParserInterface
             $relationship = new Relationship();
             $relationship->setSource($sourceClass);
             $relationship->setTarget($targetClass);
-            
-            // Special handling for bidirectional relationships
-            if (preg_match('/<[-=]>|<-->|<==>/', $relationshipType)) {
-                $relationship->setType(Relationship::TYPE_BIDIRECTIONAL);
-            } else {
-                $relationship->setType($this->mapRelationshipType($relationshipType));
-            }
+            $relationship->setType($type);
 
             if ($label) {
                 $relationship->setLabel($label);
@@ -397,53 +418,61 @@ class PlantUmlParser implements ParserInterface
             $diagram->addRelationship($relationship);
             $processedRelationships[] = $key;
         }
-
-        // Also match simpler relationship patterns without multiplicity
-        $simplePattern = '/([A-Za-z0-9_]+)\s*(-+|<-+|>-+|<>-+|-+>|<->|<-->|<--->|<==>)\s*([A-Za-z0-9_]+)/';
-        preg_match_all($simplePattern, $content, $simpleMatches, PREG_SET_ORDER);
-
-        foreach ($simpleMatches as $match) {
-            $sourceClass = $match[1];
-            $relationshipType = $match[2];
-            $targetClass = $match[3];
-            
-            // Create a unique key that considers direction and type
-            $key = $this->createRelationshipKey($sourceClass, $targetClass, $relationshipType);
-            if (in_array($key, $processedRelationships)) {
-                continue;
-            }
-
-            $relationship = new Relationship();
-            $relationship->setSource($sourceClass);
-            $relationship->setTarget($targetClass);
-            
-            // Determine relationship type based on the arrow style
-            if (preg_match('/<[-=]>|<-->|<==>/', $relationshipType)) {
-                $relationship->setType(Relationship::TYPE_BIDIRECTIONAL);
-            } else if (preg_match('/<-/', $relationshipType)) {
-                $relationship->setType(Relationship::TYPE_DEPENDENCY);
-            } else {
-                $relationship->setType(Relationship::TYPE_ASSOCIATION);
-            }
-            
-            $diagram->addRelationship($relationship);
-            $processedRelationships[] = $key;
-        }
     }
 
     /**
-     * Creates a unique key for a relationship that considers both direction and type
+     * Creates a unique key for a relationship that considers direction, type, and label
      */
-    private function createRelationshipKey(string $source, string $target, string $type): string {
-        // For bidirectional relationships, always use the same order
-        if (preg_match('/<[-=]>|<-->|<==>/', $type)) {
+    private function createRelationshipKey(string $source, string $target, string $type, ?string $label): string {
+        if ($type === Relationship::TYPE_BIDIRECTIONAL) {
             $classes = [$source, $target];
             sort($classes);
-            return implode(':', $classes) . ':' . $type;
+            return implode(':', $classes) . ':' . $type . ($label ? ':' . $label : '');
         }
         
-        // For directional relationships, preserve the order
-        return $source . ':' . $target . ':' . $type;
+        return $source . ':' . $target . ':' . $type . ($label ? ':' . $label : '');
+    }
+
+    /**
+     * Determine the relationship type based on syntax and label
+     */
+    private function determineRelationshipType(string $syntax, ?string $label): string {
+        // Check label first for implementation/inheritance
+        if ($label) {
+            $labelLower = strtolower(trim($label));
+            if ($labelLower === 'implements') {
+                return Relationship::TYPE_IMPLEMENTATION;
+            }
+            if ($labelLower === 'extends') {
+                return Relationship::TYPE_INHERITANCE;
+            }
+        }
+
+        // Then check syntax
+        if (strpos($syntax, '<|') !== false || strpos($syntax, '|>') !== false) {
+            if (strpos($syntax, '..') !== false) {
+                return Relationship::TYPE_IMPLEMENTATION;
+            }
+            return Relationship::TYPE_INHERITANCE;
+        }
+
+        if (strpos($syntax, '*') !== false || strpos($syntax, '-*') !== false || strpos($syntax, '*-') !== false) {
+            return Relationship::TYPE_COMPOSITION;
+        }
+
+        if (strpos($syntax, 'o') !== false || strpos($syntax, '-o') !== false || strpos($syntax, 'o-') !== false) {
+            return Relationship::TYPE_AGGREGATION;
+        }
+
+        if (strpos($syntax, '..') !== false) {
+            return Relationship::TYPE_DEPENDENCY;
+        }
+
+        if (preg_match('/<[-=]>|<-->|<==>/', $syntax)) {
+            return Relationship::TYPE_BIDIRECTIONAL;
+        }
+
+        return Relationship::TYPE_ASSOCIATION;
     }
 
     /**
