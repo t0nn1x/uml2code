@@ -61,7 +61,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     /**
      * Find or create a user by email
      */
-    public function findOrCreateFromOauth(string $email, string $firstName = null, string $lastName = null): User
+    public function findOrCreateFromOauth(string $email, ?string $firstName = null, ?string $lastName = null): User
     {
         $user = $this->findOneBy(['email' => $email]);
 
