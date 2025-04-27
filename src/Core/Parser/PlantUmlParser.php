@@ -120,15 +120,7 @@ class PlantUmlParser implements ParserInterface
 
         // Combine matches, but avoid duplicates
         $processedClasses = [];
-        foreach ($matches as $match) {
-            $name = $match[2];
-            if (!in_array($name, $processedClasses)) {
-                $this->processClassMatch($match, $diagram);
-                $processedClasses[] = $name;
-            }
-        }
-
-        foreach ($emptyMatches as $match) {
+        foreach (array_merge($matches, $emptyMatches) as $match) {
             $name = $match[2];
             if (!in_array($name, $processedClasses)) {
                 $this->processClassMatch($match, $diagram);
@@ -362,7 +354,7 @@ class PlantUmlParser implements ParserInterface
             $targetClass = $match[5];
             $label = isset($match[6]) ? trim($match[6]) : null;
 
-            $key = $sourceClass . '->' . $targetClass;
+            $key = $sourceClass . '->' . $targetClass . '-' . $relationshipType;
             if (in_array($key, $processedRelationships)) {
                 continue;
             }
@@ -398,19 +390,23 @@ class PlantUmlParser implements ParserInterface
         preg_match_all($simplePattern, $content, $simpleMatches, PREG_SET_ORDER);
 
         foreach ($simpleMatches as $match) {
-            $key = $match[1] . '->' . $match[3];
+            $sourceClass = $match[1];
+            $relationshipType = $match[2];
+            $targetClass = $match[3];
+            
+            $key = $sourceClass . '->' . $targetClass . '-' . $relationshipType;
             if (in_array($key, $processedRelationships)) {
                 continue;
             }
 
             $relationship = new Relationship();
-            $relationship->setSource($match[1]);
-            $relationship->setTarget($match[3]);
+            $relationship->setSource($sourceClass);
+            $relationship->setTarget($targetClass);
             
             // Determine relationship type based on the arrow style
-            if (preg_match('/<[-=]>|<-->|<==>/', $match[2])) {
+            if (preg_match('/<[-=]>|<-->|<==>/', $relationshipType)) {
                 $relationship->setType(Relationship::TYPE_BIDIRECTIONAL);
-            } else if (preg_match('/<-/', $match[2])) {
+            } else if (preg_match('/<-/', $relationshipType)) {
                 $relationship->setType(Relationship::TYPE_DEPENDENCY);
             } else {
                 $relationship->setType(Relationship::TYPE_ASSOCIATION);
@@ -436,9 +432,10 @@ class PlantUmlParser implements ParserInterface
         // Handle common cases
         switch (strtolower($multiplicity)) {
             case '*':
+                return '*';
             case 'many':
             case 'n':
-                return 'many';
+                return '*';
             case '0..1':
             case '0,1':
             case 'zero or one':
@@ -484,7 +481,7 @@ class PlantUmlParser implements ParserInterface
             '*--' => Relationship::TYPE_COMPOSITION,
             'o--' => Relationship::TYPE_AGGREGATION,
             '<--' => Relationship::TYPE_DEPENDENCY,
-            '..' => Relationship::TYPE_ASSOCIATION,
+            '..' => Relationship::TYPE_DEPENDENCY,
             '<|..' => Relationship::TYPE_IMPLEMENTATION,
             '<|--o' => Relationship::TYPE_INHERITANCE,
             '--o' => Relationship::TYPE_ASSOCIATION,
@@ -503,6 +500,10 @@ class PlantUmlParser implements ParserInterface
             '-->' => Relationship::TYPE_ASSOCIATION,
             '<-->>' => Relationship::TYPE_BIDIRECTIONAL,
             '<<-->>' => Relationship::TYPE_BIDIRECTIONAL,
+            '->' => Relationship::TYPE_DEPENDENCY,
+            '<-' => Relationship::TYPE_DEPENDENCY,
+            '>' => Relationship::TYPE_DEPENDENCY,
+            '<' => Relationship::TYPE_DEPENDENCY
         ];
 
         return $map[$syntax] ?? Relationship::TYPE_ASSOCIATION;
