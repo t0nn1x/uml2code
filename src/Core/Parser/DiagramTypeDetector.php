@@ -31,8 +31,15 @@ class DiagramTypeDetector
             '<|--' => 3,           // Low weight: Inheritance arrow notation but could be used in other contexts
             '*--' => 3,            // Low weight: Composition arrow notation but similar to other relationship types
             'o--' => 3,            // Low weight: Aggregation arrow notation but could be confused with other symbols
-            '{' => 1,              // Minimal weight: Basic syntax character used in many contexts
-            '}' => 1,              // Minimal weight: Basic syntax character used in many contexts
+            '{' => 2,              // Minimal weight: Basic syntax character used in many contexts
+            '}' => 2,              // Minimal weight: Basic syntax character used in many contexts
+            'String' => 3,         // Common Java/C# type indicator
+            'Integer' => 3,        // Common Java/C# type indicator
+            'Boolean' => 3,        // Common Java/C# type indicator
+            'List<' => 4,         // Generic collection type indicator
+            'Map<' => 4,          // Generic collection type indicator
+            'Set<' => 4,          // Generic collection type indicator
+            '[]' => 3,            // Array type indicator
             '--' => 2,             // Low weight: Basic association line, could be used in many contexts
             '->' => 2,             // Low weight: Basic directed association, common in many diagrams
             '<-' => 2,             // Low weight: Basic directed association (reverse), common in many diagrams
@@ -58,7 +65,6 @@ class DiagramTypeDetector
             '->>' => 8,           // High weight: Typical sequence message notation
             '->x' => 8,           // High weight: Specific destruction message notation
             '->o' => 8,           // High weight: Specific creation message notation
-            '-->' => 3,           // Low weight: Generic arrow that appears in many diagram types
             '<<--' => 8,          // High weight: Specific return message notation
             'activate' => 10,      // Highest weight: Definitive sequence diagram lifecycle keyword
             'deactivate' => 10,    // Highest weight: Definitive sequence diagram lifecycle keyword
@@ -139,6 +145,26 @@ class DiagramTypeDetector
             return self::TYPE_UNKNOWN;
         }
 
+        // Special case: If we see class-specific patterns, it's a class diagram
+        if (preg_match('/\b(?:class|interface|enum|abstract\s+class)\s+[A-Za-z0-9_]+/', $cleanText)) {
+            return self::TYPE_CLASS;
+        }
+
+        // Special case: If we see Java/C# style type declarations, it's likely a class diagram
+        if (preg_match('/[+\-#~]?\s*(?:String|Integer|Boolean|List|Map|Set|Object)[\[\]<>]*\s+\w+/', $cleanText)) {
+            return self::TYPE_CLASS;
+        }
+
+        // Special case: If we see state-specific keywords, it's a state diagram
+        if (preg_match('/\[*\]\s*-+>\s*\w+|state\s+\w+\s*{|\[*\]\s*-+>\s*\[*\]/', $cleanText)) {
+            return self::TYPE_STATE;
+        }
+
+        // Special case: If we see sequence-specific patterns, it's a sequence diagram
+        if (preg_match('/(?:participant|actor)\s+\w+|activate\s+\w+|deactivate\s+\w+|alt\s+\w+|opt\s+\w+|loop\s+\w+/', $cleanText)) {
+            return self::TYPE_SEQUENCE;
+        }
+
         // Count indicators for each diagram type with weights
         $typeCounts = [];
         foreach (self::TYPE_INDICATORS as $type => $indicators) {
@@ -157,7 +183,7 @@ class DiagramTypeDetector
         $maxCount = current($typeCounts);
 
         // Return unknown if the score is too low
-        if ($maxCount < 5) {  // Increased threshold further
+        if ($maxCount < 3) {  // Lowered threshold since we added more specific checks
             return self::TYPE_UNKNOWN;
         }
 

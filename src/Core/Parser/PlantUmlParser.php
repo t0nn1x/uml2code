@@ -114,32 +114,55 @@ class PlantUmlParser implements ParserInterface
 
         preg_match_all($pattern, $content, $matches, PREG_SET_ORDER);
 
-        foreach ($matches as $matchNum => $match) {
-            $type = trim($match[1]);
+        // Also match empty class definitions without braces
+        $emptyPattern = '/\b(class|interface|abstract\s+class|enum)\s+([A-Za-z0-9_]+)(?:\s+as\s+([A-Za-z0-9_]+))?(?:\s+([^{\n]*))?(?:\s*$|\s*\n)/m';
+        preg_match_all($emptyPattern, $content, $emptyMatches, PREG_SET_ORDER);
+
+        // Combine matches, but avoid duplicates
+        $processedClasses = [];
+        foreach ($matches as $match) {
             $name = $match[2];
-            $alias = isset($match[3]) ? $match[3] : null;
-            $extends = isset($match[4]) ? $this->parseExtendsPart($match[4]) : null;
-            $body = isset($match[5]) ? $match[5] : '';
-
-            $class = new ClassEntity();
-            $class->setName($name);
-
-            // Set type (class, interface, etc.)
-            if ($type === 'interface') {
-                $class->setInterface(true);
-            } elseif ($type === 'abstract class') {
-                $class->setAbstract(true);
-            } elseif ($type === 'enum') {
-                $class->setEnum(true);
+            if (!in_array($name, $processedClasses)) {
+                $this->processClassMatch($match, $diagram);
+                $processedClasses[] = $name;
             }
-
-            // Parse class body (attributes and methods)
-            if (!empty($body)) {
-                $this->parseClassBody($body, $class);
-            }
-
-            $diagram->addClass($class);
         }
+
+        foreach ($emptyMatches as $match) {
+            $name = $match[2];
+            if (!in_array($name, $processedClasses)) {
+                $this->processClassMatch($match, $diagram);
+                $processedClasses[] = $name;
+            }
+        }
+    }
+
+    private function processClassMatch(array $match, ClassDiagram $diagram): void
+    {
+        $type = trim($match[1]);
+        $name = $match[2];
+        $alias = isset($match[3]) ? $match[3] : null;
+        $extends = isset($match[4]) ? $this->parseExtendsPart($match[4]) : null;
+        $body = isset($match[5]) ? $match[5] : '';
+
+        $class = new ClassEntity();
+        $class->setName($name);
+
+        // Set type (class, interface, etc.)
+        if ($type === 'interface') {
+            $class->setInterface(true);
+        } elseif ($type === 'abstract class') {
+            $class->setAbstract(true);
+        } elseif ($type === 'enum') {
+            $class->setEnum(true);
+        }
+
+        // Parse class body (attributes and methods)
+        if (!empty($body)) {
+            $this->parseClassBody($body, $class);
+        }
+
+        $diagram->addClass($class);
     }
 
     /**
@@ -181,7 +204,15 @@ class PlantUmlParser implements ParserInterface
         $lines = array_map('trim', explode("\n", $body));
         $lines = array_filter($lines); // Remove empty lines
 
+        $processedLines = [];
+        $seenSignatures = [];
+
         foreach ($lines as $lineNum => $line) {
+            // Skip if we've already processed this line
+            if (in_array($line, $processedLines)) {
+                continue;
+            }
+
             // Try to match a method with parameters and return type: +login(password: string): bool
             if (preg_match('/([+\-#~])?([\w\d_]+)\((.*?)\)(?:\s*:\s*([\w\d_<>]+))?/', $line, $methodMatch)) {
                 $visibility = $methodMatch[1] ?: '+';
@@ -189,36 +220,52 @@ class PlantUmlParser implements ParserInterface
                 $parameters = trim($methodMatch[3]);
                 $returnType = isset($methodMatch[4]) ? trim($methodMatch[4]) : null;
 
-                $class->addMethod([
-                    'name' => $methodName,
-                    'visibility' => $this->mapVisibilitySymbol($visibility),
-                    'parameters' => $parameters,
-                    'returnType' => $returnType
-                ]);
+                // Clean up parameter format
+                $parameters = preg_replace('/\s*:\s*/', ': ', $parameters);
+
+                $signature = $methodName . '(' . $parameters . ')';
+                if (!in_array($signature, $seenSignatures)) {
+                    $class->addMethod([
+                        'name' => $methodName,
+                        'visibility' => $this->mapVisibilitySymbol($visibility),
+                        'parameters' => $parameters,
+                        'returnType' => $returnType
+                    ]);
+                    $seenSignatures[] = $signature;
+                }
+                $processedLines[] = $line;
             }
             // Try to match an attribute with explicit type: +id: int
-            else if (preg_match('/([+\-#~])?([\w\d_]+)\s*:\s*([\w\d_<>]+)/', $line, $attrMatch)) {
+            else if (preg_match('/([+\-#~])?([\w\d_]+)\s*:\s*([\w\d_<>[\],\s]+)/', $line, $attrMatch)) {
                 $visibility = $attrMatch[1] ?: '+';
                 $attributeName = $attrMatch[2];
-                $type = $attrMatch[3];
+                $type = trim($attrMatch[3]);
 
-                $class->addAttribute([
-                    'name' => $attributeName,
-                    'visibility' => $this->mapVisibilitySymbol($visibility),
-                    'type' => $type
-                ]);
+                if (!in_array($attributeName, $seenSignatures)) {
+                    $class->addAttribute([
+                        'name' => $attributeName,
+                        'visibility' => $this->mapVisibilitySymbol($visibility),
+                        'type' => $type
+                    ]);
+                    $seenSignatures[] = $attributeName;
+                }
+                $processedLines[] = $line;
             }
             // Try to match a Java/C#-style attribute: +String name, +int[] ids, +List<User> users
-            else if (preg_match('/([+\-#~])?([A-Za-z0-9_<>,\[\]]+)\s+([A-Za-z0-9_]+)/', $line, $javaStyleMatch)) {
+            else if (preg_match('/([+\-#~])?([\w\d_<>[\],\s]+)\s+([\w\d_]+)/', $line, $javaStyleMatch)) {
                 $visibility = $javaStyleMatch[1] ?: '+';
-                $type = $javaStyleMatch[2];
+                $type = trim($javaStyleMatch[2]);
                 $attributeName = $javaStyleMatch[3];
 
-                $class->addAttribute([
-                    'name' => $attributeName,
-                    'visibility' => $this->mapVisibilitySymbol($visibility),
-                    'type' => $type
-                ]);
+                if (!in_array($attributeName, $seenSignatures)) {
+                    $class->addAttribute([
+                        'name' => $attributeName,
+                        'visibility' => $this->mapVisibilitySymbol($visibility),
+                        'type' => $type
+                    ]);
+                    $seenSignatures[] = $attributeName;
+                }
+                $processedLines[] = $line;
             }
             // Try to match a basic attribute with no type: +name
             else if (preg_match('/([+\-#~])?([\w\d_]+)$/', $line, $basicAttrMatch)) {
@@ -227,11 +274,15 @@ class PlantUmlParser implements ParserInterface
 
                 // Ignore if this looks like a method without parentheses (common mistake)
                 if (!in_array(strtolower($attributeName), ['get', 'set', 'is', 'has', 'find', 'load', 'save', 'delete', 'update', 'create', 'remove', 'add', 'process'])) {
-                    $class->addAttribute([
-                        'name' => $attributeName,
-                        'visibility' => $this->mapVisibilitySymbol($visibility),
-                        'type' => null
-                    ]);
+                    if (!in_array($attributeName, $seenSignatures)) {
+                        $class->addAttribute([
+                            'name' => $attributeName,
+                            'visibility' => $this->mapVisibilitySymbol($visibility),
+                            'type' => null
+                        ]);
+                        $seenSignatures[] = $attributeName;
+                    }
+                    $processedLines[] = $line;
                 }
             } else {
                 // Debug: Log unmatched lines
@@ -282,7 +333,10 @@ class PlantUmlParser implements ParserInterface
                 <\|--o|--o|<\.\.|\.\.>|\*--|
                 \*\.\.|-\*|<--|-->|\*-->|
                 <\.\*|o\.\.|\.\.o|--\*|\.\.>|
-                -->>|--|<-->>|<<-->>
+                -->>|--|<-->>|<<-->>|
+                -+|<-+|>-+|<>-+|-+>|
+                <->|<-->|<--->|<---->|
+                <=>|<==>|<===>|<====>
             )
             \s*
             (?:                                 # Optional target multiplicity
@@ -298,6 +352,8 @@ class PlantUmlParser implements ParserInterface
 
         preg_match_all($pattern, $content, $matches, PREG_SET_ORDER);
 
+        $processedRelationships = [];
+
         foreach ($matches as $match) {
             $sourceClass = $match[1];
             $sourceMultiplicity = isset($match[2]) ? $this->normalizeMultiplicity($match[2]) : null;
@@ -306,11 +362,22 @@ class PlantUmlParser implements ParserInterface
             $targetClass = $match[5];
             $label = isset($match[6]) ? trim($match[6]) : null;
 
+            $key = $sourceClass . '->' . $targetClass;
+            if (in_array($key, $processedRelationships)) {
+                continue;
+            }
+
             // Create and configure the relationship
             $relationship = new Relationship();
             $relationship->setSource($sourceClass);
             $relationship->setTarget($targetClass);
-            $relationship->setType($this->mapRelationshipType($relationshipType));
+            
+            // Special handling for bidirectional relationships
+            if (preg_match('/<[-=]>|<-->|<==>/', $relationshipType)) {
+                $relationship->setType(Relationship::TYPE_BIDIRECTIONAL);
+            } else {
+                $relationship->setType($this->mapRelationshipType($relationshipType));
+            }
 
             if ($label) {
                 $relationship->setLabel($label);
@@ -323,6 +390,34 @@ class PlantUmlParser implements ParserInterface
             }
 
             $diagram->addRelationship($relationship);
+            $processedRelationships[] = $key;
+        }
+
+        // Also match simpler relationship patterns without multiplicity
+        $simplePattern = '/([A-Za-z0-9_]+)\s*(-+|<-+|>-+|<>-+|-+>|<->|<-->|<--->|<==>)\s*([A-Za-z0-9_]+)/';
+        preg_match_all($simplePattern, $content, $simpleMatches, PREG_SET_ORDER);
+
+        foreach ($simpleMatches as $match) {
+            $key = $match[1] . '->' . $match[3];
+            if (in_array($key, $processedRelationships)) {
+                continue;
+            }
+
+            $relationship = new Relationship();
+            $relationship->setSource($match[1]);
+            $relationship->setTarget($match[3]);
+            
+            // Determine relationship type based on the arrow style
+            if (preg_match('/<[-=]>|<-->|<==>/', $match[2])) {
+                $relationship->setType(Relationship::TYPE_BIDIRECTIONAL);
+            } else if (preg_match('/<-/', $match[2])) {
+                $relationship->setType(Relationship::TYPE_DEPENDENCY);
+            } else {
+                $relationship->setType(Relationship::TYPE_ASSOCIATION);
+            }
+            
+            $diagram->addRelationship($relationship);
+            $processedRelationships[] = $key;
         }
     }
 
@@ -343,7 +438,7 @@ class PlantUmlParser implements ParserInterface
             case '*':
             case 'many':
             case 'n':
-                return '*';
+                return 'many';
             case '0..1':
             case '0,1':
             case 'zero or one':
