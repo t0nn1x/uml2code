@@ -177,8 +177,12 @@ class PlantUmlParser implements ParserInterface
                 $class->setExtends($extendsMatch[1]);
             }
             
-            // Only process 'implements' for non-interface types
-            if ($type !== 'interface' && preg_match('/\b' . preg_quote($type, '/') . '\s+' . preg_quote($name, '/') . '.*?implements\s+([A-Za-z0-9_,\s]+)/i', $content, $implMatch)) {
+            // Check for implementation using a more robust pattern that considers both 
+            // "class X implements Y" and "class X extends Z implements Y"
+            $implementsPattern = '/\b' . preg_quote($type, '/') . '\s+' . preg_quote($name, '/') . 
+                               '(?:\s+extends\s+[A-Za-z][A-Za-z0-9_]*)?\s+implements\s+([A-Za-z0-9_,\s]+)/i';
+            
+            if ($type !== 'interface' && preg_match($implementsPattern, $content, $implMatch)) {
                 $interfaces = explode(',', $implMatch[1]);
                 foreach ($interfaces as $interface) {
                     $class->addImplements(trim($interface));
@@ -222,8 +226,62 @@ class PlantUmlParser implements ParserInterface
             $diagram->addClass($class);
         }
         
+        // Find implementation relationships for each class
+        $this->parseImplementsRelationships($content, $diagram);
+        
         // Also check for inheritance and implementation relationships
         $this->updateClassTypesFromRelationships($content, $diagram);
+    }
+
+    /**
+     * Parse "implements" statements that weren't caught during initial class parsing
+     *
+     * @param string $content PlantUML content
+     * @param ClassDiagram $diagram The diagram to add entities to
+     */
+    private function parseImplementsRelationships(string $content, ClassDiagram $diagram): void
+    {
+        // Look for class X extends Y implements Z pattern
+        preg_match_all('/\bclass\s+([A-Za-z][A-Za-z0-9_]*)\s+(?:extends\s+([A-Za-z][A-Za-z0-9_]*)\s+)?implements\s+([A-Za-z0-9_,\s]+)/i', 
+            $content, $matches, PREG_SET_ORDER);
+        
+        foreach ($matches as $match) {
+            $className = trim($match[1]);
+            
+            if (!$diagram->hasClass($className)) {
+                continue;
+            }
+            
+            $class = $diagram->getClass($className);
+            
+            // If there's an extends part, add it
+            if (!empty($match[2])) {
+                $class->setExtends(trim($match[2]));
+            }
+            
+            // Add all implements
+            $interfaces = explode(',', $match[3]);
+            foreach ($interfaces as $interface) {
+                $interfaceName = trim($interface);
+                
+                if (!empty($interfaceName)) {
+                    // Create interface if it doesn't exist
+                    if (!$diagram->hasClass($interfaceName)) {
+                        $interfaceClass = new ClassEntity();
+                        $interfaceClass->setName($interfaceName);
+                        $interfaceClass->setInterface(true);
+                        $diagram->addClass($interfaceClass);
+                    } else {
+                        // Mark existing class as interface
+                        $interfaceClass = $diagram->getClass($interfaceName);
+                        $interfaceClass->setInterface(true);
+                    }
+                    
+                    // Add implements relationship
+                    $class->addImplements($interfaceName);
+                }
+            }
+        }
     }
 
     /**
@@ -355,7 +413,7 @@ class PlantUmlParser implements ParserInterface
             }
 
             // Try to match a method with parameters and return type: +login(password: string): bool
-            if (preg_match('/([+\-#~])?([\w\d_]+)\((.*?)\)(?:\s*:\s*([\w\d_<>]+))?/', $line, $methodMatch)) {
+            if (preg_match('/([+\-#~])?([\w\d_]+)\((.*?)\)(?:\s*:\s*([^,;]+))?/', $line, $methodMatch)) {
                 $visibility = $methodMatch[1] ?: '+';
                 $methodName = $methodMatch[2];
                 $parameters = trim($methodMatch[3]);
@@ -377,7 +435,7 @@ class PlantUmlParser implements ParserInterface
                 $processedLines[] = $line;
             }
             // Try to match an attribute with explicit type: +id: int
-            else if (preg_match('/([+\-#~])?([\w\d_]+)\s*:\s*([\w\d_<>[\],\s]+)/', $line, $attrMatch)) {
+            else if (preg_match('/([+\-#~])?([\w\d_]+)\s*:\s*([^,;]+)/', $line, $attrMatch)) {
                 $visibility = $attrMatch[1] ?: '+';
                 $attributeName = $attrMatch[2];
                 $type = trim($attrMatch[3]);
@@ -473,6 +531,63 @@ class PlantUmlParser implements ParserInterface
         $definedEntities = [];
         foreach ($entityMatches as $match) {
             $definedEntities[] = $match[2];
+        }
+        
+        // Process explicit 'implements' statements first
+        preg_match_all('/class\s+([A-Za-z0-9_]+)\s+(?:extends\s+([A-Za-z0-9_]+)\s+)?implements\s+([A-Za-z0-9_,\s]+)/i', $content, $implMatches, PREG_SET_ORDER);
+        
+        foreach ($implMatches as $match) {
+            $className = $match[1];
+            $interfaces = explode(',', $match[3]);
+            
+            if (!$diagram->hasClass($className)) {
+                if (in_array($className, $definedEntities) || $this->isValidEntityName($className)) {
+                    $class = new ClassEntity();
+                    $class->setName($className);
+                    $diagram->addClass($class);
+                    $classNames[] = $className;
+                }
+            }
+            
+            if ($diagram->hasClass($className)) {
+                $class = $diagram->getClass($className);
+                
+                foreach ($interfaces as $interfaceName) {
+                    $interfaceName = trim($interfaceName);
+                    
+                    if (!empty($interfaceName)) {
+                        // Make sure the interface exists
+                        if (!$diagram->hasClass($interfaceName)) {
+                            if (in_array($interfaceName, $definedEntities) || $this->isValidEntityName($interfaceName)) {
+                                $interface = new ClassEntity();
+                                $interface->setName($interfaceName);
+                                $interface->setInterface(true);
+                                $diagram->addClass($interface);
+                                $classNames[] = $interfaceName;
+                            }
+                        } else {
+                            // Mark existing entity as interface
+                            $interface = $diagram->getClass($interfaceName);
+                            $interface->setInterface(true);
+                        }
+                        
+                        // Add implementation relationship
+                        $class->addImplements($interfaceName);
+                        
+                        // Add explicit relationship if not already processed
+                        $key = $this->createRelationshipKey($interfaceName, $className, Relationship::TYPE_IMPLEMENTATION, null);
+                        
+                        if (!isset($processedKeys[$key])) {
+                            $rel = new Relationship();
+                            $rel->setSource($interfaceName);
+                            $rel->setTarget($className);
+                            $rel->setType(Relationship::TYPE_IMPLEMENTATION);
+                            $diagram->addRelationship($rel);
+                            $processedKeys[$key] = true;
+                        }
+                    }
+                }
+            }
         }
         
         // First, match relationships in standard format with multiplicities in quotes
@@ -702,9 +817,6 @@ class PlantUmlParser implements ParserInterface
                 $interface->setInterface(true);
                 
                 // Add implements relationship if not already present
-                $class->addImplements($interfaceName);
-                
-                // Create a relationship if one doesn't exist
                 $key = $this->createRelationshipKey($interfaceName, $className, Relationship::TYPE_IMPLEMENTATION, null);
                 
                 if (!isset($processedKeys[$key])) {
@@ -772,8 +884,57 @@ class PlantUmlParser implements ParserInterface
                 $diagram->removeClass($className);
             }
         }
+
+        // Clean up any fragment classes after all processing is done
+        $this->removeFragmentClasses($diagram);
     }
     
+    /**
+     * Remove fragment classes from the diagram
+     * Fragment classes are those that appear to be substrings of existing class names
+     * 
+     * @param ClassDiagram $diagram
+     */
+    private function removeFragmentClasses(ClassDiagram $diagram): void
+    {
+        $classes = $diagram->getClasses();
+        $classNames = [];
+        $problematicClasses = [];
+        
+        // Collect class names
+        foreach ($classes as $class) {
+            $classNames[] = $class->getName();
+        }
+        
+        // Identify potential fragment classes (substrings of other classes)
+        foreach ($classNames as $className) {
+            foreach ($classNames as $otherName) {
+                // Skip if comparing to itself
+                if ($className === $otherName) {
+                    continue;
+                }
+                
+                // If this class is a substring of another class and shorter
+                if (stripos($otherName, $className) === 0 && strlen($className) < strlen($otherName)) {
+                    // And this class doesn't have properties or methods defined
+                    if ($diagram->hasClass($className)) {
+                        $class = $diagram->getClass($className);
+                        if (empty($class->getAttributes()) && empty($class->getMethods()) && 
+                            empty($class->getExtends()) && empty($class->getImplements())) {
+                            $problematicClasses[] = $className;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Remove fragment classes
+        foreach (array_unique($problematicClasses) as $className) {
+            $diagram->removeClass($className);
+        }
+    }
+
     /**
      * Check if a string is likely to be a valid entity name
      * 
