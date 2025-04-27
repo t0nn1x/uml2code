@@ -154,6 +154,18 @@ class PlantUmlParser implements ParserInterface
             $this->parseClassBody($body, $class);
         }
 
+        // Handle extends and implements
+        if ($extends) {
+            if ($extends['extends']) {
+                $class->setExtends($extends['extends']);
+            }
+            if (!empty($extends['implements'])) {
+                foreach ($extends['implements'] as $interface) {
+                    $class->addImplements($interface);
+                }
+            }
+        }
+
         $diagram->addClass($class);
     }
 
@@ -354,7 +366,7 @@ class PlantUmlParser implements ParserInterface
             $targetClass = $match[5];
             $label = isset($match[6]) ? trim($match[6]) : null;
 
-            $key = $sourceClass . '->' . $targetClass . '-' . $relationshipType;
+            $key = $sourceClass . '->' . $targetClass;
             if (in_array($key, $processedRelationships)) {
                 continue;
             }
@@ -394,7 +406,7 @@ class PlantUmlParser implements ParserInterface
             $relationshipType = $match[2];
             $targetClass = $match[3];
             
-            $key = $sourceClass . '->' . $targetClass . '-' . $relationshipType;
+            $key = $sourceClass . '->' . $targetClass;
             if (in_array($key, $processedRelationships)) {
                 continue;
             }
@@ -503,8 +515,27 @@ class PlantUmlParser implements ParserInterface
             '->' => Relationship::TYPE_DEPENDENCY,
             '<-' => Relationship::TYPE_DEPENDENCY,
             '>' => Relationship::TYPE_DEPENDENCY,
-            '<' => Relationship::TYPE_DEPENDENCY
+            '<' => Relationship::TYPE_DEPENDENCY,
+            '<|-' => Relationship::TYPE_INHERITANCE,
+            '-|>' => Relationship::TYPE_INHERITANCE,
+            '<|' => Relationship::TYPE_INHERITANCE,
+            '|>' => Relationship::TYPE_INHERITANCE
         ];
+
+        // If the syntax contains inheritance markers, it's inheritance
+        if (strpos($syntax, '<|') !== false || strpos($syntax, '|>') !== false) {
+            return Relationship::TYPE_INHERITANCE;
+        }
+
+        // If the syntax contains composition markers, it's composition
+        if (strpos($syntax, '*') !== false) {
+            return Relationship::TYPE_COMPOSITION;
+        }
+
+        // If the syntax contains dots, it's a dependency
+        if (strpos($syntax, '..') !== false) {
+            return Relationship::TYPE_DEPENDENCY;
+        }
 
         return $map[$syntax] ?? Relationship::TYPE_ASSOCIATION;
     }
