@@ -49,9 +49,15 @@ class PlantUmlParser implements ParserInterface
             case DiagramTypeDetector::TYPE_SEQUENCE:
                 throw new ParserException("Sequence diagram parsing not yet implemented");
             case DiagramTypeDetector::TYPE_ACTIVITY:
-                throw new ParserException("Activity diagram parsing not yet implemented");
-            default:
+            case DiagramTypeDetector::TYPE_USECASE:
+            case DiagramTypeDetector::TYPE_COMPONENT:
+            case DiagramTypeDetector::TYPE_STATE:
+            case DiagramTypeDetector::TYPE_OBJECT:
                 throw new ParserException("Unsupported diagram type: " . $diagramType);
+            case DiagramTypeDetector::TYPE_UNKNOWN:
+                throw new ParserException("Invalid or unknown diagram type");
+            default:
+                throw new ParserException("Unexpected diagram type: " . $diagramType);
         }
     }
 
@@ -95,13 +101,12 @@ class PlantUmlParser implements ParserInterface
      */
     private function parseClasses(string $content, ClassDiagram $diagram): void
     {
-        // Match class definitions
-        // Basic pattern: class ClassName { ... }
-        $pattern = '/\b(class|interface|abstract\s+class|enum)\s+([A-Za-z0-9_]+)(?:\s+as\s+([A-Za-z0-9_]+))?(?:\s+([^{]*))?(?:\s*\{\s*(.*?)\s*\})?/s';
+        // Match class definitions with their bodies
+        $pattern = '/\b(class|interface|abstract\s+class|enum)\s+([A-Za-z0-9_]+)(?:\s+as\s+([A-Za-z0-9_]+))?(?:\s+([^{]*))?(?:\s*\{([^}]*)\})?/s';
 
         preg_match_all($pattern, $content, $matches, PREG_SET_ORDER);
 
-        foreach ($matches as $match) {
+        foreach ($matches as $matchNum => $match) {
             $type = trim($match[1]);
             $name = $match[2];
             $alias = isset($match[3]) ? $match[3] : null;
@@ -164,49 +169,57 @@ class PlantUmlParser implements ParserInterface
      */
     private function parseClassBody(string $body, ClassEntity $class): void
     {
-        // Split into lines
-        $lines = explode("\n", $body);
+        // Split into lines and clean each line
+        $lines = array_map('trim', explode("\n", $body));
+        $lines = array_filter($lines); // Remove empty lines
 
-        foreach ($lines as $line) {
-            $line = trim($line);
-            if (empty($line)) {
-                continue;
-            }
+        foreach ($lines as $lineNum => $line) {
+            if (preg_match('/([+\-#~])?([\w\d_]+)\((.*?)\)(?:\s*:\s*([\w\d_<>]+))?/', $line, $methodMatch)) {
 
-            // Detect if this is a method or attribute
-            if (preg_match('/(.+)\(.*\)(\s*:\s*([A-Za-z0-9_<>]+))?/', $line, $methodMatch)) {
-                // This is a method
-                $methodName = trim($methodMatch[1]);
-                $returnType = isset($methodMatch[3]) ? $methodMatch[3] : null;
-
-                $visibility = $this->detectVisibility($methodName);
-                $methodName = $this->stripVisibilityPrefix($methodName, $visibility);
+                $visibility = $methodMatch[1] ?: '+';
+                $methodName = $methodMatch[2];
+                $parameters = trim($methodMatch[3]);
+                $returnType = isset($methodMatch[4]) ? trim($methodMatch[4]) : null;
 
                 $class->addMethod([
                     'name' => $methodName,
-                    'visibility' => $visibility,
+                    'visibility' => $this->mapVisibilitySymbol($visibility),
+                    'parameters' => $parameters,
                     'returnType' => $returnType
                 ]);
-            } else {
-                // This is an attribute
-                $attributeName = $line;
-                $type = null;
+            }
+            // Try to match an attribute
+            else if (preg_match('/([+\-#~])?([\w\d_]+)\s*:\s*([\w\d_<>]+)/', $line, $attrMatch)) {
 
-                // Check for type
-                if (preg_match('/(.+)\s*:\s*([A-Za-z0-9_<>]+)/', $line, $typeMatch)) {
-                    $attributeName = trim($typeMatch[1]);
-                    $type = $typeMatch[2];
-                }
-
-                $visibility = $this->detectVisibility($attributeName);
-                $attributeName = $this->stripVisibilityPrefix($attributeName, $visibility);
+                $visibility = $attrMatch[1] ?: '+';
+                $attributeName = $attrMatch[2];
+                $type = $attrMatch[3];
 
                 $class->addAttribute([
                     'name' => $attributeName,
-                    'visibility' => $visibility,
+                    'visibility' => $this->mapVisibilitySymbol($visibility),
                     'type' => $type
                 ]);
+            } else {
+                // Debug: Log unmatched lines
+                error_log("No match for line: '$line'");
             }
+        }
+
+        // Debug: Log final counts
+        error_log("Final counts for " . $class->getName() . ": " . 
+                 count($class->getMethods()) . " methods, " . 
+                 count($class->getAttributes()) . " attributes");
+    }
+
+    private function mapVisibilitySymbol(string $symbol): string
+    {
+        switch ($symbol) {
+            case '+': return ClassEntity::VISIBILITY_PUBLIC;
+            case '-': return ClassEntity::VISIBILITY_PRIVATE;
+            case '#': return ClassEntity::VISIBILITY_PROTECTED;
+            case '~': return ClassEntity::VISIBILITY_PACKAGE;
+            default: return ClassEntity::VISIBILITY_PUBLIC;
         }
     }
 
@@ -218,28 +231,115 @@ class PlantUmlParser implements ParserInterface
      */
     private function parseRelationships(string $content, ClassDiagram $diagram): void
     {
-        // Match relationship patterns
-        // e.g., ClassA --> ClassB : association
-        $pattern = '/([A-Za-z0-9_]+)\s+(--|<\|--|o--|<\|\.\.|\.\.|<\|--o|--o|<\.\.|\.\.>|\*--|\*\.\.|-\*|<--|\*-->|<\.\*|o\.\.|\.\.o|--\*|\.\.>|-->>|--|<-->>|<<-->>)\s+([A-Za-z0-9_]+)(?:\s*:\s*(.+))?/';
+        // Match relationship patterns with multiplicity
+        // Examples:
+        // User "1" --> "*" Order : places
+        // User "1..*" -- "0..1" Account
+        // Department "1" o-- "*" Employee : employs
+        // Company *-- "2..5" Department
+        $pattern = '/
+            ([A-Za-z0-9_]+)                     # Source class
+            \s*
+            (?:                                 # Optional source multiplicity
+                "([^"]*)"                      # Captures: "1", "0..*", "1..5", etc.
+            )?
+            \s*
+            (                                   # Relationship type
+                --|<\|--|o--|<\|\.\.|\.\.|
+                <\|--o|--o|<\.\.|\.\.>|\*--|
+                \*\.\.|-\*|<--|-->|\*-->|
+                <\.\*|o\.\.|\.\.o|--\*|\.\.>|
+                -->>|--|<-->>|<<-->>
+            )
+            \s*
+            (?:                                 # Optional target multiplicity
+                "([^"]*)"                      # Captures: "1", "0..*", "1..5", etc.
+            )?
+            \s*
+            ([A-Za-z0-9_]+)                     # Target class
+            (?:                                 # Optional relationship label
+                \s*:\s*
+                ([^\n]+)                       # Captures everything until newline
+            )?
+        /x';  // x modifier for verbose regex with comments
 
         preg_match_all($pattern, $content, $matches, PREG_SET_ORDER);
 
         foreach ($matches as $match) {
             $sourceClass = $match[1];
-            $relationshipType = $match[2];
-            $targetClass = $match[3];
-            $label = isset($match[4]) ? trim($match[4]) : null;
+            $sourceMultiplicity = isset($match[2]) ? $this->normalizeMultiplicity($match[2]) : null;
+            $relationshipType = $match[3];
+            $targetMultiplicity = isset($match[4]) ? $this->normalizeMultiplicity($match[4]) : null;
+            $targetClass = $match[5];
+            $label = isset($match[6]) ? trim($match[6]) : null;
 
+            // Create and configure the relationship
             $relationship = new Relationship();
             $relationship->setSource($sourceClass);
             $relationship->setTarget($targetClass);
             $relationship->setType($this->mapRelationshipType($relationshipType));
+            
             if ($label) {
                 $relationship->setLabel($label);
+            }
+            if ($sourceMultiplicity) {
+                $relationship->setSourceMultiplicity($sourceMultiplicity);
+            }
+            if ($targetMultiplicity) {
+                $relationship->setTargetMultiplicity($targetMultiplicity);
             }
 
             $diagram->addRelationship($relationship);
         }
+    }
+
+    /**
+     * Normalize multiplicity notation
+     * Converts various multiplicity formats to a standardized format
+     *
+     * @param string $multiplicity Raw multiplicity value
+     * @return string Normalized multiplicity
+     */
+    private function normalizeMultiplicity(string $multiplicity): string
+    {
+        // Trim any whitespace
+        $multiplicity = trim($multiplicity);
+
+        // Handle common cases
+        switch (strtolower($multiplicity)) {
+            case '*':
+            case 'many':
+            case 'n':
+                return '*';
+            case '0..1':
+            case '0,1':
+            case 'zero or one':
+                return '0..1';
+            case '1':
+            case 'one':
+                return '1';
+            case '0..*':
+            case '0..n':
+            case 'zero to many':
+                return '0..*';
+            case '1..*':
+            case '1..n':
+            case 'one to many':
+                return '1..*';
+        }
+
+        // Check if it's a range (e.g., "2..5")
+        if (preg_match('/^(\d+)\.\.(\d+|\*)$/', $multiplicity)) {
+            return $multiplicity;
+        }
+
+        // If it's a single number
+        if (is_numeric($multiplicity)) {
+            return $multiplicity;
+        }
+
+        // Default case - return as is if we can't normalize it
+        return $multiplicity;
     }
 
     /**
@@ -281,43 +381,6 @@ class PlantUmlParser implements ParserInterface
     }
 
     /**
-     * Detect visibility from method or attribute name
-     *
-     * @param string $name Name with possible visibility prefix
-     * @return string Visibility constant
-     */
-    private function detectVisibility(string $name): string
-    {
-        if (strpos($name, '+') === 0) {
-            return ClassEntity::VISIBILITY_PUBLIC;
-        } elseif (strpos($name, '-') === 0) {
-            return ClassEntity::VISIBILITY_PRIVATE;
-        } elseif (strpos($name, '#') === 0) {
-            return ClassEntity::VISIBILITY_PROTECTED;
-        } elseif (strpos($name, '~') === 0) {
-            return ClassEntity::VISIBILITY_PACKAGE;
-        }
-
-        return ClassEntity::VISIBILITY_PUBLIC;
-    }
-
-    /**
-     * Remove visibility prefix from name
-     *
-     * @param string $name Name with possible visibility prefix
-     * @param string $detectedVisibility The detected visibility
-     * @return string Name without visibility prefix
-     */
-    private function stripVisibilityPrefix(string $name, string $detectedVisibility): string
-    {
-        if ($detectedVisibility !== ClassEntity::VISIBILITY_PUBLIC) {
-            return substr($name, 1);
-        }
-
-        return $name;
-    }
-
-    /**
      * Clean the input by removing comments and normalizing whitespace
      *
      * @param string $input
@@ -325,12 +388,15 @@ class PlantUmlParser implements ParserInterface
      */
     private function cleanInput(string $input): string
     {
-        // Remove single-line comments
-        $input = preg_replace('/' . preg_quote("'") . '.*$/m', '', $input);
-
-        // Convert tabs to spaces
-        $input = str_replace("\t", '    ', $input);
-
+        // Remove single-line comments that don't start with @
+        $input = preg_replace('/(?<!@)\'[^\n]*\n/', "\n", $input);
+        
+        // Convert tabs to spaces and normalize line endings
+        $input = str_replace(["\t", "\r\n", "\r"], [' ', "\n", "\n"], $input);
+        
+        // Normalize spaces around braces and colons
+        $input = preg_replace('/\s*([{}:])\s*/', ' $1 ', $input);
+        
         return $input;
     }
 }
