@@ -149,7 +149,7 @@ class PlantUmlParser implements ParserInterface
             $class->setEnum(true);
         }
 
-        // Parse class body (attributes and methods)
+        // Parse class body (attributes and methods) if present
         if (!empty($body)) {
             $this->parseClassBody($body, $class);
         }
@@ -360,13 +360,14 @@ class PlantUmlParser implements ParserInterface
 
         foreach ($matches as $match) {
             $sourceClass = $match[1];
-            $sourceMultiplicity = isset($match[2]) ? $this->normalizeMultiplicity($match[2]) : null;
+            $sourceMultiplicity = isset($match[2]) ? trim($match[2]) : null;
             $relationshipType = $match[3];
-            $targetMultiplicity = isset($match[4]) ? $this->normalizeMultiplicity($match[4]) : null;
+            $targetMultiplicity = isset($match[4]) ? trim($match[4]) : null;
             $targetClass = $match[5];
             $label = isset($match[6]) ? trim($match[6]) : null;
 
-            $key = $sourceClass . '->' . $targetClass;
+            // Create a unique key that considers direction and type
+            $key = $this->createRelationshipKey($sourceClass, $targetClass, $relationshipType);
             if (in_array($key, $processedRelationships)) {
                 continue;
             }
@@ -406,7 +407,8 @@ class PlantUmlParser implements ParserInterface
             $relationshipType = $match[2];
             $targetClass = $match[3];
             
-            $key = $sourceClass . '->' . $targetClass;
+            // Create a unique key that considers direction and type
+            $key = $this->createRelationshipKey($sourceClass, $targetClass, $relationshipType);
             if (in_array($key, $processedRelationships)) {
                 continue;
             }
@@ -430,8 +432,24 @@ class PlantUmlParser implements ParserInterface
     }
 
     /**
+     * Creates a unique key for a relationship that considers both direction and type
+     */
+    private function createRelationshipKey(string $source, string $target, string $type): string {
+        // For bidirectional relationships, always use the same order
+        if (preg_match('/<[-=]>|<-->|<==>/', $type)) {
+            $classes = [$source, $target];
+            sort($classes);
+            return implode(':', $classes) . ':' . $type;
+        }
+        
+        // For directional relationships, preserve the order
+        return $source . ':' . $target . ':' . $type;
+    }
+
+    /**
      * Normalize multiplicity notation
      * Converts various multiplicity formats to a standardized format
+     * but preserves certain common text values
      *
      * @param string $multiplicity Raw multiplicity value
      * @return string Normalized multiplicity
@@ -441,12 +459,14 @@ class PlantUmlParser implements ParserInterface
         // Trim any whitespace
         $multiplicity = trim($multiplicity);
 
+        // Preserve common text values
+        if (in_array(strtolower($multiplicity), ['many', 'n'])) {
+            return $multiplicity;
+        }
+
         // Handle common cases
         switch (strtolower($multiplicity)) {
             case '*':
-                return '*';
-            case 'many':
-            case 'n':
                 return '*';
             case '0..1':
             case '0,1':
@@ -487,49 +507,22 @@ class PlantUmlParser implements ParserInterface
      */
     private function mapRelationshipType(string $syntax): string
     {
-        $map = [
-            '--' => Relationship::TYPE_ASSOCIATION,
-            '<|--' => Relationship::TYPE_INHERITANCE,
-            '*--' => Relationship::TYPE_COMPOSITION,
-            'o--' => Relationship::TYPE_AGGREGATION,
-            '<--' => Relationship::TYPE_DEPENDENCY,
-            '..' => Relationship::TYPE_DEPENDENCY,
-            '<|..' => Relationship::TYPE_IMPLEMENTATION,
-            '<|--o' => Relationship::TYPE_INHERITANCE,
-            '--o' => Relationship::TYPE_ASSOCIATION,
-            '<..' => Relationship::TYPE_DEPENDENCY,
-            '..>' => Relationship::TYPE_DEPENDENCY,
-            '*--' => Relationship::TYPE_COMPOSITION,
-            '*..' => Relationship::TYPE_COMPOSITION,
-            '-*' => Relationship::TYPE_COMPOSITION,
-            '<--' => Relationship::TYPE_DEPENDENCY,
-            '*-->' => Relationship::TYPE_COMPOSITION,
-            '<.*' => Relationship::TYPE_DEPENDENCY,
-            'o..' => Relationship::TYPE_AGGREGATION,
-            '..o' => Relationship::TYPE_AGGREGATION,
-            '--*' => Relationship::TYPE_COMPOSITION,
-            '..>' => Relationship::TYPE_DEPENDENCY,
-            '-->' => Relationship::TYPE_ASSOCIATION,
-            '<-->>' => Relationship::TYPE_BIDIRECTIONAL,
-            '<<-->>' => Relationship::TYPE_BIDIRECTIONAL,
-            '->' => Relationship::TYPE_DEPENDENCY,
-            '<-' => Relationship::TYPE_DEPENDENCY,
-            '>' => Relationship::TYPE_DEPENDENCY,
-            '<' => Relationship::TYPE_DEPENDENCY,
-            '<|-' => Relationship::TYPE_INHERITANCE,
-            '-|>' => Relationship::TYPE_INHERITANCE,
-            '<|' => Relationship::TYPE_INHERITANCE,
-            '|>' => Relationship::TYPE_INHERITANCE
-        ];
-
         // If the syntax contains inheritance markers, it's inheritance
         if (strpos($syntax, '<|') !== false || strpos($syntax, '|>') !== false) {
+            if (strpos($syntax, '..') !== false) {
+                return Relationship::TYPE_IMPLEMENTATION;
+            }
             return Relationship::TYPE_INHERITANCE;
         }
 
         // If the syntax contains composition markers, it's composition
-        if (strpos($syntax, '*') !== false) {
+        if (strpos($syntax, '*') !== false || strpos($syntax, '-*') !== false || strpos($syntax, '*-') !== false) {
             return Relationship::TYPE_COMPOSITION;
+        }
+
+        // If the syntax contains aggregation markers, it's aggregation
+        if (strpos($syntax, 'o') !== false || strpos($syntax, '-o') !== false || strpos($syntax, 'o-') !== false) {
+            return Relationship::TYPE_AGGREGATION;
         }
 
         // If the syntax contains dots, it's a dependency
@@ -537,7 +530,13 @@ class PlantUmlParser implements ParserInterface
             return Relationship::TYPE_DEPENDENCY;
         }
 
-        return $map[$syntax] ?? Relationship::TYPE_ASSOCIATION;
+        // If the syntax contains bidirectional markers, it's bidirectional
+        if (preg_match('/<[-=]>|<-->|<==>/', $syntax)) {
+            return Relationship::TYPE_BIDIRECTIONAL;
+        }
+
+        // Default to association
+        return Relationship::TYPE_ASSOCIATION;
     }
 
     /**
