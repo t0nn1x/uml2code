@@ -32,7 +32,21 @@ class DiagramTypeDetector
             '*--' => 3,            // Low weight: Composition arrow notation but similar to other relationship types
             'o--' => 3,            // Low weight: Aggregation arrow notation but could be confused with other symbols
             '{' => 1,              // Minimal weight: Basic syntax character used in many contexts
-            '}' => 1               // Minimal weight: Basic syntax character used in many contexts
+            '}' => 1,              // Minimal weight: Basic syntax character used in many contexts
+            '--' => 2,             // Low weight: Basic association line, could be used in many contexts
+            '->' => 2,             // Low weight: Basic directed association, common in many diagrams
+            '<-' => 2,             // Low weight: Basic directed association (reverse), common in many diagrams
+            '<--' => 2,            // Low weight: Basic directed association line, used in various diagrams
+            '-->' => 2,            // Low weight: Basic directed association line, used in various diagrams
+            '<|-' => 2,            // Low weight: Inheritance line start, could be used in other contexts
+            '-|>' => 2,            // Low weight: Inheritance line end, could be used in other contexts
+            '*-' => 2,             // Low weight: Composition line start, similar to other relationships
+            '-*' => 2,             // Low weight: Composition line end, similar to other relationships
+            'o-' => 2,             // Low weight: Aggregation line start, could be confused with other notations
+            '-o' => 2,             // Low weight: Aggregation line end, could be confused with other notations
+            '..' => 1,             // Minimal weight: Dotted line, very generic notation
+            '..>' => 1,            // Minimal weight: Dotted arrow, very generic notation
+            '<..' => 1,            // Minimal weight: Dotted arrow (reverse), very generic notation
         ],
         self::TYPE_SEQUENCE => [
             'participant' => 10,    // Highest weight: Definitive keyword unique to sequence diagrams
@@ -143,7 +157,7 @@ class DiagramTypeDetector
         $maxCount = current($typeCounts);
 
         // Return unknown if the score is too low
-        if ($maxCount < 15) {  // Increased threshold further
+        if ($maxCount < 5) {  // Increased threshold further
             return self::TYPE_UNKNOWN;
         }
 

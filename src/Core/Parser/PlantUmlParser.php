@@ -42,6 +42,14 @@ class PlantUmlParser implements ParserInterface
         // Detect diagram type
         $diagramType = $this->typeDetector->detectType($plantUmlText);
 
+        // Fallback for diagrams with relationships but no class/interface/enum keywords
+        if ($diagramType === DiagramTypeDetector::TYPE_UNKNOWN) {
+            // Check for common relationship patterns
+            if (preg_match('/[A-Za-z0-9_]+\s+(?:--|->|<-|<--|-->|o--|<\|--|<-\.\.|\.\.-|\.\.>|--\*|\*--)\s+[A-Za-z0-9_]+/', $plantUmlText)) {
+                $diagramType = DiagramTypeDetector::TYPE_CLASS;
+            }
+        }
+
         // Parse according to diagram type
         switch ($diagramType) {
             case DiagramTypeDetector::TYPE_CLASS:
@@ -200,8 +208,8 @@ class PlantUmlParser implements ParserInterface
                     'type' => $type
                 ]);
             }
-            // Try to match a Java/C#-style attribute: +String name, +int id
-            else if (preg_match('/([+\-#~])?([\w\d_<>]+)\s+([\w\d_]+)/', $line, $javaStyleMatch)) {
+            // Try to match a Java/C#-style attribute: +String name, +int[] ids, +List<User> users
+            else if (preg_match('/([+\-#~])?([A-Za-z0-9_<>,\[\]]+)\s+([A-Za-z0-9_]+)/', $line, $javaStyleMatch)) {
                 $visibility = $javaStyleMatch[1] ?: '+';
                 $type = $javaStyleMatch[2];
                 $attributeName = $javaStyleMatch[3];
@@ -235,11 +243,16 @@ class PlantUmlParser implements ParserInterface
     private function mapVisibilitySymbol(string $symbol): string
     {
         switch ($symbol) {
-            case '+': return ClassEntity::VISIBILITY_PUBLIC;
-            case '-': return ClassEntity::VISIBILITY_PRIVATE;
-            case '#': return ClassEntity::VISIBILITY_PROTECTED;
-            case '~': return ClassEntity::VISIBILITY_PACKAGE;
-            default: return ClassEntity::VISIBILITY_PUBLIC;
+            case '+':
+                return ClassEntity::VISIBILITY_PUBLIC;
+            case '-':
+                return ClassEntity::VISIBILITY_PRIVATE;
+            case '#':
+                return ClassEntity::VISIBILITY_PROTECTED;
+            case '~':
+                return ClassEntity::VISIBILITY_PACKAGE;
+            default:
+                return ClassEntity::VISIBILITY_PUBLIC;
         }
     }
 
@@ -298,7 +311,7 @@ class PlantUmlParser implements ParserInterface
             $relationship->setSource($sourceClass);
             $relationship->setTarget($targetClass);
             $relationship->setType($this->mapRelationshipType($relationshipType));
-            
+
             if ($label) {
                 $relationship->setLabel($label);
             }
@@ -410,13 +423,13 @@ class PlantUmlParser implements ParserInterface
     {
         // Remove single-line comments that don't start with @
         $input = preg_replace('/(?<!@)\'[^\n]*\n/', "\n", $input);
-        
+
         // Convert tabs to spaces and normalize line endings
         $input = str_replace(["\t", "\r\n", "\r"], [' ', "\n", "\n"], $input);
-        
+
         // Normalize spaces around braces and colons
         $input = preg_replace('/\s*([{}:])\s*/', ' $1 ', $input);
-        
+
         return $input;
     }
 }
