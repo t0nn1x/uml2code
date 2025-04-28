@@ -72,7 +72,15 @@ User "1" --> "*" Order: places
 						</div>
 
 						<div class="px-4 py-5 sm:p-6">
-							<h3 class="text-lg font-medium leading-6 text-gray-900">Results</h3>
+							<div class="flex justify-between items-center">
+								<h3 class="text-lg font-medium leading-6 text-gray-900">Results</h3>
+								<button id="copy-button" type="button" class="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 hidden">
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+									</svg>
+									Copy Results
+								</button>
+							</div>
 							<div id="loading" class="mt-4 hidden">
 								<div class="flex justify-center">
 									<svg class="animate-spin h-5 w-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24">
@@ -115,6 +123,7 @@ const resultJson = document.getElementById('result-json');
 const loadingDiv = document.getElementById('loading');
 const errorDiv = document.getElementById('error');
 const errorMessage = document.getElementById('error-message');
+const copyButton = document.getElementById('copy-button');
 
 // Function to format JSON with syntax highlighting
 function formatJSON(json) {
@@ -135,6 +144,33 @@ return '<span class="' + cls + '">' + match + '</span>';
 });
 }
 
+// Copy results functionality
+copyButton.addEventListener('click', function() {
+    const textToCopy = JSON.parse(resultJson.textContent); // Get raw JSON
+    const formattedText = JSON.stringify(textToCopy, null, 2); // Format it nicely
+    
+    navigator.clipboard.writeText(formattedText).then(() => {
+        // Temporarily change button text to show success
+        const originalText = copyButton.innerHTML;
+        copyButton.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Copied!
+        `;
+        copyButton.classList.remove('text-gray-700', 'bg-white', 'hover:bg-gray-50');
+        copyButton.classList.add('text-green-700', 'bg-green-50', 'hover:bg-green-100');
+        
+        setTimeout(() => {
+            copyButton.innerHTML = originalText;
+            copyButton.classList.remove('text-green-700', 'bg-green-50', 'hover:bg-green-100');
+            copyButton.classList.add('text-gray-700', 'bg-white', 'hover:bg-gray-50');
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy text: ', err);
+    });
+});
+
 parseButton.addEventListener('click', function () {
 const umlCode = umlInput.value.trim();
 
@@ -142,6 +178,7 @@ if (! umlCode) {
 errorDiv.classList.remove('hidden');
 errorMessage.textContent = 'Please enter some UML code';
 resultsDiv.classList.add('hidden');
+copyButton.classList.add('hidden');
 return;
 }
 
@@ -149,6 +186,7 @@ return;
 loadingDiv.classList.remove('hidden');
 resultsDiv.classList.add('hidden');
 errorDiv.classList.add('hidden');
+copyButton.classList.add('hidden');
 
 // Make API request
 fetch('/api/uml/parse', {
@@ -165,15 +203,18 @@ loadingDiv.classList.add('hidden');
 if (data.success === false) {
 errorDiv.classList.remove('hidden');
 errorMessage.textContent = data.error || 'Error parsing UML';
+copyButton.classList.add('hidden');
 return;
 }
 
 resultsDiv.classList.remove('hidden');
+copyButton.classList.remove('hidden');
 resultJson.innerHTML = formatJSON(data);
 }).catch(error => {
 loadingDiv.classList.add('hidden');
 errorDiv.classList.remove('hidden');
 errorMessage.textContent = 'Network error: ' + error.message;
+copyButton.classList.add('hidden');
 });
 });
 });
