@@ -46,10 +46,14 @@ class UmlParserController extends AbstractController
         $umlContent = $data['uml'];
 
         try {
+            // Parse the UML diagram
             $diagram = $this->parserService->parseUml($umlContent);
 
-            // Convert diagram object to array structure for JSON response
-            $result = $this->diagramToArray($diagram);
+            // Convert to array
+            $result = $this->parserService->diagramToArray($diagram);
+
+            // Clean the array (remove duplicates)
+            $result = $this->parserService->cleanDiagramArray($result);
 
             return $this->json([
                 'success' => true,
@@ -61,6 +65,11 @@ class UmlParserController extends AbstractController
                 'error' => $e->getMessage(),
                 'context' => $e->getContext()
             ], Response::HTTP_BAD_REQUEST);
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'error' => 'An unexpected error occurred: ' . $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -102,57 +111,5 @@ class UmlParserController extends AbstractController
         return $this->json([
             'metadata' => $metadata
         ]);
-    }
-
-    /**
-     * Convert a diagram object to an array representation
-     *
-     * @param mixed $diagram
-     * @return array
-     */
-    private function diagramToArray($diagram): array
-    {
-        if (method_exists($diagram, 'getTitle')) {
-            $result = [
-                'title' => $diagram->getTitle(),
-                'type' => get_class($diagram),
-            ];
-
-            // Handle class diagram
-            if (method_exists($diagram, 'getClasses')) {
-                $classes = [];
-                foreach ($diagram->getClasses() as $class) {
-                    $classes[] = [
-                        'name' => $class->getName(),
-                        'type' => $class->getType(),
-                        'attributes' => $class->getAttributes(),
-                        'methods' => $class->getMethods(),
-                        'extends' => $class->getExtends(),
-                        'implements' => $class->getImplements(),
-                    ];
-                }
-                $result['classes'] = $classes;
-
-                $relationships = [];
-                foreach ($diagram->getRelationships() as $relationship) {
-                    $relationships[] = [
-                        'source' => $relationship->getSource(),
-                        'target' => $relationship->getTarget(),
-                        'type' => $relationship->getType(),
-                        'label' => $relationship->getLabel(),
-                        'sourceMultiplicity' => $relationship->getSourceMultiplicity(),
-                        'targetMultiplicity' => $relationship->getTargetMultiplicity(),
-                    ];
-                }
-                $result['relationships'] = $relationships;
-            }
-
-            return $result;
-        }
-
-        // Fallback for unknown diagram types
-        return [
-            'type' => get_class($diagram),
-        ];
     }
 }
