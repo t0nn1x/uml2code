@@ -2,6 +2,8 @@
 
 namespace App\Core\Parser\Models;
 
+use App\Core\Parser\Util\TypeParser;
+
 /**
  * Represents a UML class diagram
  */
@@ -136,7 +138,7 @@ class ClassDiagram
                 $attributes[] = [
                     'name' => $attribute->getName(),
                     'visibility' => $attribute->getVisibility(),
-                    'type' => $attribute->getType(), // Original type as parsed
+                    'type' => TypeParser::parseType($attribute->getType()),
                     'defaultValue' => $defaultValue
                 ];
             }
@@ -145,12 +147,8 @@ class ClassDiagram
             // Process methods
             $methods = [];
             foreach ($class->getMethods() as $method) {
-                $methods[] = [
-                    'name' => $method->getName(),
-                    'visibility' => $method->getVisibility(),
-                    'parameters' => $method->getParameters(), // Original parameters as parsed
-                    'returnType' => $method->getReturnType() // Original return type as parsed
-                ];
+                $methodArray = $method->toArray();
+                $methods[] = $methodArray;
             }
             $classArray['methods'] = $methods;
 

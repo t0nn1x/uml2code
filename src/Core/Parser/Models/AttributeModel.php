@@ -2,6 +2,8 @@
 
 namespace App\Core\Parser\Models;
 
+use App\Core\Parser\Util\TypeParser;
+
 /**
  * Represents an attribute/property in a class
  */
@@ -18,9 +20,9 @@ class AttributeModel
     private string $visibility = 'public';
 
     /**
-     * @var string|null Type of the attribute
+     * @var array|null Type of the attribute as a structured type object
      */
-    private ?string $type = null;
+    private ?array $type = null;
 
     /**
      * @var mixed|null Default value of the attribute
@@ -74,23 +76,33 @@ class AttributeModel
     /**
      * Set the type of the attribute
      *
-     * @param string|null $type The attribute type
+     * @param string|null $type The attribute type string
      * @return self
      */
     public function setType(?string $type): self
     {
-        $this->type = $type;
+        $this->type = $type ? TypeParser::parseType($type) : null;
         return $this;
     }
 
     /**
      * Get the type of the attribute
      *
-     * @return string|null The attribute type
+     * @return array|null The attribute type as a structured type object
      */
-    public function getType(): ?string
+    public function getType(): ?array
     {
         return $this->type;
+    }
+
+    /**
+     * Get the type as a string
+     *
+     * @return string|null The type string
+     */
+    public function getTypeString(): ?string
+    {
+        return $this->type ? $this->typeToString($this->type) : null;
     }
 
     /**
@@ -113,6 +125,32 @@ class AttributeModel
     public function getDefaultValue()
     {
         return $this->defaultValue;
+    }
+
+    /**
+     * Convert a type object back to its string representation
+     * 
+     * @param array|null $type The type object
+     * @return string The string representation
+     */
+    private function typeToString(?array $type): string
+    {
+        if (!$type) {
+            return '';
+        }
+
+        switch ($type['kind']) {
+            case 'Primitive':
+            case 'Class':
+                return $type['name'];
+            case 'Array':
+                return $this->typeToString($type['elementType']) . '[]';
+            case 'Generic':
+                $typeArgs = array_map([$this, 'typeToString'], $type['typeArguments']);
+                return $type['base'] . '<' . implode(',', $typeArgs) . '>';
+            default:
+                return '';
+        }
     }
 
     /**

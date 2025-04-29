@@ -504,8 +504,8 @@ class PlantUmlParser
             $method = new MethodModel();
             $method->setName($name);
             $method->setVisibility($visibility);
-            $method->setParameters($parameters); // Preserve EXACTLY as written in UML
-            $method->setReturnType($returnType); // Preserve EXACTLY as written in UML
+            $method->setParameters($parameters);
+            $method->setReturnType($returnType);
 
             $class->addMethod($method);
         } else if (preg_match('/^([+\-#~])\s*(\w+)\s*\((.*)\)$/', $line, $matches)) {
@@ -517,7 +517,7 @@ class PlantUmlParser
             $method = new MethodModel();
             $method->setName($name);
             $method->setVisibility($visibility);
-            $method->setParameters($parameters); // Preserve EXACTLY as written in UML
+            $method->setParameters($parameters);
 
             $class->addMethod($method);
         } else if (preg_match('/^(\w+)\s*\((.*)\)\s*:\s*(.+)$/', $line, $matches)) {
@@ -529,8 +529,8 @@ class PlantUmlParser
             $method = new MethodModel();
             $method->setName($name);
             $method->setVisibility('public'); // Default to public
-            $method->setParameters($parameters); // Preserve EXACTLY as written in UML
-            $method->setReturnType($returnType); // Preserve EXACTLY as written in UML
+            $method->setParameters($parameters);
+            $method->setReturnType($returnType);
 
             $class->addMethod($method);
         } else if (preg_match('/^(\w+)\s*\((.*)\)$/', $line, $matches)) {
@@ -541,7 +541,7 @@ class PlantUmlParser
             $method = new MethodModel();
             $method->setName($name);
             $method->setVisibility('public'); // Default to public
-            $method->setParameters($parameters); // Preserve EXACTLY as written in UML
+            $method->setParameters($parameters);
 
             $class->addMethod($method);
         }
