@@ -66,7 +66,17 @@ class Type
         'Set',
         'Collection',
         'Array',
-        'Dictionary'
+        'Dictionary',
+        'ArrayList',
+        'LinkedList',
+        'HashSet',
+        'TreeSet',
+        'HashMap',
+        'TreeMap',
+        'Vector',
+        'Stack',
+        'Queue',
+        'Deque'
     ];
 
     /**
@@ -106,17 +116,57 @@ class Type
         }
 
         // Check if it's a generic type
-        if (preg_match('/^(\w+)<(.+)>$/', $baseType, $matches)) {
+        if (preg_match('/^(\w+)\s*<\s*(.+?)\s*>\s*$/', $baseType, $matches)) {
             $baseType = $matches[1];
-            // Parse type arguments (simple implementation, might need enhancement for nested generics)
-            $typeArgStrings = explode(',', $matches[2]);
+            // Parse type arguments using a more robust approach
+            $typeArgStrings = $this->splitGenericParameters($matches[2]);
             foreach ($typeArgStrings as $typeArgString) {
                 $this->typeArguments[] = self::fromString(trim($typeArgString));
             }
         }
 
+        // Check if this type is primitive
         $this->isPrimitive = in_array(strtolower($baseType), self::PRIMITIVE_TYPES);
+
+        // Check if this type is a collection
         $this->isCollection = in_array($baseType, self::COLLECTION_TYPES);
+    }
+
+    /**
+     * Split generic parameters string into individual type arguments
+     * This handles nested generics correctly by tracking angle bracket depth
+     *
+     * @param string $paramsStr The generic parameters string
+     * @return array The individual type argument strings
+     */
+    private function splitGenericParameters(string $paramsStr): array
+    {
+        $result = [];
+        $current = '';
+        $depth = 0;
+
+        for ($i = 0; $i < strlen($paramsStr); $i++) {
+            $char = $paramsStr[$i];
+
+            if ($char === '<') {
+                $depth++;
+                $current .= $char;
+            } elseif ($char === '>') {
+                $depth--;
+                $current .= $char;
+            } elseif ($char === ',' && $depth === 0) {
+                $result[] = $current;
+                $current = '';
+            } else {
+                $current .= $char;
+            }
+        }
+
+        if ($current !== '') {
+            $result[] = $current;
+        }
+
+        return array_map('trim', $result);
     }
 
     /**
@@ -177,5 +227,27 @@ class Type
     public function __toString(): string
     {
         return $this->toString();
+    }
+
+    /**
+     * Get base type name without generics or array notation
+     *
+     * @return string
+     */
+    public function getBaseName(): string
+    {
+        $value = $this->value;
+
+        // Remove array notation
+        if ($this->isArray) {
+            $value = substr($value, 0, -2);
+        }
+
+        // Remove generic parameters
+        if (preg_match('/^(\w+)\s*<.+>\s*$/', $value, $matches)) {
+            $value = $matches[1];
+        }
+
+        return $value;
     }
 }

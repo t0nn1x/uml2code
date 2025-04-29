@@ -474,6 +474,7 @@ class PlantUmlParser implements ClassDiagramParserInterface
 
     /**
      * Split parameters string into individual parameter strings
+     * This handles nested generics correctly
      *
      * @param string $paramsStr The parameters string
      * @return array The individual parameter strings
@@ -489,11 +490,11 @@ class PlantUmlParser implements ClassDiagramParserInterface
 
             if ($char === '<') {
                 $depth++;
+                $current .= $char;
             } elseif ($char === '>') {
                 $depth--;
-            }
-
-            if ($char === ',' && $depth === 0) {
+                $current .= $char;
+            } elseif ($char === ',' && $depth === 0) {
                 $result[] = $current;
                 $current = '';
             } else {

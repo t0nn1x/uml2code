@@ -153,7 +153,18 @@ class Attribute
         ];
 
         if ($this->type) {
+            // Use the full type string including generic parameters
             $result['type'] = $this->type->toString();
+
+            // Add type arguments if this is a generic type
+            $typeArgs = $this->type->getTypeArguments();
+            if (!empty($typeArgs)) {
+                $typeArgsArray = [];
+                foreach ($typeArgs as $typeArg) {
+                    $typeArgsArray[] = $typeArg->toString();
+                }
+                $result['typeArguments'] = $typeArgsArray;
+            }
         }
 
         if ($this->defaultValue !== null) {

@@ -87,6 +87,7 @@ class UmlParserService
 
     /**
      * Clean a diagram array by removing duplicates and fixing inconsistencies
+     * This also ensures that generic types are properly preserved
      *
      * @param array $diagram The diagram array to clean
      * @return array The cleaned diagram array
@@ -107,6 +108,21 @@ class UmlParserService
 
                 if (!isset($seenClasses[$name])) {
                     $seenClasses[$name] = true;
+
+                    // Process attributes to ensure generic types are properly represented
+                    if (isset($class['attributes']) && is_array($class['attributes'])) {
+                        foreach ($class['attributes'] as $index => $attribute) {
+                            if (isset($attribute['typeArguments']) && !empty($attribute['typeArguments'])) {
+                                // For attributes with type arguments, make sure the type string includes the generic parameters
+                                if (isset($attribute['type'])) {
+                                    $baseType = $attribute['type'];
+                                    $typeArgs = implode(', ', $attribute['typeArguments']);
+                                    $class['attributes'][$index]['type'] = "$baseType<$typeArgs>";
+                                }
+                            }
+                        }
+                    }
+
                     $uniqueClasses[] = $class;
                 }
             }
@@ -135,6 +151,18 @@ class UmlParserService
             $diagram['relationships'] = $uniqueRelationships;
         }
 
+        return $diagram;
+    }
+
+    /**
+     * Process generics in the diagram model before conversion to array
+     * 
+     * @param ClassDiagram $diagram The class diagram model
+     * @return ClassDiagram The processed class diagram
+     */
+    private function processGenerics(ClassDiagram $diagram): ClassDiagram
+    {
+        // This method could be used to process generic types further if needed
         return $diagram;
     }
 }
