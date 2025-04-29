@@ -20,5 +20,24 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    # Parser Infrastructure
+    App\Core\Parser\ClassDiagram\Infrastructure\Parser\PlantUmlParser:
+        public: false
+
+    # Parser Interface binding
+    App\Core\Parser\ClassDiagram\Application\Service\ClassDiagramParserInterface:
+        alias: App\Core\Parser\ClassDiagram\Infrastructure\Parser\PlantUmlParser
+
+    # Application Services
+    App\Core\Parser\ClassDiagram\Application\Service\UmlParserService:
+        public: true
+        arguments:
+            - '@App\Core\Parser\ClassDiagram\Application\Service\ClassDiagramParserInterface'
+
+    # Controllers
+    App\Core\Parser\ClassDiagram\Presentation\Controller\:
+        resource: '../src/Core/Parser/ClassDiagram/Presentation/Controller/'
+        tags: ['controller.service_arguments']
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

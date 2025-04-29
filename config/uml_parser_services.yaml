@@ -1,0 +1,25 @@
+# config/uml_parser_services.yaml
+services:
+    # Default configuration for services in this file
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    # Parser Infrastructure
+    App\Core\Parser\ClassDiagram\Infrastructure\Parser\PlantUmlParser: ~
+
+    # Parser Interface binding
+    App\Core\Parser\ClassDiagram\Application\Service\ClassDiagramParserInterface:
+        alias: App\Core\Parser\ClassDiagram\Infrastructure\Parser\PlantUmlParser
+
+    # Application Services
+    App\Core\Parser\ClassDiagram\Application\Service\UmlParserService:
+        public: true
+        arguments:
+            $parser: '@App\Core\Parser\ClassDiagram\Application\Service\ClassDiagramParserInterface'
+
+    # Register the bundle
+    App\Core\Parser\ClassDiagram\Infrastructure\ParserBundle: ~
+
+    # Controllers are registered by the ControllerProvider in the bundle
