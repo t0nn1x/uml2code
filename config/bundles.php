@@ -12,4 +12,5 @@ return [
     SymfonyCasts\Bundle\VerifyEmail\SymfonyCastsVerifyEmailBundle::class => ['all' => true],
     KnpU\OAuth2ClientBundle\KnpUOAuth2ClientBundle::class => ['all' => true],
     App\Core\Parser\ClassDiagram\Infrastructure\ParserBundle::class => ['all' => true],
+    App\Core\Generator\ClassDiagram\Infrastructure\GeneratorBundle::class => ['all' => true],
 ];
