@@ -40,6 +40,11 @@ class Relationship
     private ?string $targetMultiplicity = null;
 
     /**
+     * @var bool Whether this is a bidirectional relationship
+     */
+    private bool $bidirectional = false;
+
+    /**
      * Create a new relationship
      *
      * @param string $source Source class name
@@ -167,6 +172,28 @@ class Relationship
     }
 
     /**
+     * Set whether this is a bidirectional relationship
+     *
+     * @param bool $bidirectional Whether the relationship is bidirectional
+     * @return self
+     */
+    public function setBidirectional(bool $bidirectional): self
+    {
+        $this->bidirectional = $bidirectional;
+        return $this;
+    }
+
+    /**
+     * Check if the relationship is bidirectional
+     *
+     * @return bool
+     */
+    public function isBidirectional(): bool
+    {
+        return $this->bidirectional;
+    }
+
+    /**
      * Convert to an array representation
      *
      * @return array
@@ -189,6 +216,10 @@ class Relationship
 
         if ($this->targetMultiplicity) {
             $result['targetMultiplicity'] = $this->targetMultiplicity;
+        }
+
+        if ($this->bidirectional) {
+            $result['bidirectional'] = true;
         }
 
         return $result;

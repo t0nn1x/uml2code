@@ -4,15 +4,18 @@ namespace App\Core\Parser\ClassDiagram\Domain\ValueObject;
 
 /**
  * Value object representing the type of relationship between classes
+ * Enhanced with more relationship types support
  */
 class RelationshipType
 {
     public const ASSOCIATION = 'association';
+    public const DIRECTED_ASSOCIATION = 'directedAssociation';
     public const DEPENDENCY = 'dependency';
     public const AGGREGATION = 'aggregation';
     public const COMPOSITION = 'composition';
     public const INHERITANCE = 'inheritance';
     public const IMPLEMENTATION = 'implementation';
+    public const BIDIRECTIONAL = 'bidirectional';
 
     /**
      * @var string The relationship type value
@@ -43,11 +46,13 @@ class RelationshipType
 
         return new self(match ($type) {
             'association', 'directed association', 'unidirectional' => self::ASSOCIATION,
+            'directedassociation', 'directed_association' => self::DIRECTED_ASSOCIATION,
             'dependency' => self::DEPENDENCY,
             'aggregation' => self::AGGREGATION,
             'composition' => self::COMPOSITION,
             'inheritance', 'generalization', 'extends' => self::INHERITANCE,
             'implementation', 'realization', 'implements' => self::IMPLEMENTATION,
+            'bidirectional', 'bidirectional_association' => self::BIDIRECTIONAL,
             default => $type
         });
     }
@@ -60,6 +65,11 @@ class RelationshipType
      */
     public static function fromNotation(string $notation): self
     {
+        // Bidirectional: A <--> B
+        if (strpos($notation, '<-->') !== false) {
+            return new self(self::BIDIRECTIONAL);
+        }
+
         // Inheritance: A <|-- B or B --|> A
         if (strpos($notation, '<|--') !== false || strpos($notation, '--|>') !== false) {
             return new self(self::INHERITANCE);
@@ -85,6 +95,11 @@ class RelationshipType
             return new self(self::DEPENDENCY);
         }
 
+        // Directed Association: A --> B or B <-- A
+        if (strpos($notation, '-->') !== false || strpos($notation, '<--') !== false) {
+            return new self(self::DIRECTED_ASSOCIATION);
+        }
+
         // Association (default)
         return new self(self::ASSOCIATION);
     }
@@ -99,11 +114,13 @@ class RelationshipType
     {
         $validValues = [
             self::ASSOCIATION,
+            self::DIRECTED_ASSOCIATION,
             self::DEPENDENCY,
             self::AGGREGATION,
             self::COMPOSITION,
             self::INHERITANCE,
-            self::IMPLEMENTATION
+            self::IMPLEMENTATION,
+            self::BIDIRECTIONAL
         ];
 
         if (!in_array($value, $validValues)) {

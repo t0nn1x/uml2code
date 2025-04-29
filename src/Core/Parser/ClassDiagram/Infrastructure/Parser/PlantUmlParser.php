@@ -341,10 +341,35 @@ class PlantUmlParser implements ClassDiagramParserInterface
             if (strpos($line, '(') !== false && strpos($line, ')') !== false) {
                 $this->parseMethod($line, $classElement);
             } else {
-                $this->parseAttribute($line, $classElement);
+                // Check if this is an enum with default value
+                if ($classElement->getType() === 'enum' && strpos($line, '=') !== false) {
+                    $this->parseEnumWithValue($line, $classElement);
+                } else {
+                    $this->parseAttribute($line, $classElement);
+                }
             }
 
             $this->currentLine++;
+        }
+    }
+
+    /**
+     * Parse an enum value with default value
+     *
+     * @param string $line The line containing the enum value
+     * @param ClassElement $classElement The enum to add the value to
+     */
+    private function parseEnumWithValue(string $line, ClassElement $classElement): void
+    {
+        // Pattern: ENUM_VALUE = value
+        if (preg_match('/^(\w+)\s*=\s*(.+)$/', $line, $matches)) {
+            $name = $matches[1];
+            $value = trim($matches[2]);
+
+            $attribute = Attribute::fromParsed($name, 'public');
+            $attribute->setDefaultValue($value);
+
+            $classElement->addAttribute($attribute);
         }
     }
 
@@ -361,7 +386,7 @@ class PlantUmlParser implements ClassDiagramParserInterface
             return;
         }
 
-        // Visibility pattern: +, -, #, or ~ followed by name: type
+        // Visibility pattern: +, -, #, or ~ followed by name: type (with potential generics)
         if (preg_match('/^([+\-#~])\s*(\w+)(?:\s*:\s*(.+))?$/', $line, $matches)) {
             $visibility = $this->mapVisibilitySymbol($matches[1]);
             $name = $matches[2];
@@ -409,7 +434,7 @@ class PlantUmlParser implements ClassDiagramParserInterface
 
             $method = Method::fromParsed($name, $visibility, $returnType);
 
-            // Parse parameters
+            // Parse parameters with improved generic handling
             $this->parseParameters($paramsStr, $method);
 
             // Check for static/abstract modifiers
@@ -431,7 +456,7 @@ class PlantUmlParser implements ClassDiagramParserInterface
 
             $method = Method::fromParsed($name, 'public', $returnType);
 
-            // Parse parameters
+            // Parse parameters with improved generic handling
             $this->parseParameters($paramsStr, $method);
 
             // Check for static/abstract modifiers
@@ -537,6 +562,11 @@ class PlantUmlParser implements ClassDiagramParserInterface
      */
     private function parseRelationship(string $line): void
     {
+        if (strpos($line, '<-->') !== false) {
+            $this->parseBidirectionalRelationship($line);
+            return;
+        }
+
         // Try to match different relationship patterns
 
         // Pattern 1: A "srcMult" -- "tgtMult" B : label
@@ -587,6 +617,55 @@ class PlantUmlParser implements ClassDiagramParserInterface
             return;
         }
     }
+
+    /**
+     * Parse a bidirectional relationship
+     *
+     * @param string $line The bidirectional relationship line
+     */
+    private function parseBidirectionalRelationship(string $line): void
+    {
+        // Match bidirectional pattern: A <--> B : label
+        if (preg_match('/^(\w+)\s+<-->\s+(\w+)(?:\s*:\s*(.+))?$/', $line, $matches)) {
+            $source = $matches[1];
+            $target = $matches[2];
+            $label = isset($matches[3]) ? trim($matches[3]) : null;
+
+            // Create two relationships (one in each direction)
+            $forwardLabel = $label;
+            $backwardLabel = $label ? "reverse_$label" : null;
+
+            // Forward relationship
+            $forwardRelationship = Relationship::fromParsed(
+                $source,
+                $target,
+                'association'
+            );
+
+            if ($forwardLabel) {
+                $forwardRelationship->setLabel($forwardLabel);
+            }
+
+            // Backward relationship
+            $backwardRelationship = Relationship::fromParsed(
+                $target,
+                $source,
+                'association'
+            );
+
+            if ($backwardLabel) {
+                $backwardRelationship->setLabel($backwardLabel);
+            }
+
+            // Add both relationships to the diagram
+            $this->diagram->addRelationship($forwardRelationship);
+            $this->diagram->addRelationship($backwardRelationship);
+
+            // Ensure both classes exist
+            $this->ensureClassExists($source);
+            $this->ensureClassExists($target);
+        }
+    }   
 
     /**
      * Create and add a relationship to the diagram

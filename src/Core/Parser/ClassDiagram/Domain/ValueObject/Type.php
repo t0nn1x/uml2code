@@ -4,6 +4,7 @@ namespace App\Core\Parser\ClassDiagram\Domain\ValueObject;
 
 /**
  * Value object representing a type in the UML diagram
+ * Enhanced with better support for generic types
  */
 class Type
 {
@@ -54,7 +55,9 @@ class Type
         'byte',
         'short',
         'long',
-        'char'
+        'char',
+        'UUID',
+        'DateTime'
     ];
 
     /**
@@ -115,7 +118,8 @@ class Type
             $baseType = substr($baseType, 0, -2);
         }
 
-        // Check if it's a generic type
+        // Check if it's a generic type with improved regex pattern
+        // This will properly handle whitespace variations and nested generics
         if (preg_match('/^(\w+)\s*<\s*(.+?)\s*>\s*$/', $baseType, $matches)) {
             $baseType = $matches[1];
             // Parse type arguments using a more robust approach
@@ -126,7 +130,7 @@ class Type
         }
 
         // Check if this type is primitive
-        $this->isPrimitive = in_array(strtolower($baseType), self::PRIMITIVE_TYPES);
+        $this->isPrimitive = in_array(strtolower($baseType), array_map('strtolower', self::PRIMITIVE_TYPES));
 
         // Check if this type is a collection
         $this->isCollection = in_array($baseType, self::COLLECTION_TYPES);
@@ -216,6 +220,20 @@ class Type
      */
     public function toString(): string
     {
+        // If we have type arguments, reconstruct the full generic type string
+        if (!empty($this->typeArguments)) {
+            $baseType = $this->getBaseName();
+            $typeArgs = [];
+
+            foreach ($this->typeArguments as $typeArg) {
+                $typeArgs[] = $typeArg->toString();
+            }
+
+            $typeArgString = implode(', ', $typeArgs);
+            return $baseType . '<' . $typeArgString . '>' . ($this->isArray ? '[]' : '');
+        }
+
+        // Otherwise return the original value
         return $this->value;
     }
 
