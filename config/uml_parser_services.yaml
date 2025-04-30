@@ -18,8 +18,3 @@ services:
         public: true
         arguments:
             $parser: '@App\Core\Parser\ClassDiagram\Application\Service\ClassDiagramParserInterface'
-
-    # Register the bundle
-    App\Core\Parser\ClassDiagram\Infrastructure\ParserBundle: ~
-
-    # Controllers are registered by the ControllerProvider in the bundle
