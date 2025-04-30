@@ -3,7 +3,7 @@
 namespace App\Tests\Core\Generator\ClassDiagram\Domain\Model\Php;
 
 use App\Core\Generator\ClassDiagram\Domain\Model\CodeFile;
-use App\Core\Generator\ClassDiagram\Domain\Model\Php\PhpCodeGenerator;
+use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Php\Php74CodeGenerator;
 use PHPUnit\Framework\TestCase;
 
 class PhpCodeGeneratorTest extends TestCase
@@ -47,7 +47,7 @@ class PhpCodeGeneratorTest extends TestCase
             ]
         ];
 
-        $generator = new PhpCodeGenerator($diagram, 'PHP', '7.4');
+        $generator = new Php74CodeGenerator($diagram, 'PHP', '7.4');
         $generator->setNamespacePrefix('App\\Test');
         $generator->setOutputDirectory('test/output');
 
@@ -94,7 +94,7 @@ class PhpCodeGeneratorTest extends TestCase
             ]
         ];
 
-        $generator = new PhpCodeGenerator($diagram, 'PHP', '7.4');
+        $generator = new Php74CodeGenerator($diagram, 'PHP', '7.4');
         $generator->setNamespacePrefix('App\\Test');
         $generator->setOutputDirectory('test/output');
 
@@ -133,7 +133,7 @@ class PhpCodeGeneratorTest extends TestCase
             ]
         ];
 
-        $generator = new PhpCodeGenerator($diagram, 'PHP', '7.4');
+        $generator = new Php74CodeGenerator($diagram, 'PHP', '7.4');
         $generator->setNamespacePrefix('App\\Test');
         $generator->setOutputDirectory('test/output');
 
@@ -184,7 +184,7 @@ class PhpCodeGeneratorTest extends TestCase
             ]
         ];
 
-        $generator = new PhpCodeGenerator($diagram, 'PHP', '7.4');
+        $generator = new Php74CodeGenerator($diagram, 'PHP', '7.4');
         $generator->setNamespacePrefix('App\\Test');
         $generator->setOutputDirectory('test/output');
 
