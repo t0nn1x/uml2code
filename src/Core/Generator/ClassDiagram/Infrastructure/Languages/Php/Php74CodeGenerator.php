@@ -1,49 +1,15 @@
 <?php
 
-namespace App\Core\Generator\ClassDiagram\Domain\Model\Php;
+namespace App\Core\Generator\ClassDiagram\Infrastructure\Languages\Php;
 
 use App\Core\Generator\ClassDiagram\Domain\Exception\GeneratorException;
 use App\Core\Generator\ClassDiagram\Domain\Model\CodeFile;
-use App\Core\Generator\ClassDiagram\Domain\Model\CodeGenerator;
 
 /**
- * PHP code generator for class diagrams
+ * PHP 7.4 code generator for class diagrams
  */
-class PhpCodeGenerator extends CodeGenerator
+class Php74CodeGenerator extends AbstractPhpCodeGenerator
 {
-    /**
-     * PHP type mapping from UML to PHP
-     */
-    private const TYPE_MAPPING = [
-        'string' => 'string',
-        'int' => 'int',
-        'integer' => 'int',
-        'float' => 'float',
-        'double' => 'float',
-        'boolean' => 'bool',
-        'bool' => 'bool',
-        'array' => 'array',
-        'void' => 'void',
-        'object' => 'object',
-        'mixed' => 'mixed',
-        'DateTime' => '\\DateTime',
-        'Map' => 'array',
-        'List' => 'array',
-        'byte[]' => 'string',
-        'long' => 'int',
-        'UUID' => 'string',
-    ];
-    
-    /**
-     * @var string The output directory for generated files
-     */
-    private string $outputDir = '';
-    
-    /**
-     * @var string The namespace prefix for generated code
-     */
-    private string $namespacePrefix = 'App\\Generated';
-
     /**
      * @var int The index of the current class being generated
      */
@@ -67,35 +33,11 @@ class PhpCodeGenerator extends CodeGenerator
     }
     
     /**
-     * Set the output directory
-     *
-     * @param string $dir
-     * @return self
-     */
-    public function setOutputDirectory(string $dir): self
-    {
-        $this->outputDir = rtrim($dir, '/');
-        return $this;
-    }
-    
-    /**
-     * Set the namespace prefix
-     *
-     * @param string $prefix
-     * @return self
-     */
-    public function setNamespacePrefix(string $prefix): self
-    {
-        $this->namespacePrefix = trim($prefix, '\\');
-        return $this;
-    }
-    
-    /**
      * Validate the diagram structure
      *
      * @throws GeneratorException
      */
-    private function validateDiagram(): void
+    protected function validateDiagram(): void
     {
         if (!isset($this->diagram['classes']) || !is_array($this->diagram['classes'])) {
             throw new GeneratorException('Invalid diagram structure: missing "classes" array');
@@ -108,7 +50,7 @@ class PhpCodeGenerator extends CodeGenerator
      * @param array $classData
      * @return CodeFile
      */
-    private function generateClass(array $classData): CodeFile
+    protected function generateClass(array $classData): CodeFile
     {
         $type = $classData['type'] ?? 'class';
         $name = $classData['name'];
@@ -192,7 +134,7 @@ class PhpCodeGenerator extends CodeGenerator
         
         $code .= "}\n";
         
-        $path = $this->outputDir;
+        $path = $this->outputDirectory;
         $file = new CodeFile($fileName, $path, $code);
         $this->addFile($file);
         
@@ -205,7 +147,7 @@ class PhpCodeGenerator extends CodeGenerator
      * @param array $classData
      * @return string
      */
-    private function generateImports(array $classData): string
+    protected function generateImports(array $classData): string
     {
         $imports = [];
         
@@ -265,7 +207,7 @@ class PhpCodeGenerator extends CodeGenerator
      * @param string $type
      * @return bool
      */
-    private function isBuiltinType(string $type): bool
+    protected function isBuiltinType(string $type): bool
     {
         $builtinTypes = [
             'string', 'int', 'float', 'bool', 'array', 'object', 'mixed', 'void', 'null', 'callable', 'iterable', 'resource'
@@ -282,7 +224,7 @@ class PhpCodeGenerator extends CodeGenerator
      * @param string $type
      * @return string
      */
-    private function extractBaseType(string $type): string
+    protected function extractBaseType(string $type): string
     {
         // For array types like 'string[]'
         if (substr($type, -2) === '[]') {
@@ -298,46 +240,12 @@ class PhpCodeGenerator extends CodeGenerator
     }
     
     /**
-     * Map a UML type to a PHP type
-     *
-     * @param string|null $type
-     * @return string|null
-     */
-    private function mapType(?string $type): ?string
-    {
-        if ($type === null) {
-            return null;
-        }
-        
-        // Handle array types like 'string[]'
-        if (substr($type, -2) === '[]') {
-            return 'array';
-        }
-        
-        // Handle generic types
-        if (preg_match('/^(\w+)\s*<(.+)>$/', $type, $matches)) {
-            $baseType = strtolower($matches[1]);
-            
-            // Most generic containers map to array in PHP 7.4
-            if (in_array($baseType, ['list', 'map', 'set', 'collection'])) {
-                return 'array';
-            }
-            
-            // For other generic classes, use the base class name
-            return $matches[1];
-        }
-        
-        // Look up in the mapping table
-        return self::TYPE_MAPPING[strtolower($type)] ?? $type;
-    }
-    
-    /**
      * Generate enum constants (for PHP 7.4 which doesn't support enums)
      *
      * @param array $classData
      * @return string
      */
-    private function generateEnumConstants(array $classData): string
+    protected function generateEnumConstants(array $classData): string
     {
         $code = "";
         
@@ -363,7 +271,7 @@ class PhpCodeGenerator extends CodeGenerator
      * @param array $attributes
      * @return string
      */
-    private function generateProperties(array $attributes): string
+    protected function generateProperties(array $attributes): string
     {
         $code = "";
         
@@ -414,7 +322,7 @@ class PhpCodeGenerator extends CodeGenerator
      * @param string $type
      * @return bool
      */
-    private function isValidPropertyTypeHint(string $type): bool
+    protected function isValidPropertyTypeHint(string $type): bool
     {
         // PHP 7.4 supports class/interface names and the following types for properties
         $validTypes = ['string', 'int', 'float', 'bool', 'array', 'object', 'iterable', 'self', 'parent'];
@@ -430,7 +338,7 @@ class PhpCodeGenerator extends CodeGenerator
      * @param string $classType
      * @return string
      */
-    private function generateMethods(array $methods, string $classType): string
+    protected function generateMethods(array $methods, string $classType): string
     {
         $code = "";
         
@@ -498,34 +406,10 @@ class PhpCodeGenerator extends CodeGenerator
                 $code .= "\n    {\n";
                 
                 if ($returnType !== 'void' && $returnType !== null) {
-                    // For non-void methods, add a basic return statement based on the return type
-                    switch ($returnType) {
-                        case 'bool':
-                        case 'boolean':
-                            $code .= "        return false;\n";
-                            break;
-                        case 'int':
-                        case 'integer':
-                        case 'float':
-                        case 'double':
-                            $code .= "        return 0;\n";
-                            break;
-                        case 'string':
-                            $code .= "        return '';\n";
-                            break;
-                        case 'array':
-                            $code .= "        return [];\n";
-                            break;
-                        default:
-                            // For object types, return null
-                            $code .= "        return null;\n";
-                    }
-                } else if ($returnType === 'void') {
-                    // Leave empty for void methods
-                    $code .= "        // Implementation required\n";
+                    $code .= "        // TODO: Implement method\n";
+                    $code .= "        return " . $this->getDefaultReturnValue($returnType) . ";\n";
                 } else {
-                    // No return type specified
-                    $code .= "        // Implementation required\n";
+                    $code .= "        // TODO: Implement method\n";
                 }
                 
                 $code .= "    }\n\n";
@@ -536,31 +420,61 @@ class PhpCodeGenerator extends CodeGenerator
     }
     
     /**
-     * Generate a docblock type annotation for generic types
+     * Get a default return value for a given type
+     *
+     * @param string $type
+     * @return string
+     */
+    protected function getDefaultReturnValue(string $type): string
+    {
+        switch (strtolower($type)) {
+            case 'string':
+                return "''";
+            case 'int':
+            case 'float':
+                return "0";
+            case 'bool':
+                return "false";
+            case 'array':
+                return "[]";
+            case 'object':
+                return "new \stdClass()";
+            default:
+                return "null";
+        }
+    }
+    
+    /**
+     * Generate a docblock type from a generic type and its arguments
      *
      * @param string $baseType
      * @param array $typeArguments
      * @return string
      */
-    private function generateDocblockType(string $baseType, array $typeArguments): string
+    protected function generateDocblockType(string $baseType, array $typeArguments): string
     {
-        $baseType = $this->mapType($this->extractBaseType($baseType));
-        
-        if ($baseType === 'array') {
-            if (count($typeArguments) === 1) {
-                // For single type argument like List<string>, use string[]
-                return $this->mapType($typeArguments[0]) . '[]';
-            } else if (count($typeArguments) === 2) {
-                // For two type arguments like Map<string, User>, use array<string, User>
-                return 'array<' . $this->mapType($typeArguments[0]) . ', ' . $this->mapType($typeArguments[1]) . '>';
-            }
+        // Handle array types
+        if (substr($baseType, -2) === '[]') {
+            $elementType = $typeArguments[0] ?? 'mixed';
+            return $elementType . '[]';
         }
         
-        // For other generic types
-        $typeArgsStr = implode(', ', array_map(function($type) {
-            return $this->mapType($type);
-        }, $typeArguments));
+        // Handle generic types
+        $baseType = $this->extractBaseType($baseType);
         
-        return $baseType . '<' . $typeArgsStr . '>';
+        if (strtolower($baseType) === 'list' || strtolower($baseType) === 'array') {
+            $elementType = $typeArguments[0] ?? 'mixed';
+            return $elementType . '[]';
+        }
+        
+        if (strtolower($baseType) === 'map') {
+            $keyType = $typeArguments[0] ?? 'string';
+            $valueType = $typeArguments[1] ?? 'mixed';
+            return "array<{$keyType}, {$valueType}>";
+        }
+        
+        // For other generic classes
+        $args = implode(', ', array_map([$this, 'mapType'], $typeArguments));
+        return "{$baseType}<{$args}>";
     }
 } 

@@ -3,7 +3,9 @@
 namespace App\Core\Generator\ClassDiagram\Application\Service;
 
 use App\Core\Generator\ClassDiagram\Domain\Exception\GeneratorException;
-use App\Core\Generator\ClassDiagram\Domain\Model\Php\PhpCodeGenerator;
+use App\Core\Generator\ClassDiagram\Domain\Model\Languages\PhpCodeGeneratorInterface;
+use App\Core\Generator\ClassDiagram\Domain\Model\Languages\JavaCodeGeneratorInterface;
+use App\Core\Generator\ClassDiagram\Domain\Model\LanguageCodeGenerator;
 
 /**
  * Service for generating code from class diagrams
@@ -21,6 +23,11 @@ class CodeGeneratorService
     private string $namespacePrefix;
     
     /**
+     * @var string Base package name for Java code
+     */
+    private string $packageName;
+    
+    /**
      * @var GeneratorFactory The generator factory
      */
     private GeneratorFactory $factory;
@@ -29,12 +36,17 @@ class CodeGeneratorService
      * Create a new code generator service
      *
      * @param string $outputDirectory Base output directory for generated code
-     * @param string $namespacePrefix Base namespace prefix for generated code
+     * @param string $namespacePrefix Base namespace prefix for PHP code
+     * @param string $packageName Base package name for Java code
      */
-    public function __construct(string $outputDirectory = 'generated', string $namespacePrefix = 'App\\Generated')
-    {
+    public function __construct(
+        string $outputDirectory = 'generated', 
+        string $namespacePrefix = 'App\\Generated',
+        string $packageName = 'com.example.generated'
+    ) {
         $this->outputDirectory = $outputDirectory;
         $this->namespacePrefix = $namespacePrefix;
+        $this->packageName = $packageName;
         $this->factory = new GeneratorFactory();
     }
     
@@ -52,10 +64,16 @@ class CodeGeneratorService
         // Create the appropriate generator based on language and version
         $generator = $this->factory->createGenerator($diagram, $language, $version);
         
-        // Set output directory and namespace prefix if the generator supports it
-        if ($generator instanceof PhpCodeGenerator) {
+        // Configure the generator based on its type
+        if ($generator instanceof LanguageCodeGenerator) {
             $generator->setOutputDirectory($this->outputDirectory);
-            $generator->setNamespacePrefix($this->namespacePrefix);
+            
+            // Additional language-specific configuration
+            if ($generator instanceof PhpCodeGeneratorInterface) {
+                $generator->setNamespacePrefix($this->namespacePrefix);
+            } elseif ($generator instanceof JavaCodeGeneratorInterface) {
+                $generator->setPackageName($this->packageName);
+            }
         }
         
         // Generate code
@@ -88,7 +106,7 @@ class CodeGeneratorService
     }
     
     /**
-     * Set the base namespace prefix for generated code
+     * Set the base namespace prefix for PHP code
      *
      * @param string $namespacePrefix
      * @return self
@@ -96,6 +114,18 @@ class CodeGeneratorService
     public function setNamespacePrefix(string $namespacePrefix): self
     {
         $this->namespacePrefix = $namespacePrefix;
+        return $this;
+    }
+    
+    /**
+     * Set the base package name for Java code
+     *
+     * @param string $packageName
+     * @return self
+     */
+    public function setPackageName(string $packageName): self
+    {
+        $this->packageName = $packageName;
         return $this;
     }
 } 
