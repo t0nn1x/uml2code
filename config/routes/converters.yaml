@@ -1,0 +1,3 @@
+converter_api:
+    resource: ../../src/Core/Converter/ClassDiagram/Presentation/Controller/
+    type: attribute 

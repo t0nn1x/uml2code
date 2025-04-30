@@ -1,0 +1,3 @@
+generator_api:
+    resource: ../../src/Core/Generator/ClassDiagram/Presentation/Controller/
+    type: attribute 

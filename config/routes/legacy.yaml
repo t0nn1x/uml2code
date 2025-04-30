@@ -1,0 +1,14 @@
+# Legacy routes for backward compatibility
+api_uml_generate:
+    path: /api/uml/generate
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        path: /api/converter/from-uml
+        permanent: true
+
+api_uml_languages:
+    path: /api/uml/languages
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        path: /api/converter/languages
+        permanent: true 

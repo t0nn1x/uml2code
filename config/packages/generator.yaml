@@ -1,0 +1,6 @@
+services:
+    # Default configuration for the generator service
+    App\Core\Generator\ClassDiagram\Application\Service\CodeGeneratorService:
+        arguments:
+            $outputDirectory: '%kernel.project_dir%/var/generated'
+            $namespacePrefix: 'App\Generated' 

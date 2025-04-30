@@ -1,37 +1,27 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Password Reset Email Sent - UML2Code
-{% endblock %}
+{% block title %}Password Reset Email Sent - UML2Code{% endblock %}
 
 {% block body %}
-	<div class="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-		<div class="max-w-md w-full space-y-8">
-			<div>
-				<h1 class="text-center text-3xl font-extrabold text-indigo-600">UML2Code</h1>
-				<h2 class="mt-6 text-center text-2xl font-bold text-gray-900">Password reset email sent</h2>
-			</div>
+    <div class="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <div>
+                <h1 class="text-center text-3xl font-extrabold text-indigo-600">UML2Code</h1>
+                <h2 class="mt-6 text-center text-2xl font-bold text-gray-900">Check your email</h2>
+            </div>
 
-			<div class="bg-white p-6 rounded-lg shadow-md">
-				<div class="text-center">
-					<svg class="h-16 w-16 text-green-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke="currentColor">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76"/>
-					</svg>
-
-					<p class="text-gray-700">
-						If an account matching your email exists, then an email was just sent that contains a link that you can use to reset your password. This link will expire in {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
-					</p>
-
-					<p class="mt-4 text-gray-700">
-						If you don't receive an email, please make sure you've entered the address you registered with, and check your spam folder.
-					</p>
-
-					<div class="mt-6">
-						<a href="{{ path('app_login') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-							Back to login
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+            <div class="rounded-md shadow-sm bg-white p-6">
+                <div class="text-sm text-gray-700 space-y-4">
+                    <p>
+                        If an account matching your email exists, then an email was just sent that contains a link that you can use to reset your password.
+                        This link will expire in {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
+                    </p>
+                    <p>
+                        If you don't receive an email please check your spam folder or 
+                        <a href="{{ path('app_forgot_password_request') }}" class="text-indigo-600 hover:text-indigo-500">try again</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * API Controller for UML parsing operations
+ * API Controller for UML parsing endpoints
  */
 #[Route('/api/uml')]
 class ApiController extends AbstractController
@@ -22,7 +22,7 @@ class ApiController extends AbstractController
     private UmlParserService $parserService;
 
     /**
-     * Create a new API controller
+     * Create a new UML API controller
      *
      * @param UmlParserService $parserService The UML parser service
      */
@@ -52,11 +52,8 @@ class ApiController extends AbstractController
             // Parse the UML diagram to array
             $diagram = $this->parserService->parseUmlToArray($umlContent);
 
-            // Clean the array (remove duplicates and preserve generics)
+            // Clean the array (remove duplicates)
             $diagram = $this->parserService->cleanDiagramArray($diagram);
-
-            // Process generic types specifically
-            $diagram = $this->processGenericTypes($diagram);
 
             return $this->json([
                 'success' => true,
@@ -71,49 +68,9 @@ class ApiController extends AbstractController
         } catch (\Exception $e) {
             return $this->json([
                 'success' => false,
-                'error' => 'An unexpected error occurred: ' . $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'error' => 'An unexpected error occurred: ' . $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-    }
-
-    /**
-     * Process generic types in the diagram array to ensure they are properly represented in the JSON output
-     *
-     * @param array $diagram The diagram array
-     * @return array The processed diagram array
-     */
-    private function processGenericTypes(array $diagram): array
-    {
-        if (isset($diagram['classes']) && is_array($diagram['classes'])) {
-            foreach ($diagram['classes'] as $classIndex => $class) {
-                // Process attributes
-                if (isset($class['attributes']) && is_array($class['attributes'])) {
-                    foreach ($class['attributes'] as $attrIndex => $attribute) {
-                        if (isset($attribute['type']) && strpos($attribute['type'], '<') !== false) {
-                            // This is a generic type, parse it to extract type and arguments
-                            $matches = [];
-                            if (preg_match('/^(\w+)\s*<\s*(.+?)\s*>\s*$/', $attribute['type'], $matches)) {
-                                $baseType = $matches[1];
-                                $typeArgs = $matches[2];
-
-                                // Store the complete type expression
-                                $diagram['classes'][$classIndex]['attributes'][$attrIndex]['fullType'] = $attribute['type'];
-
-                                // Process and store type arguments
-                                $typeArgsList = explode(',', $typeArgs);
-                                $cleanTypeArgs = array_map('trim', $typeArgsList);
-                                $diagram['classes'][$classIndex]['attributes'][$attrIndex]['typeArguments'] = $cleanTypeArgs;
-                            }
-                        }
-                    }
-                }
-
-                // Process method parameters and return types (similar logic could be applied)
-            }
-        }
-
-        return $diagram;
     }
 
     /**
@@ -161,6 +118,18 @@ class ApiController extends AbstractController
         return $this->json([
             'success' => true,
             'metadata' => $metadata
+        ]);
+    }
+
+    /**
+     * Get supported languages for parsing features
+     */
+    #[Route('/languages', name: 'api_uml_languages', methods: ['GET'])]
+    public function getSupportedLanguages(): JsonResponse
+    {
+        return $this->json([
+            'success' => true,
+            'languages' => []
         ]);
     }
 }
