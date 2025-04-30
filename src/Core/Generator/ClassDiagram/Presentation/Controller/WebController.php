@@ -39,7 +39,7 @@ class WebController extends AbstractController
         // Get supported languages for pre-loading in the UI
         $supportedLanguages = $this->generatorService->getSupportedLanguages();
         
-        return $this->render('uml2code/index.html.twig', [
+        return $this->render('generator/index.html.twig', [
             'page_title' => 'Code Generator',
             'supported_languages' => $supportedLanguages
         ]);
