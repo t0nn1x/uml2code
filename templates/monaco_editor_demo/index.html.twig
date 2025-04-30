@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Monaco Editor Demo{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Monaco Editor Demo</h1>
+    
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-3">Basic Editor with Toolbar</h2>
+        <p class="mb-4">This editor has a toolbar with language selector and copy button:</p>
+        
+        {{ component('monaco_editor', {
+            id: 'editor1',
+            language: 'javascript',
+            content: initialContent,
+            size: 'medium',
+            showToolbar: true,
+            languages: languages
+        }) }}
+    </div>
+    
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-3">Read-only Editor</h2>
+        <p class="mb-4">This editor is read-only:</p>
+        
+        {{ component('monaco_editor', {
+            id: 'editor2',
+            language: 'html',
+            content: '<div class="example">\n    <h1>Hello World</h1>\n    <p>This is a read-only example</p>\n</div>',
+            size: 'small',
+            readOnly: true
+        }) }}
+    </div>
+    
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-3">Form Integration</h2>
+        <p class="mb-4">This editor is integrated with a form:</p>
+        
+        <form action="" method="post" class="space-y-4">
+            <div>
+                {{ component('monaco_editor', {
+                    id: 'editorForm',
+                    language: 'json',
+                    content: '{\n    "name": "John Doe",\n    "email": "john@example.com",\n    "age": 30\n}',
+                    size: 'medium',
+                    formField: 'json_data',
+                    showToolbar: true,
+                    languages: languages
+                }) }}
+            </div>
+            
+            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
+                Submit Form
+            </button>
+        </form>
+    </div>
+    
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-3">Large Editor</h2>
+        <p class="mb-4">This editor has a larger size:</p>
+        
+        {{ component('monaco_editor', {
+            id: 'editorLarge',
+            language: 'php',
+            content: "<?php\n\nnamespace App\\Service;\n\nclass ExampleService\n{\n    private $logger;\n    \n    public function __construct(LoggerInterface $logger)\n    {\n        $this->logger = $logger;\n    }\n    \n    public function doSomething(string $data): array\n    {\n        $this->logger->info('Processing data');\n        \n        // Process the data\n        $result = ['processed' => true, 'data' => $data];\n        \n        return $result;\n    }\n}",
+            size: 'large',
+            showToolbar: true,
+            languages: languages
+        }) }}
+    </div>
+</div>
+{% endblock %} 

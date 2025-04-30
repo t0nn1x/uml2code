@@ -8,7 +8,19 @@
 			{% endblock %}
 		</title>
 		<link rel="stylesheet" href="{{ asset('css/lib/tailwind.min.css') }}">
+		<link rel="stylesheet" href="{{ asset('css/monaco-editor.css') }}">
 		<script src="{{ asset('js/lib/htmx.min.js') }}"></script>
+		<!-- Monaco Editor resources -->
+		<script src="{{ asset('js/lib/monaco-editor/vs/loader.js') }}"></script>
+		<script>
+			require.config({ paths: { 'vs': '{{ asset('js/lib/monaco-editor/vs') }}' }});
+			window.MonacoEnvironment = {
+				getWorkerUrl: function(workerId, label) {
+					return '{{ asset('js/lib/monaco-editor/vs/base/worker/workerMain.js') }}';
+				}
+			};
+		</script>
+		<script src="{{ asset('js/monaco-editor-setup.js') }}" defer></script>
 		{% block stylesheets %}{% endblock %}
 		{% block javascripts %}{% endblock %}
 	</head>

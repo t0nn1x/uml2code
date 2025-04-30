@@ -1,0 +1,73 @@
+{# templates/components/monaco_editor.html.twig #}
+<div class="monaco-editor-wrapper">
+    {% if showToolbar %}
+    <div class="monaco-editor-toolbar">
+        {% if languages|length > 0 %}
+        <select class="language-selector" data-editor-id="{{ id }}">
+            {% for lang in languages %}
+            <option value="{{ lang.value }}" {% if language == lang.value %}selected{% endif %}>{{ lang.label }}</option>
+            {% endfor %}
+        </select>
+        {% endif %}
+        <button class="copy-btn" data-editor-id="{{ id }}">Copy</button>
+    </div>
+    {% endif %}
+    
+    <div class="monaco-editor-content">
+        <div id="{{ id }}" class="monaco-editor-container {{ size }}"></div>
+        
+        {% if formField %}
+        <input type="hidden" name="{{ formField }}" id="{{ formField }}" value="{{ content|e }}">
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Wait for Monaco to be loaded
+    require(['vs/editor/editor.main'], function() {
+        // Create editor with provided options
+        const options = {{ options|json_encode|raw }};
+        
+        // If readOnly is true, add it to options
+        {% if readOnly %}
+        options.readOnly = true;
+        {% endif %}
+        
+        // Initialize the editor
+        const editor = window.monacoEditorManager.createEditor('{{ id }}', '{{ language }}', {{ content|json_encode|raw }}, options);
+        
+        // Handle form submission if there's a form field
+        {% if formField %}
+        const formField = document.getElementById('{{ formField }}');
+        if (formField && editor) {
+            editor.onDidChangeModelContent(function() {
+                formField.value = editor.getValue();
+            });
+        }
+        {% endif %}
+        
+        // Set up language selector if available
+        const languageSelector = document.querySelector('.language-selector[data-editor-id="{{ id }}"]');
+        if (languageSelector) {
+            languageSelector.addEventListener('change', function() {
+                window.monacoEditorManager.setLanguage('{{ id }}', this.value);
+            });
+        }
+        
+        // Set up copy button if available
+        const copyBtn = document.querySelector('.copy-btn[data-editor-id="{{ id }}"]');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', function() {
+                const content = window.monacoEditorManager.getContent('{{ id }}');
+                navigator.clipboard.writeText(content).then(function() {
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(function() {
+                        copyBtn.textContent = 'Copy';
+                    }, 2000);
+                });
+            });
+        }
+    });
+});
+</script> 
