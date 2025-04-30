@@ -68,8 +68,8 @@ abstract class AbstractCodeGenerator implements CodeGenerator
      */
     public function getFilesAsArray(): array
     {
-        return array_map(function (CodeFile $file) {
+        return array_values(array_map(function (CodeFile $file) {
             return $file->toArray();
-        }, $this->files);
+        }, $this->files));
     }
 } 
