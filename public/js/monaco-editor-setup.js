@@ -5,6 +5,89 @@
 class MonacoEditorManager {
     constructor() {
         this.editors = {};
+        this.setupLanguages();
+    }
+
+    /**
+     * Set up custom language configurations
+     */
+    setupLanguages() {
+        // Register PlantUML language if Monaco is available
+        if (typeof monaco !== 'undefined') {
+            // Register PlantUML as a language
+            monaco.languages.register({ id: 'plantuml' });
+            
+            // Define PlantUML syntax highlighting
+            monaco.languages.setMonarchTokensProvider('plantuml', {
+                tokenizer: {
+                    root: [
+                        // Keywords
+                        [/\b(class|interface|enum|abstract|annotation|component|package|namespace|@startuml|@enduml)\b/, 'keyword'],
+                        
+                        // Visibility modifiers
+                        [/[+-#~]/, 'keyword'],
+                        
+                        // Relationship symbols
+                        [/<\|--|<\|\.\.|-\|>|\.\.>|\*--|\*\.\.|-\->|\.\.>|<-\.>|--|\.\.|o--|\.\.|--o|--\*|\*--|\*\.\.|-\.->|<-\.-/, 'operator'],
+                        
+                        // Strings
+                        [/"([^"\\]|\\.)*$/, 'string.invalid'],  // non-teminated string
+                        [/"/, { token: 'string.quote', bracket: '@open', next: '@string' }],
+                        
+                        // Type definitions
+                        [/\b(int|string|boolean|void|float|double|long|short|byte|char|Object)\b/, 'type'],
+                        
+                        // Comments
+                        [/'.*$/, 'comment'],
+                        [/\/\/.*$/, 'comment'],
+                        [/\/\*/, 'comment', '@comment'],
+                        
+                        // Numbers
+                        [/\d*\.\d+([eE][\-+]?\d+)?/, 'number.float'],
+                        [/0[xX][0-9a-fA-F]+/, 'number.hex'],
+                        [/\d+/, 'number'],
+                        
+                        // Identifiers
+                        [/[a-zA-Z_$][\w$]*/, 'identifier'],
+                    ],
+                    
+                    comment: [
+                        [/[^\/*]+/, 'comment'],
+                        [/\/\*/, 'comment', '@push'],
+                        ["\\*/", 'comment', '@pop'],
+                        [/[\/*]/, 'comment']
+                    ],
+                    
+                    string: [
+                        [/[^\\"]+/, 'string'],
+                        [/\\./, 'string.escape'],
+                        [/"/, { token: 'string.quote', bracket: '@close', next: '@pop' }]
+                    ]
+                }
+            });
+            
+            // Define PlantUML language configuration
+            monaco.languages.setLanguageConfiguration('plantuml', {
+                comments: {
+                    lineComment: "'",
+                    blockComment: ['/*', '*/']
+                },
+                brackets: [
+                    ['{', '}'],
+                    ['(', ')']
+                ],
+                autoClosingPairs: [
+                    { open: '{', close: '}' },
+                    { open: '(', close: ')' },
+                    { open: '"', close: '"' }
+                ],
+                surroundingPairs: [
+                    { open: '{', close: '}' },
+                    { open: '(', close: ')' },
+                    { open: '"', close: '"' }
+                ]
+            });
+        }
     }
 
     /**

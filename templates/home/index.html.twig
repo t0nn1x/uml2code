@@ -1,4 +1,234 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello World
+{% block title %}UML2Code - Turn UML diagrams into code{% endblock %}
+
+{% block body %}
+<div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-500 py-20 shadow-lg">
+    <div class="max-w-4xl mx-auto text-center px-6">
+        <h1 class="text-4xl font-extrabold text-white md:text-5xl lg:text-6xl">
+            <span class="block">Transform UML Diagrams</span>
+            <span class="block mt-1 bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-100">Into Executable Code</span>
+        </h1>
+        <p class="mt-6 max-w-2xl mx-auto text-xl text-indigo-100">
+            Streamline your development process with UML2Code - the modern tool for converting UML class diagrams to production-ready code.
+        </p>
+        <div class="mt-10 flex justify-center gap-x-6">
+            <a href="/converter/" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Get Started</a>
+            <a href="#features" class="text-sm font-semibold leading-6 text-white hover:text-indigo-100 flex items-center">
+                Learn more <span aria-hidden="true" class="ml-2">↓</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div id="features" class="py-16 sm:py-24 bg-slate-50 dark:bg-slate-900">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl lg:text-center">
+            <h2 class="text-base font-semibold leading-7 text-indigo-600 dark:text-indigo-400">Powerful Features</h2>
+            <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Everything you need for UML to code conversion</p>
+            <p class="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
+                UML2Code provides a comprehensive suite of tools to transform your UML diagrams into working code, supporting multiple languages and frameworks.
+            </p>
+        </div>
+        <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+            <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-3 lg:gap-y-16">
+                <div class="relative pl-16">
+                    <dt class="text-base font-semibold leading-7 text-gray-900 dark:text-white">
+                        <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+                            <i class="fas fa-project-diagram text-white"></i>
+                        </div>
+                        UML Parser
+                    </dt>
+                    <dd class="mt-2 text-base leading-7 text-gray-600 dark:text-gray-300">
+                        Parse PlantUML class diagrams with support for classes, interfaces, enums, relationships, attributes, and methods. Validate UML syntax and extract diagram metadata.
+                    </dd>
+                </div>
+
+                <div class="relative pl-16">
+                    <dt class="text-base font-semibold leading-7 text-gray-900 dark:text-white">
+                        <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        Code Generator
+                    </dt>
+                    <dd class="mt-2 text-base leading-7 text-gray-600 dark:text-gray-300">
+                        Generate clean, well-structured code from your UML diagrams. Support for multiple programming languages and frameworks. Customizable templates.
+                    </dd>
+                </div>
+
+                <div class="relative pl-16">
+                    <dt class="text-base font-semibold leading-7 text-gray-900 dark:text-white">
+                        <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+                            <i class="fas fa-exchange-alt text-white"></i>
+                        </div>
+                        Format Converter
+                    </dt>
+                    <dd class="mt-2 text-base leading-7 text-gray-600 dark:text-gray-300">
+                        Transform between different UML representations and output formats. Generate code, documentation, or convert between different UML notations.
+                    </dd>
+                </div>
+
+                <div class="relative pl-16">
+                    <dt class="text-base font-semibold leading-7 text-gray-900 dark:text-white">
+                        <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+                            <i class="fas fa-terminal text-white"></i>
+                        </div>
+                        Monaco Editor
+                    </dt>
+                    <dd class="mt-2 text-base leading-7 text-gray-600 dark:text-gray-300">
+                        Integrated Monaco Editor provides features like syntax highlighting, code completion, and error checking for a seamless development experience.
+                    </dd>
+                </div>
+
+                <div class="relative pl-16">
+                    <dt class="text-base font-semibold leading-7 text-gray-900 dark:text-white">
+                        <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+                            <i class="fas fa-draw-polygon text-white"></i>
+                        </div>
+                        UML Visualization
+                    </dt>
+                    <dd class="mt-2 text-base leading-7 text-gray-600 dark:text-gray-300">
+                        Interactive visualizations of your UML diagrams. View relationships between classes and explore your models interactively.
+                    </dd>
+                </div>
+
+                <div class="relative pl-16">
+                    <dt class="text-base font-semibold leading-7 text-gray-900 dark:text-white">
+                        <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+                            <i class="fas fa-cloud-download-alt text-white"></i>
+                        </div>
+                        Export Options
+                    </dt>
+                    <dd class="mt-2 text-base leading-7 text-gray-600 dark:text-gray-300">
+                        Export generated code as files, project archives, or directly to GitHub repositories. Multiple export formats and targets supported.
+                    </dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="bg-white dark:bg-slate-800 py-16 sm:py-24">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl lg:text-center">
+            <h2 class="text-base font-semibold leading-7 text-indigo-600 dark:text-indigo-400">How It Works</h2>
+            <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Simple, powerful workflow</p>
+            <p class="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
+                UML2Code provides a seamless workflow from UML diagrams to production-ready code in just three steps.
+            </p>
+        </div>
+        <div class="mx-auto mt-12 max-w-4xl">
+            <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+                <div class="relative rounded-lg bg-slate-50 dark:bg-slate-900 p-6 shadow-md">
+                    <div class="absolute -top-4 -left-4 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 text-white font-bold text-xl">1</div>
+                    <h3 class="mt-4 text-xl font-semibold text-gray-900 dark:text-white">Create UML Diagram</h3>
+                    <p class="mt-2 text-gray-600 dark:text-gray-300">Draw your class diagram using PlantUML or paste an existing diagram into our parser.</p>
+                </div>
+                <div class="relative rounded-lg bg-slate-50 dark:bg-slate-900 p-6 shadow-md">
+                    <div class="absolute -top-4 -left-4 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 text-white font-bold text-xl">2</div>
+                    <h3 class="mt-4 text-xl font-semibold text-gray-900 dark:text-white">Configure Output</h3>
+                    <p class="mt-2 text-gray-600 dark:text-gray-300">Choose your target programming language, framework, and customize generation options.</p>
+                </div>
+                <div class="relative rounded-lg bg-slate-50 dark:bg-slate-900 p-6 shadow-md">
+                    <div class="absolute -top-4 -left-4 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 text-white font-bold text-xl">3</div>
+                    <h3 class="mt-4 text-xl font-semibold text-gray-900 dark:text-white">Generate Code</h3>
+                    <p class="mt-2 text-gray-600 dark:text-gray-300">Get clean, well-structured code ready for use in your projects. Download or export directly.</p>
+                </div>
+            </div>
+            <div class="mt-12 text-center">
+                <a href="/converter/" class="rounded-md bg-indigo-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-700 dark:hover:bg-indigo-600">
+                    Try it now
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Example Section with Monaco Editor -->
+<div class="py-16 sm:py-24 bg-slate-50 dark:bg-slate-900">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl lg:text-center">
+            <h2 class="text-base font-semibold leading-7 text-indigo-600 dark:text-indigo-400">See It In Action</h2>
+            <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">UML to Code Example</p>
+            <p class="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
+                See how UML2Code transforms a simple class diagram into production-ready code.
+            </p>
+        </div>
+        
+        <div class="mx-auto mt-12 max-w-6xl">
+            <p class="text-center text-gray-600 dark:text-gray-400 mb-6">
+                See how UML2Code transforms a simple class diagram into production-ready code.
+            </p>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- UML Editor -->
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">UML Class Diagram</h3>
+                    </div>
+                    <div style="height: 450px; border: 1px solid #333; background-color: #0d1117;" id="umlEditor"></div>
+                </div>
+                
+                <!-- Generated Code Editor -->
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Generated PHP Code</h3>
+                    </div>
+                    <div style="height: 450px; border: 1px solid #333; background-color: #0d1117;" id="phpEditor"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Wait for Monaco to be loaded
+    require(['vs/editor/editor.main'], function() {
+        // UML Editor
+        window.umlEditor = monaco.editor.create(document.getElementById('umlEditor'), {
+            value: '@startuml\nclass User {\n  -id: int\n  -email: string\n  -password: string\n  +getId(): int\n  +getEmail(): string\n  +setEmail(email: string): void\n}\n\nclass Profile {\n  -id: int\n  -firstName: string\n  -lastName: string\n  -user: User\n  +getFullName(): string\n}\n\nclass Address {\n  -id: int\n  -street: string\n  -city: string\n  -zipCode: string\n  -profile: Profile\n}\n\nUser "1" -- "1" Profile\nProfile "1" -- "*" Address\n@enduml',
+            language: 'plaintext',
+            theme: 'vs-dark',
+            readOnly: true,
+            minimap: { enabled: false },
+            scrollBeyondLastLine: false,
+            automaticLayout: true,
+            fontSize: 14
+        });
+
+        // PHP Editor
+        window.phpEditor = monaco.editor.create(document.getElementById('phpEditor'), {
+            value: '<?php\n\nnamespace App\\Entity;\n\nuse Doctrine\\ORM\\Mapping as ORM;\n\n#[ORM\\Entity(repositoryClass: UserRepository::class)]\nclass User\n{\n    #[ORM\\Id]\n    #[ORM\\GeneratedValue]\n    #[ORM\\Column(type: \'integer\')]\n    private int $id;\n\n    #[ORM\\Column(type: \'string\', length: 180, unique: true)]\n    private string $email;\n\n    #[ORM\\Column(type: \'string\')]\n    private string $password;\n\n    #[ORM\\OneToOne(mappedBy: \'user\', targetEntity: Profile::class, cascade: [\'persist\', \'remove\'])]\n    private ?Profile $profile = null;\n\n    public function getId(): int\n    {\n        return $this->id;\n    }\n\n    public function getEmail(): string\n    {\n        return $this->email;\n    }\n\n    public function setEmail(string $email): void\n    {\n        $this->email = $email;\n    }\n\n    // Additional methods...\n}',
+            language: 'php',
+            theme: 'vs-dark',
+            readOnly: true,
+            minimap: { enabled: false },
+            scrollBeyondLastLine: false,
+            automaticLayout: true,
+            fontSize: 14
+        });
+    });
+});
+</script>
+
+<!-- CTA Section -->
+<div class="bg-indigo-600 py-16">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">Ready to streamline your development?</h2>
+        <p class="mx-auto mt-6 max-w-2xl text-lg leading-8 text-indigo-100">
+            Start generating clean, well-structured code from your UML diagrams today.
+        </p>
+        <div class="mt-10 flex items-center justify-center gap-8">
+            <a href="/converter/" class="rounded-md bg-white px-6 py-3 text-base font-semibold text-indigo-600 shadow-sm hover:bg-indigo-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                Get Started
+            </a>
+            <a href="/parser/" class="text-base font-semibold leading-6 text-white hover:text-indigo-100">
+                View Parser <span aria-hidden="true">→</span>
+            </a>
+        </div>
+    </div>
+</div>
 {% endblock %}

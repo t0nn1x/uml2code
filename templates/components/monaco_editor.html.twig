@@ -14,7 +14,7 @@
     {% endif %}
     
     <div class="monaco-editor-content">
-        <div id="{{ id }}" class="monaco-editor-container {{ size }}"></div>
+        <div id="{{ id }}" class="monaco-editor-container {{ size }} bg-gray-900"></div>
         
         {% if formField %}
         <input type="hidden" name="{{ formField }}" id="{{ formField }}" value="{{ content|e }}">
@@ -26,6 +26,36 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Wait for Monaco to be loaded
     require(['vs/editor/editor.main'], function() {
+        // Set editor theme based on current site theme
+        const isDarkMode = document.documentElement.classList.contains('dark') || 
+                           localStorage.getItem('color-theme') === 'dark' ||
+                           (!localStorage.getItem('color-theme') && 
+                            window.matchMedia('(prefers-color-scheme: dark)').matches);
+        
+        // Define custom editor themes
+        monaco.editor.defineTheme('uml2code-dark', {
+            base: 'vs-dark',
+            inherit: true,
+            rules: [
+                { token: 'keyword', foreground: '569CD6', fontStyle: 'bold' },
+                { token: 'type', foreground: '4EC9B0' },
+                { token: 'string', foreground: 'CE9178' },
+                { token: 'number', foreground: 'B5CEA8' },
+                { token: 'comment', foreground: '6A9955' },
+                { token: 'operator', foreground: 'D4D4D4' },
+                { token: 'delimiter', foreground: 'FFFFFF' }
+            ],
+            colors: {
+                'editor.background': '#1E1E1E',
+                'editor.foreground': '#D4D4D4',
+                'editorLineNumber.foreground': '#858585',
+                'editorLineNumber.activeForeground': '#C6C6C6',
+                'editor.selectionBackground': '#264F78',
+                'editor.lineHighlightBackground': '#2D2D30',
+                'editor.lineHighlightBorder': '#383838'
+            }
+        });
+        
         // Create editor with provided options
         const options = {{ options|json_encode|raw }};
         
@@ -33,6 +63,9 @@ document.addEventListener('DOMContentLoaded', function() {
         {% if readOnly %}
         options.readOnly = true;
         {% endif %}
+        
+        // Set the theme based on current site theme
+        options.theme = 'uml2code-dark';
         
         // Initialize the editor
         const editor = window.monacoEditorManager.createEditor('{{ id }}', '{{ language }}', {{ content|json_encode|raw }}, options);
@@ -66,6 +99,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         copyBtn.textContent = 'Copy';
                     }, 2000);
                 });
+            });
+        }
+        
+        // Update on theme changes
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', function() {
+                // We don't need to change Monaco's theme as we're using a fixed dark theme
             });
         }
     });

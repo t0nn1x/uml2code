@@ -1,125 +1,127 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register - UML2Code
-{% endblock %}
+{% block title %}Register - UML2Code{% endblock %}
 
 {% block body %}
-	<div class="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-		<div class="max-w-md w-full space-y-8">
-			<div>
-				<h1 class="text-center text-3xl font-extrabold text-indigo-600">UML2Code</h1>
-				<h2 class="mt-6 text-center text-2xl font-bold text-gray-900">Create your account</h2>
-				<p class="mt-2 text-center text-sm text-gray-600">
-					Or
-					<a href="{{ path('app_login') }}" class="font-medium text-indigo-600 hover:text-indigo-500">
-						sign in to your existing account
-					</a>
-				</p>
-			</div>
+<div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+	<div class="sm:mx-auto sm:w-full sm:max-w-md">
+		<div class="text-center">
+			<svg class="mx-auto h-12 w-12 text-indigo-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M9 4.5H6.2C5.08 4.5 4.52 4.5 4.092 4.732C3.716 4.935 3.43 5.252 3.257 5.643C3.059 6.092 3.1 6.661 3.181 7.8L3.75 14.1C3.848 15.489 3.897 16.183 4.225 16.694C4.512 17.145 4.939 17.486 5.443 17.671C5.816 17.891 6.511 17.891 7.9 17.891" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+				<path d="M15 4.5H17.8C18.92 4.5 19.48 4.5 19.908 4.732C20.284 4.935 20.57 5.252 20.743 5.643C20.941 6.092 20.9 6.661 20.819 7.8L20.25 14.1C20.152 15.489 20.103 16.183 19.775 16.694C19.488 17.145 19.061 17.486 18.557 17.671C18.184 17.891 17.489 17.891 16.1 17.891" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+				<path d="M20.5 9H3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+				<path d="M12 4.5V20.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+			</svg>
+			<h2 class="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 dark:text-white">Create your account</h2>
+			<p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+				Or
+				<a href="{{ path('app_login') }}" class="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+					sign in to your existing account
+				</a>
+			</p>
+		</div>
 
-			{% for flash_error in app.flashes('verify_email_error') %}
-				<div class="rounded-md bg-red-50 p-4 my-4">
-					<div class="flex">
-						<div class="flex-shrink-0">
-							<svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
-								<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-							</svg>
+		{% for flash_error in app.flashes('verify_email_error') %}
+			<div class="mt-4 rounded-md bg-red-50 dark:bg-red-900/30 p-4">
+				<div class="flex">
+					<div class="flex-shrink-0">
+						<i class="fas fa-exclamation-circle text-red-400"></i>
+					</div>
+					<div class="ml-3">
+						<p class="text-sm font-medium text-red-800 dark:text-red-300">{{ flash_error }}</p>
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+
+		<div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+			<div class="bg-white dark:bg-slate-800 px-8 py-10 shadow-lg sm:rounded-lg">
+				{{ form_start(registrationForm, {'attr': {'class': 'space-y-6'}}) }}
+				
+				<div>
+					{{ form_label(registrationForm.email, 'Email address', {'label_attr': {'class': 'block text-sm font-medium leading-6 text-gray-900 dark:text-gray-200'}}) }}
+					<div class="mt-2.5">
+						{{ form_widget(registrationForm.email, {'attr': {'class': 'block w-full rounded-md border-0 py-2 px-3.5 text-gray-900 dark:text-white dark:bg-slate-700 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 dark:focus:ring-indigo-500 sm:text-sm sm:leading-6'}}) }}
+						<div class="text-sm text-red-600 dark:text-red-400 mt-1">{{ form_errors(registrationForm.email) }}</div>
+					</div>
+				</div>
+
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+					<div>
+						{{ form_label(registrationForm.firstName, 'First Name', {'label_attr': {'class': 'block text-sm font-medium leading-6 text-gray-900 dark:text-gray-200'}}) }}
+						<div class="mt-2.5">
+							{{ form_widget(registrationForm.firstName, {'attr': {'class': 'block w-full rounded-md border-0 py-2 px-3.5 text-gray-900 dark:text-white dark:bg-slate-700 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 dark:focus:ring-indigo-500 sm:text-sm sm:leading-6'}}) }}
+							<div class="text-sm text-red-600 dark:text-red-400 mt-1">{{ form_errors(registrationForm.firstName) }}</div>
 						</div>
-						<div class="ml-3">
-							<p class="text-sm font-medium text-red-800">{{ flash_error }}</p>
+					</div>
+					
+					<div>
+						{{ form_label(registrationForm.lastName, 'Last Name', {'label_attr': {'class': 'block text-sm font-medium leading-6 text-gray-900 dark:text-gray-200'}}) }}
+						<div class="mt-2.5">
+							{{ form_widget(registrationForm.lastName, {'attr': {'class': 'block w-full rounded-md border-0 py-2 px-3.5 text-gray-900 dark:text-white dark:bg-slate-700 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 dark:focus:ring-indigo-500 sm:text-sm sm:leading-6'}}) }}
+							<div class="text-sm text-red-600 dark:text-red-400 mt-1">{{ form_errors(registrationForm.lastName) }}</div>
 						</div>
 					</div>
 				</div>
-			{% endfor %}
 
-			<div class="rounded-md shadow-sm -space-y-px bg-white">
-				<div class="px-6 py-6">
-					{{ form_start(registrationForm, {'attr': {'class': 'space-y-6'}}) }}
-					<div>
-						{{ form_label(registrationForm.email, 'Email address', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
-						<div class="mt-1">
-							{{ form_widget(registrationForm.email) }}
-							{{ form_errors(registrationForm.email) }}
+				<div class="mt-6">
+					{{ form_label(registrationForm.plainPassword, 'Password', {'label_attr': {'class': 'block text-sm font-medium leading-6 text-gray-900 dark:text-gray-200'}}) }}
+					<div class="mt-2.5">
+						{{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'block w-full rounded-md border-0 py-2 px-3.5 text-gray-900 dark:text-white dark:bg-slate-700 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 dark:focus:ring-indigo-500 sm:text-sm sm:leading-6'}}) }}
+						<div class="text-sm text-red-600 dark:text-red-400 mt-1">{{ form_errors(registrationForm.plainPassword) }}</div>
+					</div>
+				</div>
+
+				<div class="flex items-start mt-6">
+					<div class="flex items-center h-5">
+						{{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600 dark:border-gray-600 dark:bg-slate-700 dark:focus:ring-offset-slate-800'}}) }}
+					</div>
+					<div class="ml-3 text-sm">
+						{{ form_label(registrationForm.agreeTerms, 'I agree to the Terms and Conditions', {'label_attr': {'class': 'font-medium text-gray-900 dark:text-gray-200'}}) }}
+						<div class="text-sm text-red-600 dark:text-red-400 mt-1">{{ form_errors(registrationForm.agreeTerms) }}</div>
+					</div>
+				</div>
+
+				<div class="mt-8">
+					<button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-700 dark:hover:bg-indigo-600">
+						Register
+					</button>
+				</div>
+				{{ form_end(registrationForm) }}
+
+				<div class="mt-8">
+					<div class="relative">
+						<div class="absolute inset-0 flex items-center">
+							<div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
+						</div>
+						<div class="relative flex justify-center text-sm font-medium leading-6">
+							<span class="px-6 bg-white text-gray-900 dark:bg-slate-800 dark:text-gray-200">Or register with</span>
 						</div>
 					</div>
 
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-						<div>
-							{{ form_label(registrationForm.firstName, 'First Name', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
-							<div class="mt-1">
-								{{ form_widget(registrationForm.firstName) }}
-								{{ form_errors(registrationForm.firstName) }}
-							</div>
-						</div>
-						<div>
-							{{ form_label(registrationForm.lastName, 'Last Name', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
-							<div class="mt-1">
-								{{ form_widget(registrationForm.lastName) }}
-								{{ form_errors(registrationForm.lastName) }}
-							</div>
-						</div>
-					</div>
+					<div class="mt-6 grid grid-cols-2 gap-4">
+						<a href="{{ path('connect_google') }}" class="flex w-full items-center justify-center gap-3 rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:ring-transparent dark:bg-slate-700 dark:text-white dark:ring-gray-600 dark:hover:bg-slate-600">
+							<svg class="h-5 w-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+								<g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
+									<path fill="#4285F4" d="M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z"/>
+									<path fill="#34A853" d="M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z"/>
+									<path fill="#FBBC05" d="M -21.484 53.529 C -21.734 52.809 -21.864 52.039 -21.864 51.239 C -21.864 50.439 -21.724 49.669 -21.484 48.949 L -21.484 45.859 L -25.464 45.859 C -26.284 47.479 -26.754 49.299 -26.754 51.239 C -26.754 53.179 -26.284 54.999 -25.464 56.619 L -21.484 53.529 Z"/>
+									<path fill="#EA4335" d="M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.789 L -6.734 42.369 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z"/>
+								</g>
+							</svg>
+							<span>Google</span>
+						</a>
 
-					<div>
-						{{ form_label(registrationForm.plainPassword, 'Password', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
-						<div class="mt-1">
-							{{ form_widget(registrationForm.plainPassword) }}
-							{{ form_errors(registrationForm.plainPassword) }}
-						</div>
-					</div>
-
-					<div class="flex items-center">
-						{{ form_widget(registrationForm.agreeTerms) }}
-						<div class="ml-2">
-							{{ form_label(registrationForm.agreeTerms, 'I agree to the Terms and Conditions', {'label_attr': {'class': 'text-sm text-gray-900'}}) }}
-							<p class="text-red-800 text-sm">{{ form_errors(registrationForm.agreeTerms) }}</p>
-						</div>
-					</div>
-
-					<div>
-						<button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-							Register
-						</button>
-					</div>
-					{{ form_end(registrationForm) }}
-
-					<div class="mt-6">
-						<div class="relative">
-							<div class="absolute inset-0 flex items-center">
-								<div class="w-full border-t border-gray-300"></div>
-							</div>
-							<div class="relative flex justify-center text-sm">
-								<span class="px-2 bg-white text-gray-500">
-									Or register with
-								</span>
-							</div>
-						</div>
-
-						<div class="mt-6 grid grid-cols-2 gap-3">
-							<div>
-								<a href="{{ path('connect_google') }}" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-									<svg class="w-5 h-5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-										<g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
-											<path fill="#4285F4" d="M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z"/>
-											<path fill="#34A853" d="M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z"/>
-											<path fill="#FBBC05" d="M -21.484 53.529 C -21.734 52.809 -21.864 52.039 -21.864 51.239 C -21.864 50.439 -21.724 49.669 -21.484 48.949 L -21.484 45.859 L -25.464 45.859 C -26.284 47.479 -26.754 49.299 -26.754 51.239 C -26.754 53.179 -26.284 54.999 -25.464 56.619 L -21.484 53.529 Z"/>
-											<path fill="#EA4335" d="M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.789 L -6.734 42.369 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z"/>
-										</g>
-									</svg>
-								</a>
-							</div>
-
-							<div>
-								<a href="{{ path('connect_github') }}" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-									<svg class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20" aria-hidden="true">
-										<path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clip-rule="evenodd"/>
-									</svg>
-								</a>
-							</div>
-						</div>
+						<a href="{{ path('connect_github') }}" class="flex w-full items-center justify-center gap-3 rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:ring-transparent dark:bg-slate-700 dark:text-white dark:ring-gray-600 dark:hover:bg-slate-600">
+							<svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+								<path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clip-rule="evenodd"/>
+							</svg>
+							<span>GitHub</span>
+						</a>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+</div>
 {% endblock %}

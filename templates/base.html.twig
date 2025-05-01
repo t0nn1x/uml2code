@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" class="h-full">
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>
-			{% block title %}Welcome!
-			{% endblock %}
-		</title>
+		<title>{% block title %}UML2Code{% endblock %}</title>
+		<!-- Tailwind and Custom CSS -->
 		<link rel="stylesheet" href="{{ asset('css/lib/tailwind.min.css') }}">
 		<link rel="stylesheet" href="{{ asset('css/monaco-editor.css') }}">
+		<link rel="stylesheet" href="{{ asset('css/code-examples.css') }}">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 		<!-- Monaco Editor resources -->
 		<script src="{{ asset('js/lib/monaco-editor/vs/loader.js') }}"></script>
 		<script>
@@ -27,9 +27,295 @@
 			{{ encore_entry_script_tags('app') }}
 		{% endblock %}
 	</head>
-	<body class="bg-gray-100 min-h-screen">
-		<turbo-frame id="main">
+	<body class="h-full bg-white dark:bg-slate-900 text-slate-900 dark:text-white antialiased flex flex-col">
+		<!-- Top Navigation Bar -->
+		<header class="bg-white dark:bg-slate-800 shadow-sm border-b border-slate-200 dark:border-slate-700">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div class="flex justify-between h-16">
+					<!-- Logo and Primary Navigation -->
+					<div class="flex">
+						<div class="flex-shrink-0 flex items-center">
+							<a href="{{ path('app_home') }}" class="flex items-center space-x-2">
+								<svg class="h-8 w-8 text-indigo-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M9 4.5H6.2C5.08 4.5 4.52 4.5 4.092 4.732C3.716 4.935 3.43 5.252 3.257 5.643C3.059 6.092 3.1 6.661 3.181 7.8L3.75 14.1C3.848 15.489 3.897 16.183 4.225 16.694C4.512 17.145 4.939 17.486 5.443 17.671C5.816 17.891 6.511 17.891 7.9 17.891" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+									<path d="M15 4.5H17.8C18.92 4.5 19.48 4.5 19.908 4.732C20.284 4.935 20.57 5.252 20.743 5.643C20.941 6.092 20.9 6.661 20.819 7.8L20.25 14.1C20.152 15.489 20.103 16.183 19.775 16.694C19.488 17.145 19.061 17.486 18.557 17.671C18.184 17.891 17.489 17.891 16.1 17.891" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+									<path d="M20.5 9H3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+									<path d="M12 4.5V20.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+								<span class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">UML2Code</span>
+							</a>
+						</div>
+						<div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+							<a href="{{ path('app_home') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {% if app.request.get('_route') starts with 'app_home' %}border-indigo-500 text-gray-900 dark:text-white{% else %}border-transparent text-gray-500 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200{% endif %} text-sm font-medium">
+								<i class="fas fa-home mr-2"></i> Home
+							</a>
+							
+							<a href="/converter/" class="inline-flex items-center px-1 pt-1 border-b-2 {% if app.request.get('_route') starts with 'app_converter' %}border-indigo-500 text-gray-900 dark:text-white{% else %}border-transparent text-gray-500 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200{% endif %} text-sm font-medium">
+								<i class="fas fa-exchange-alt mr-2"></i> Converter
+							</a>
+							
+							<a href="/parser/" class="inline-flex items-center px-1 pt-1 border-b-2 {% if app.request.get('_route') starts with 'app_parser' %}border-indigo-500 text-gray-900 dark:text-white{% else %}border-transparent text-gray-500 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200{% endif %} text-sm font-medium">
+								<i class="fas fa-project-diagram mr-2"></i> Parser
+							</a>
+							
+							<a href="/generator/" class="inline-flex items-center px-1 pt-1 border-b-2 {% if app.request.get('_route') starts with 'app_generator' %}border-indigo-500 text-gray-900 dark:text-white{% else %}border-transparent text-gray-500 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200{% endif %} text-sm font-medium">
+								<i class="fas fa-code mr-2"></i> Generator
+							</a>
+						</div>
+					</div>
+					
+					<!-- Secondary Navigation -->
+					<div class="hidden sm:ml-6 sm:flex sm:items-center">
+						<!-- Theme toggle button -->
+						<button id="theme-toggle" type="button" class="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+							<svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+								<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+							</svg>
+							<svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+								<path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+							</svg>
+						</button>
+						
+						<!-- Settings Dropdown -->
+						<div class="ml-3 relative">
+							<button type="button" id="settings-menu-button" class="bg-white dark:bg-slate-800 p-1 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+								<span class="sr-only">View settings</span>
+								<i class="fas fa-cog w-6 h-6"></i>
+							</button>
+							
+							<!-- Settings dropdown menu (hidden by default) -->
+							<div id="settings-menu" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white dark:bg-slate-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10" role="menu" aria-orientation="vertical" aria-labelledby="settings-menu-button" tabindex="-1">
+								<a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem" tabindex="-1">
+									<i class="fas fa-user-cog mr-2"></i> Account Settings
+								</a>
+								<a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem" tabindex="-1">
+									<i class="fas fa-sliders-h mr-2"></i> Preferences
+								</a>
+							</div>
+						</div>
+						
+						<!-- Profile dropdown -->
+						<div class="ml-3 relative">
+							{% if app.user %}
+								<div>
+									<button type="button" id="user-menu-button" class="bg-white dark:bg-slate-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+										<span class="sr-only">Open user menu</span>
+										<img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name={{ app.user.email|split('@')[0] }}&background=random" alt="User avatar">
+									</button>
+								</div>
+								
+								<!-- User dropdown menu (hidden by default) -->
+								<div id="user-menu" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white dark:bg-slate-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+									<a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem" tabindex="-1">
+										<i class="fas fa-user mr-2"></i> Your Profile
+									</a>
+									<a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem" tabindex="-1">
+										<i class="fas fa-bookmark mr-2"></i> Your Projects
+									</a>
+									<div class="border-t border-gray-200 dark:border-gray-600"></div>
+									<a href="{{ path('app_logout') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem" tabindex="-1">
+										<i class="fas fa-sign-out-alt mr-2"></i> Sign out
+									</a>
+								</div>
+							{% else %}
+								<div class="flex space-x-2">
+									<a href="{{ path('app_login') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-white dark:bg-slate-800 dark:text-indigo-400 hover:bg-gray-50 dark:hover:bg-slate-700">
+										<i class="fas fa-sign-in-alt mr-2"></i> Sign in
+									</a>
+									<a href="{{ path('app_register') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+										<i class="fas fa-user-plus mr-2"></i> Register
+									</a>
+								</div>
+							{% endif %}
+						</div>
+					</div>
+					
+					<!-- Mobile menu button -->
+					<div class="-mr-2 flex items-center sm:hidden">
+						<button id="mobile-menu-button" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500" aria-controls="mobile-menu" aria-expanded="false">
+							<span class="sr-only">Open main menu</span>
+							<!-- Icon when menu is closed -->
+							<svg id="menu-closed-icon" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+							</svg>
+							<!-- Icon when menu is open -->
+							<svg id="menu-open-icon" class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+							</svg>
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Mobile menu, show/hide based on menu state -->
+			<div id="mobile-menu" class="hidden sm:hidden">
+				<div class="pt-2 pb-3 space-y-1">
+					<a href="{{ path('app_home') }}" class="{% if app.request.get('_route') starts with 'app_home' %}bg-indigo-50 dark:bg-slate-700 border-indigo-500 text-indigo-700 dark:text-white{% else %}border-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-white{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+						<i class="fas fa-home mr-2"></i> Home
+					</a>
+					
+					<a href="/converter/" class="{% if app.request.get('_route') starts with 'app_converter' %}bg-indigo-50 dark:bg-slate-700 border-indigo-500 text-indigo-700 dark:text-white{% else %}border-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-white{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+						<i class="fas fa-exchange-alt mr-2"></i> Converter
+					</a>
+					
+					<a href="/parser/" class="{% if app.request.get('_route') starts with 'app_parser' %}bg-indigo-50 dark:bg-slate-700 border-indigo-500 text-indigo-700 dark:text-white{% else %}border-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-white{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+						<i class="fas fa-project-diagram mr-2"></i> Parser
+					</a>
+					
+					<a href="/generator/" class="{% if app.request.get('_route') starts with 'app_generator' %}bg-indigo-50 dark:bg-slate-700 border-indigo-500 text-indigo-700 dark:text-white{% else %}border-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-white{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+						<i class="fas fa-code mr-2"></i> Generator
+					</a>
+				</div>
+				
+				<!-- Mobile profile section -->
+				<div class="pt-4 pb-3 border-t border-gray-200 dark:border-gray-600">
+					{% if app.user %}
+						<div class="flex items-center px-4">
+							<div class="flex-shrink-0">
+								<img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name={{ app.user.email|split('@')[0] }}&background=random" alt="User avatar">
+							</div>
+							<div class="ml-3">
+								<div class="text-base font-medium text-gray-800 dark:text-white">{{ app.user.email|split('@')[0] }}</div>
+								<div class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ app.user.email }}</div>
+							</div>
+							<button type="button" class="ml-auto bg-white dark:bg-slate-800 flex-shrink-0 p-1 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+								<span class="sr-only">View notifications</span>
+								<i class="fas fa-bell w-6 h-6"></i>
+							</button>
+						</div>
+						<div class="mt-3 space-y-1">
+							<a href="#" class="block px-4 py-2 text-base font-medium text-gray-500 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+								<i class="fas fa-user mr-2"></i> Your Profile
+							</a>
+							<a href="#" class="block px-4 py-2 text-base font-medium text-gray-500 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+								<i class="fas fa-cog mr-2"></i> Settings
+							</a>
+							<a href="{{ path('app_logout') }}" class="block px-4 py-2 text-base font-medium text-gray-500 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+								<i class="fas fa-sign-out-alt mr-2"></i> Sign out
+							</a>
+						</div>
+					{% else %}
+						<div class="mt-3 space-y-1 px-2">
+							<a href="{{ path('app_login') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-500 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+								<i class="fas fa-sign-in-alt mr-2"></i> Sign in
+							</a>
+							<a href="{{ path('app_register') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-500 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+								<i class="fas fa-user-plus mr-2"></i> Register
+							</a>
+						</div>
+					{% endif %}
+				</div>
+			</div>
+		</header>
+
+		<!-- Main Content Area with page transitions -->
+		<main class="flex-1 bg-slate-50 dark:bg-slate-900">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 			{% block body %}{% endblock %}
-		</turbo-frame>
+			</div>
+		</main>
+
+		<!-- Footer -->
+		<footer class="bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700 mt-auto">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+				<div class="md:flex md:items-center md:justify-between">
+					<div class="flex justify-center md:justify-start space-x-6">
+						<a href="https://github.com/t0nn1x/uml2code" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+							<span class="sr-only">GitHub</span>
+							<i class="fab fa-github text-xl"></i>
+						</a>
+						<a href="https://www.linkedin.com/in/anton-khrobust-4426b126a?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+							<span class="sr-only">LinkedIn</span>
+							<i class="fab fa-linkedin text-xl"></i>
+						</a>
+					</div>
+					<p class="mt-8 text-center md:mt-0 text-base text-gray-500 dark:text-gray-400">
+						&copy; 2025 UML2Code. All rights reserved.
+					</p>
+				</div>
+			</div>
+		</footer>
+
+		<!-- JavaScript for interactive elements -->
+		<script>
+			// Mobile menu toggle
+			const mobileMenuButton = document.getElementById('mobile-menu-button');
+			const mobileMenu = document.getElementById('mobile-menu');
+			const menuClosedIcon = document.getElementById('menu-closed-icon');
+			const menuOpenIcon = document.getElementById('menu-open-icon');
+			
+			if (mobileMenuButton) {
+				mobileMenuButton.addEventListener('click', () => {
+					mobileMenu.classList.toggle('hidden');
+					menuClosedIcon.classList.toggle('hidden');
+					menuOpenIcon.classList.toggle('hidden');
+				});
+			}
+			
+			// User menu toggle
+			const userMenuButton = document.getElementById('user-menu-button');
+			const userMenu = document.getElementById('user-menu');
+			
+			if (userMenuButton) {
+				userMenuButton.addEventListener('click', () => {
+					userMenu.classList.toggle('hidden');
+				});
+			}
+			
+			// Settings menu toggle
+			const settingsMenuButton = document.getElementById('settings-menu-button');
+			const settingsMenu = document.getElementById('settings-menu');
+			
+			if (settingsMenuButton) {
+				settingsMenuButton.addEventListener('click', () => {
+					settingsMenu.classList.toggle('hidden');
+				});
+			}
+			
+			// Theme toggle functionality
+			const themeToggleBtn = document.getElementById('theme-toggle');
+			const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+			const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+			// Set theme based on localStorage or system preference
+			if (localStorage.getItem('color-theme') === 'dark' || 
+				(!localStorage.getItem('color-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+				document.documentElement.classList.add('dark');
+				themeToggleLightIcon.classList.remove('hidden');
+			} else {
+				document.documentElement.classList.remove('dark');
+				themeToggleDarkIcon.classList.remove('hidden');
+			}
+
+			if (themeToggleBtn) {
+				themeToggleBtn.addEventListener('click', function() {
+					// Toggle icons
+					themeToggleDarkIcon.classList.toggle('hidden');
+					themeToggleLightIcon.classList.toggle('hidden');
+					
+					// Toggle dark class on html element
+					if (document.documentElement.classList.contains('dark')) {
+						document.documentElement.classList.remove('dark');
+						localStorage.setItem('color-theme', 'light');
+					} else {
+						document.documentElement.classList.add('dark');
+						localStorage.setItem('color-theme', 'dark');
+					}
+				});
+			}
+			
+			// Close dropdowns when clicking outside
+			document.addEventListener('click', (event) => {
+				// Close user menu when clicking outside
+				if (userMenuButton && userMenu && !userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+					userMenu.classList.add('hidden');
+				}
+				
+				// Close settings menu when clicking outside
+				if (settingsMenuButton && settingsMenu && !settingsMenuButton.contains(event.target) && !settingsMenu.contains(event.target)) {
+					settingsMenu.classList.add('hidden');
+				}
+			});
+		</script>
 	</body>
 </html>

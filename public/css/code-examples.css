@@ -1,0 +1,182 @@
+/* Custom styles for code example editors on the homepage */
+
+/* Editor container */
+.example-editor-container {
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #333;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    height: 100%;
+    background-color: #1e1e1e;
+}
+
+/* Direct editor containers */
+.code-example-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.code-example-editor {
+    border: 2px solid #374151 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    background-color: #0d1117 !important;
+}
+
+/* Set the background color for Monaco elements */
+.code-example-editor .monaco-editor,
+.code-example-editor .monaco-editor-background,
+.code-example-editor .monaco-editor .margin {
+    background-color: #0d1117 !important;
+}
+
+/* Monaco editor overrides for the examples */
+.example-editor-container .monaco-editor,
+.code-example-editor .monaco-editor {
+    padding: 0 !important;
+    border-radius: 0 !important;
+}
+
+/* Line numbers */
+.example-editor-container .margin-view-overlays .line-numbers,
+.code-example-editor .margin-view-overlays .line-numbers {
+    color: #858585 !important;
+    font-size: 14px;
+    font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* Cursor */
+.example-editor-container .cursor,
+.code-example-editor .cursor {
+    background-color: #d4d4d4 !important;
+    border-color: #d4d4d4 !important;
+}
+
+/* Line highlight */
+.example-editor-container .current-line,
+.code-example-editor .current-line {
+    background-color: #1d2433 !important;
+    border: none !important;
+}
+
+/* Monaco Editor background */
+.monaco-editor, 
+.monaco-editor .margin,
+.monaco-editor-background,
+.monaco-editor .overflow-guard {
+    background-color: #1e1e1e !important;
+}
+
+/* Add custom syntax highlighting colors for PlantUML */
+.example-editor-container .mtk1,
+.code-example-editor .mtk1 { color: #d4d4d4; } /* Default text */
+.example-editor-container .mtk2,
+.code-example-editor .mtk2 { color: #569cd6; } /* Keywords */
+.example-editor-container .mtk3,
+.code-example-editor .mtk3 { color: #9cdcfe; } /* Variables */
+.example-editor-container .mtk4,
+.code-example-editor .mtk4 { color: #ce9178; } /* Strings */
+.example-editor-container .mtk5,
+.code-example-editor .mtk5 { color: #6a9955; } /* Comments */
+.example-editor-container .mtk6,
+.code-example-editor .mtk6 { color: #4ec9b0; } /* Type declarations */
+.example-editor-container .mtk7,
+.code-example-editor .mtk7 { color: #d7ba7d; } /* Special characters */
+.example-editor-container .mtk8,
+.code-example-editor .mtk8 { color: #b5cea8; } /* Numbers */
+
+/* PHP specific colors */
+.example-editor-container .mtk9,
+.code-example-editor .mtk9 { color: #569cd6; } /* PHP keywords */
+.example-editor-container .mtk10,
+.code-example-editor .mtk10 { color: #4ec9b0; } /* PHP types */
+.example-editor-container .mtk11,
+.code-example-editor .mtk11 { color: #ce9178; } /* PHP strings */
+.example-editor-container .mtk12,
+.code-example-editor .mtk12 { color: #dcdcaa; } /* PHP functions */
+.example-editor-container .mtk13,
+.code-example-editor .mtk13 { color: #c586c0; } /* PHP operators */
+.example-editor-container .mtk14,
+.code-example-editor .mtk14 { color: #4fc1ff; } /* PHP variables */
+
+/* Make Monaco editor fit correctly */
+.h-96 .monaco-editor,
+.h-96 .monaco-editor-background,
+.h-96 .monaco-editor .overflow-guard,
+.code-example-editor .monaco-editor,
+.code-example-editor .monaco-editor-background,
+.code-example-editor .monaco-editor .overflow-guard {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+/* Adjust the editor styles for enhanced readability in the examples */
+.example-editor-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.example-editor-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.example-editor-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+/* Dark mode specific adjustments */
+html.dark .example-editor-container,
+html.dark .code-example-editor {
+    border-color: #444;
+}
+
+/* Remove padding from code examples to match screenshot */
+.h-96 .monaco-editor .mtk1,
+.code-example-editor .monaco-editor .mtk1 {
+    padding-left: 0;
+}
+
+/* Match the screenshot spacing/padding */
+.monaco-editor .view-line {
+    padding-left: 10px !important;
+}
+
+/* Fix container width */
+.monaco-editor-container, 
+.monaco-editor, 
+.overflow-guard,
+.code-example-editor,
+.code-example-editor .monaco-editor,
+.code-example-editor .overflow-guard {
+    width: 100% !important;
+}
+
+/* Set the exact height of the editor to match screenshot */
+.example-editor-container,
+.example-editor-container .monaco-editor {
+    height: 24rem !important; /* 384px = 24rem */
+}
+
+/* Make sure content is properly visible */
+.monaco-editor .view-lines {
+    font-family: Menlo, Monaco, Consolas, 'Courier New', monospace !important;
+}
+
+/* Fix scrollbars */
+.monaco-scrollable-element .scrollbar.vertical {
+    right: 0 !important;
+}
+
+/* Fix the width of the line numbers area */
+.monaco-editor .margin {
+    width: 50px !important;
+}
+
+/* Fix border styling */
+.code-example-editor {
+    border-radius: 8px !important;
+} 

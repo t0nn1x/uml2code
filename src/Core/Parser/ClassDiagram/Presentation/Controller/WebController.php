@@ -11,7 +11,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 /**
  * Web Controller for UML parser pages
  */
-#[Route('/uml-parser')]
+#[Route('/parser')]
 class WebController extends AbstractController
 {
     /**
