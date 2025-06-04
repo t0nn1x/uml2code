@@ -1,0 +1,131 @@
+# Navigation
+nav:
+  converter: "Converter"
+  generator: "Generator"
+  parser: "Parser"
+  dashboard: "Dashboard"
+  login: "Login"
+  logout: "Logout"
+  register: "Register"
+
+# Footer
+footer:
+  description: "Transform UML diagrams into production-ready code in seconds"
+  features: "Features"
+  converter: "UML to Code"
+  generator: "Code Generator"
+  parser: "UML Parser"
+  account: "Account"
+  dashboard: "Dashboard"
+  logout: "Logout"
+  login: "Login"
+  register: "Sign Up"
+  languages: "Languages"
+  rights: "All rights reserved"
+
+# Home page
+home:
+  hero:
+    title: "Transform UML Diagrams into Code"
+    subtitle: "Powerful tool for rapid code generation from PlantUML diagrams"
+    cta: "Start for Free"
+    login: "Sign in to Account"
+  features:
+    title: "Everything You Need for UML"
+    subtitle: "Our tools help you quickly transform ideas into working code"
+    parser:
+      title: "UML Parser"
+      description: "Analyze PlantUML diagrams and get structured data in JSON format"
+    generator:
+      title: "Code Generator"
+      description: "Generate code in various programming languages from structured data"
+    converter:
+      title: "Direct Converter"
+      description: "Instantly convert PlantUML diagrams into ready-to-use code"
+  languages:
+    title: "Supported Languages"
+    subtitle: "Generate code in popular programming languages"
+  cta:
+    title: "Ready to Get Started?"
+    subtitle: "Join thousands of developers already using UML2Code"
+    button: "Sign Up for Free"
+    login: "Already have an account? Sign In"
+
+# Dashboard
+dashboard:
+  title: "Dashboard"
+  welcome: "Welcome"
+  stats:
+    title: "Your Statistics"
+    diagrams: "Diagrams Processed"
+    files: "Files Generated"
+    last_activity: "Last Activity"
+  quick_actions:
+    title: "Quick Actions"
+    convert: "Convert UML to Code"
+    generate: "Generate Code"
+    parse: "Parse UML"
+
+# Converter page
+converter:
+  title: "UML to Code Converter"
+  subtitle: "Transform your PlantUML diagrams into production-ready code"
+  input_label: "PlantUML Diagram"
+  output_label: "Generated Code"
+  language: "Programming Language"
+  version: "Version"
+  select_language: "Select a language"
+  select_version: "Select a version"
+  convert_button: "Convert to Code"
+  output_placeholder: "Generated code will appear here"
+  error:
+    empty_uml: "Please enter a UML diagram"
+    no_language: "Please select a programming language"
+    conversion_failed: "Failed to convert UML to code"
+
+# Generator page
+generator:
+  title: "Code Generator"
+  subtitle: "Generate code from JSON structure"
+  input_label: "JSON Structure"
+  output_label: "Generated Code"
+  language: "Programming Language"
+  version: "Version"
+  select_language: "Select a language"
+  select_version: "Select a version"
+  generate_button: "Generate Code"
+  output_placeholder: "Generated code will appear here"
+  error:
+    empty_json: "Please enter a JSON structure"
+    invalid_json: "Invalid JSON format"
+    no_language: "Please select a programming language"
+    generation_failed: "Failed to generate code"
+
+# Parser page
+parser:
+  title: "UML Parser"
+  subtitle: "Parse PlantUML diagrams into JSON structure"
+  input_label: "PlantUML Diagram"
+  output_label: "JSON Structure"
+  parse_button: "Parse UML"
+  output_placeholder: "Parsed structure will appear here"
+  error:
+    empty_uml: "Please enter a UML diagram"
+    parsing_failed: "Failed to parse UML diagram"
+
+# Common
+common:
+  loading: "Loading..."
+  error: "Error"
+  success: "Success"
+  cancel: "Cancel"
+  save: "Save"
+  delete: "Delete"
+  edit: "Edit"
+  back: "Back"
+  next: "Next"
+  copy: "Copy"
+  copied: "Copied!"
+  download: "Download"
+  download_all: "Download All as ZIP"
+  soon: "Soon"

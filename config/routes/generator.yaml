@@ -1,9 +1,0 @@
-generator_api:
-    resource: ../../src/Core/Generator/ClassDiagram/Presentation/Controller/ApiController.php
-    type: attribute
-    prefix: /
-
-generator_web:
-    resource: ../../src/Core/Generator/ClassDiagram/Presentation/Controller/WebController.php
-    type: attribute
-    prefix: / 

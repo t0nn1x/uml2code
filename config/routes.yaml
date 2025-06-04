@@ -1,5 +1,64 @@
+# OAuth routes without locale (imported from separate file)
+security_routes:
+    resource: 'routes/security.yaml'
+
+# Controllers with locale
 controllers:
     resource:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+    prefix: /{_locale}
+    requirements:
+        _locale: uk|en
+    defaults:
+        _locale: uk
+
+# Core API routes without locale
+api_parser_routes:
+    resource: '../src/Core/Parser/ClassDiagram/Presentation/Controller/ApiController.php'
+    type: attribute
+
+api_generator_routes:
+    resource: '../src/Core/Generator/ClassDiagram/Presentation/Controller/ApiController.php'
+    type: attribute
+
+api_converter_routes:
+    resource: '../src/Core/Converter/ClassDiagram/Presentation/Controller/ApiController.php'
+    type: attribute
+
+web_parser_routes:
+    resource: '../src/Core/Parser/ClassDiagram/Presentation/Controller/WebController.php'
+    type: attribute
+    prefix: /{_locale}
+    requirements:
+        _locale: uk|en
+    defaults:
+        _locale: uk
+
+web_generator_routes:
+    resource: '../src/Core/Generator/ClassDiagram/Presentation/Controller/WebController.php'
+    type: attribute
+    prefix: /{_locale}
+    requirements:
+        _locale: uk|en
+    defaults:
+        _locale: uk
+
+web_converter_routes:
+    resource: '../src/Core/Converter/ClassDiagram/Presentation/Controller/WebController.php'
+    type: attribute
+    prefix: /{_locale}
+    requirements:
+        _locale: uk|en
+    defaults:
+        _locale: uk
+
+
+# Root redirect
+index:
+    path: /
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::urlRedirectAction
+    defaults:
+        path: /uk
+        permanent: false

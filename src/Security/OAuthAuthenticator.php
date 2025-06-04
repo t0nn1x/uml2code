@@ -147,8 +147,11 @@ class OAuthAuthenticator extends OAuth2Authenticator implements AuthenticationEn
             $this->entityManager->flush();
         }
 
+        // Get locale from session or default
+        $locale = $request->getSession()->get('_locale', 'uk');
+
         // Redirect to dashboard after successful login
-        return new RedirectResponse($this->router->generate('app_dashboard'));
+        return new RedirectResponse($this->router->generate('app_dashboard', ['_locale' => $locale]));
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
@@ -164,8 +167,11 @@ class OAuthAuthenticator extends OAuth2Authenticator implements AuthenticationEn
      */
     public function start(Request $request, ?AuthenticationException $authException = null): Response
     {
+        // Get locale from request or default
+        $locale = $request->getLocale();
+
         return new RedirectResponse(
-            $this->router->generate('app_login'),
+            $this->router->generate('app_login', ['_locale' => $locale]),
             Response::HTTP_TEMPORARY_REDIRECT
         );
     }

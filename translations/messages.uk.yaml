@@ -1,0 +1,131 @@
+# Navigation
+nav:
+  converter: "Конвертер"
+  generator: "Генератор"
+  parser: "Парсер"
+  dashboard: "Панель керування"
+  login: "Увійти"
+  logout: "Вийти"
+  register: "Реєстрація"
+
+# Footer
+footer:
+  description: "Перетворюйте UML-діаграми в готовий код за лічені секунди"
+  features: "Можливості"
+  converter: "UML в код"
+  generator: "Генератор коду"
+  parser: "Парсер UML"
+  account: "Акаунт"
+  dashboard: "Панель керування"
+  logout: "Вийти"
+  login: "Увійти"
+  register: "Зареєструватися"
+  languages: "Мови"
+  rights: "Всі права захищені"
+
+# Home page
+home:
+  hero:
+    title: "Перетворюйте UML-діаграми в код"
+    subtitle: "Потужний інструмент для швидкої генерації коду з PlantUML діаграм"
+    cta: "Почати безкоштовно"
+    login: "Увійти в акаунт"
+  features:
+    title: "Все, що потрібно для роботи з UML"
+    subtitle: "Наші інструменти допоможуть вам швидко перетворити ідеї в робочий код"
+    parser:
+      title: "Парсер UML"
+      description: "Аналізуйте PlantUML діаграми та отримуйте структуровані дані у форматі JSON"
+    generator:
+      title: "Генератор коду"
+      description: "Генеруйте код на різних мовах програмування зі структурованих даних"
+    converter:
+      title: "Прямий конвертер"
+      description: "Миттєво перетворюйте PlantUML діаграми в готовий код"
+  languages:
+    title: "Підтримувані мови"
+    subtitle: "Генеруйте код на популярних мовах програмування"
+  cta:
+    title: "Готові почати?"
+    subtitle: "Приєднуйтесь до тисяч розробників, які вже використовують UML2Code"
+    button: "Зареєструватися безкоштовно"
+    login: "Вже маєте акаунт? Увійти"
+
+# Dashboard
+dashboard:
+  title: "Панель керування"
+  welcome: "Ласкаво просимо"
+  stats:
+    title: "Ваша статистика"
+    diagrams: "Діаграм оброблено"
+    files: "Файлів згенеровано"
+    last_activity: "Остання активність"
+  quick_actions:
+    title: "Швидкі дії"
+    convert: "Конвертувати UML в код"
+    generate: "Генерувати код"
+    parse: "Парсити UML"
+
+# Converter page
+converter:
+  title: "Конвертер UML в код"
+  subtitle: "Перетворюйте ваші PlantUML діаграми в готовий код"
+  input_label: "PlantUML діаграма"
+  output_label: "Згенерований код"
+  language: "Мова програмування"
+  version: "Версія"
+  select_language: "Оберіть мову"
+  select_version: "Оберіть версію"
+  convert_button: "Конвертувати в код"
+  output_placeholder: "Згенерований код з'явиться тут"
+  error:
+    empty_uml: "Будь ласка, введіть UML діаграму"
+    no_language: "Будь ласка, оберіть мову програмування"
+    conversion_failed: "Не вдалося конвертувати UML в код"
+
+# Generator page
+generator:
+  title: "Генератор коду"
+  subtitle: "Генеруйте код з JSON структури"
+  input_label: "JSON структура"
+  output_label: "Згенерований код"
+  language: "Мова програмування"
+  version: "Версія"
+  select_language: "Оберіть мову"
+  select_version: "Оберіть версію"
+  generate_button: "Генерувати код"
+  output_placeholder: "Згенерований код з'явиться тут"
+  error:
+    empty_json: "Будь ласка, введіть JSON структуру"
+    invalid_json: "Невірний формат JSON"
+    no_language: "Будь ласка, оберіть мову програмування"
+    generation_failed: "Не вдалося згенерувати код"
+
+# Parser page
+parser:
+  title: "Парсер UML"
+  subtitle: "Перетворюйте PlantUML діаграми в JSON структуру"
+  input_label: "PlantUML діаграма"
+  output_label: "JSON структура"
+  parse_button: "Парсити UML"
+  output_placeholder: "Розпарсена структура з'явиться тут"
+  error:
+    empty_uml: "Будь ласка, введіть UML діаграму"
+    parsing_failed: "Не вдалося розпарсити UML діаграму"
+
+# Common
+common:
+  loading: "Завантаження..."
+  error: "Помилка"
+  success: "Успішно"
+  cancel: "Скасувати"
+  save: "Зберегти"
+  delete: "Видалити"
+  edit: "Редагувати"
+  back: "Назад"
+  next: "Далі"
+  copy: "Копіювати"
+  copied: "Скопійовано!"
+  download: "Завантажити"
+  download_all: "Завантажити все (ZIP)"
+  soon: "Незабаром"

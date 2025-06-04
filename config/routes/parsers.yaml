@@ -1,3 +1,0 @@
-parser_controllers:
-    resource: ../../src/Core/Parser/ClassDiagram/Presentation/Controller/
-    type: attribute 
