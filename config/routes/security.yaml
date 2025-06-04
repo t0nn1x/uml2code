@@ -1,3 +1,16 @@
-_security_logout:
-    resource: security.route_loader.logout
-    type: service
+# OAuth routes without locale prefix
+connect_google:
+    path: /connect/google
+    controller: App\Controller\Security\SecurityController::connectGoogle
+
+connect_google_check:
+    path: /connect/google/check
+    controller: App\Controller\Security\SecurityController::connectGoogleCheck
+
+connect_github:
+    path: /connect/github
+    controller: App\Controller\Security\SecurityController::connectGithub
+
+connect_github_check:
+    path: /connect/github/check
+    controller: App\Controller\Security\SecurityController::connectGithubCheck

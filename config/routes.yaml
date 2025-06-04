@@ -1,3 +1,7 @@
+# OAuth routes without locale (imported from separate file)
+security_routes:
+    resource: 'routes/security.yaml'
+
 # Controllers with locale
 controllers:
     resource:

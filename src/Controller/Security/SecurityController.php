@@ -17,7 +17,7 @@ class SecurityController extends AbstractController
     {
         // Get login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
-        
+
         // Last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
@@ -34,37 +34,39 @@ class SecurityController extends AbstractController
         throw new \LogicException('This method should not be called directly.');
     }
 
-    #[Route('/connect/google', name: 'connect_google')]
     public function connectGoogle(ClientRegistry $clientRegistry): RedirectResponse
     {
         return $clientRegistry
             ->getClient('google')
             ->redirect([
-                'email', 'profile'
+                'email',
+                'profile'
             ], []);
     }
 
-    #[Route('/connect/google/check', name: 'connect_google_check')]
     public function connectGoogleCheck(Request $request): RedirectResponse
     {
         // This is handled by the OAuthAuthenticator
-        return $this->redirectToRoute('app_dashboard');
+        // Get locale from session or default
+        $locale = $request->getSession()->get('_locale', 'uk');
+        return $this->redirectToRoute('app_dashboard', ['_locale' => $locale]);
     }
 
-    #[Route('/connect/github', name: 'connect_github')]
     public function connectGithub(ClientRegistry $clientRegistry): RedirectResponse
     {
         return $clientRegistry
             ->getClient('github')
             ->redirect([
-                'user:email', 'read:user'
+                'user:email',
+                'read:user'
             ], []);
     }
 
-    #[Route('/connect/github/check', name: 'connect_github_check')]
     public function connectGithubCheck(Request $request): RedirectResponse
     {
         // This is handled by the OAuthAuthenticator
-        return $this->redirectToRoute('app_dashboard');
+        // Get locale from session or default
+        $locale = $request->getSession()->get('_locale', 'uk');
+        return $this->redirectToRoute('app_dashboard', ['_locale' => $locale]);
     }
 }
