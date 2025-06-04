@@ -1,0 +1,81 @@
+# Navigation
+nav:
+  converter: "Converter"
+  generator: "Generator"
+  parser: "Parser"
+  dashboard: "Dashboard"
+  login: "Login"
+  logout: "Logout"
+  register: "Register"
+
+# Footer
+footer:
+  description: "Transform UML diagrams into production-ready code in seconds"
+  features: "Features"
+  converter: "UML to Code"
+  generator: "Code Generator"
+  parser: "UML Parser"
+  account: "Account"
+  dashboard: "Dashboard"
+  logout: "Logout"
+  login: "Login"
+  register: "Sign Up"
+  languages: "Languages"
+  rights: "All rights reserved"
+
+# Home page
+home:
+  hero:
+    title: "Transform UML Diagrams into Code"
+    subtitle: "Powerful tool for rapid code generation from PlantUML diagrams"
+    cta: "Start for Free"
+    login: "Sign in to Account"
+  features:
+    title: "Everything You Need for UML"
+    subtitle: "Our tools help you quickly transform ideas into working code"
+    parser:
+      title: "UML Parser"
+      description: "Analyze PlantUML diagrams and get structured data in JSON format"
+    generator:
+      title: "Code Generator"
+      description: "Generate code in various programming languages from structured data"
+    converter:
+      title: "Direct Converter"
+      description: "Instantly convert PlantUML diagrams into ready-to-use code"
+  languages:
+    title: "Supported Languages"
+    subtitle: "Generate code in popular programming languages"
+  cta:
+    title: "Ready to Get Started?"
+    subtitle: "Join thousands of developers already using UML2Code"
+    button: "Sign Up for Free"
+    login: "Already have an account? Sign In"
+
+# Dashboard
+dashboard:
+  title: "Dashboard"
+  welcome: "Welcome"
+  stats:
+    title: "Your Statistics"
+    diagrams: "Diagrams Processed"
+    files: "Files Generated"
+    last_activity: "Last Activity"
+  quick_actions:
+    title: "Quick Actions"
+    convert: "Convert UML to Code"
+    generate: "Generate Code"
+    parse: "Parse UML"
+
+# Common
+common:
+  loading: "Loading..."
+  error: "Error"
+  success: "Success"
+  cancel: "Cancel"
+  save: "Save"
+  delete: "Delete"
+  edit: "Edit"
+  back: "Back"
+  next: "Next"
+  copy: "Copy"
+  copied: "Copied!"
