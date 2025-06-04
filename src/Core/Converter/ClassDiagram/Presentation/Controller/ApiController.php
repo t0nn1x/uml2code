@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * API Controller for UML to Code conversion
  */
-#[Route('/api/converter')]
+#[Route('/converter')]
 class ApiController extends AbstractController
 {
     /**

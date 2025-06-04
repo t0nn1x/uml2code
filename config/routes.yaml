@@ -15,22 +15,43 @@ controllers:
         _locale: uk
 
 # Core API routes without locale
-api_routes:
-    resource:
-        path: ../src/Core/
-        namespace: App\Core
+api_parser_routes:
+    resource: '../src/Core/Parser/ClassDiagram/Presentation/Controller/ApiController.php'
     type: attribute
     prefix: /api
-    exclude: '../src/Core/*/ClassDiagram/Presentation/Controller/*WebController.php'
 
-# Core web routes without /api prefix
-core_web_routes:
-    resource:
-        path: ../src/Core/
-        namespace: App\Core
+api_generator_routes:
+    resource: '../src/Core/Generator/ClassDiagram/Presentation/Controller/ApiController.php'
+    type: attribute
+    prefix: /api
+
+api_converter_routes:
+    resource: '../src/Core/Converter/ClassDiagram/Presentation/Controller/ApiController.php'
+    type: attribute
+    prefix: /api
+
+web_parser_routes:
+    resource: '../src/Core/Parser/ClassDiagram/Presentation/Controller/WebController.php'
     type: attribute
     prefix: /{_locale}
-    exclude: '../src/Core/*/ClassDiagram/Presentation/Controller/*ApiController.php'
+    requirements:
+        _locale: uk|en
+    defaults:
+        _locale: uk
+
+web_generator_routes:
+    resource: '../src/Core/Generator/ClassDiagram/Presentation/Controller/WebController.php'
+    type: attribute
+    prefix: /{_locale}
+    requirements:
+        _locale: uk|en
+    defaults:
+        _locale: uk
+
+web_converter_routes:
+    resource: '../src/Core/Converter/ClassDiagram/Presentation/Controller/WebController.php'
+    type: attribute
+    prefix: /{_locale}
     requirements:
         _locale: uk|en
     defaults:

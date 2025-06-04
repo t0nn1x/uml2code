@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * API Controller for UML parsing endpoints
  */
-#[Route('/api/uml')]
+#[Route('/uml')]
 class ApiController extends AbstractController
 {
     /**
