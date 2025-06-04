@@ -98,7 +98,7 @@ class Order {
 User "1" --> "*" Order: places
 @enduml`,
         language: 'plaintext',
-        theme: 'vs-light',
+        theme: window.monacoTheme,
         minimap: { enabled: false },
         automaticLayout: true
     });
@@ -172,7 +172,7 @@ User "1" --> "*" Order: places
                 jsonEditor = monaco.editor.create(document.getElementById('json-editor'), {
                     value: JSON.stringify(data, null, 2),
                     language: 'json',
-                    theme: 'vs-light',
+                    theme: window.monacoTheme,
                     readOnly: true,
                     minimap: { enabled: false },
                     automaticLayout: true

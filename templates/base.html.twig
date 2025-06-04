@@ -10,11 +10,12 @@
     
     <!-- Monaco Editor CSS -->
     <link rel="stylesheet" data-name="vs/editor/editor.main" href="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/editor/editor.main.css">
+    <link rel="stylesheet" href="{{ asset('css/theme.css') }}">
     
     <!-- Custom CSS -->
     {% block stylesheets %}{% endblock %}
 </head>
-<body class="min-h-screen flex flex-col bg-gray-50">
+<body data-theme="light" class="min-h-screen flex flex-col bg-gray-50">
     <!-- Header -->
     <header class="bg-white shadow-sm border-b border-gray-200">
         <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -67,6 +68,7 @@
                             </div>
                         </div>
                     </div>
+                        <button id="theme-toggle" class="text-gray-700 hover:text-gray-900 text-lg" aria-label="Toggle theme">🌙</button>
 
                     <!-- User Menu -->
                     {% if app.user %}
@@ -261,6 +263,30 @@
 
         // Monaco Editor configuration
         require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
+        window.monacoTheme = localStorage.getItem("theme") === "dark" ? "vs-dark" : "vs-light";
+        function applyTheme(theme) {
+            document.body.setAttribute("data-theme", theme);
+            localStorage.setItem("theme", theme);
+            window.monacoTheme = theme === "dark" ? "vs-dark" : "vs-light";
+            if (window.monaco && window.monaco.editor) {
+                monaco.editor.setTheme(window.monacoTheme);
+            }
+            const tbtn = document.getElementById("theme-toggle");
+            if (tbtn) {
+            tbtn.textContent = theme === 'dark' ? '☀' : '🌙';
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            applyTheme(localStorage.getItem("theme") || "light");
+            const tbtn = document.getElementById("theme-toggle");
+            if (tbtn) {
+                tbtn.addEventListener("click", function() {
+                    const newTheme = document.body.getAttribute("data-theme") === "dark" ? "light" : "dark";
+                    applyTheme(newTheme);
+                });
+            }
+        });
     </script>
 
     {% block javascripts %}{% endblock %}

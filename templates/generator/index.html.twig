@@ -254,7 +254,7 @@ require([
     const jsonEditorInstance = monaco.editor.create(document.getElementById('json-editor'), {
         value: jsonExample,
         language: 'json',
-        theme: 'vs-light',
+        theme: window.monacoTheme,
         minimap: { enabled: false },
         automaticLayout: true
     });
@@ -339,7 +339,7 @@ require([
                             monaco.editor.create(document.getElementById(`file-editor-${index}`), {
                                 value: fileData.content,
                                 language: getMonacoLanguage(fileData.filename),
-                                theme: 'vs-light',
+                                theme: window.monacoTheme,
                                 readOnly: true,
                                 minimap: { enabled: false },
                                 automaticLayout: true
