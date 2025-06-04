@@ -1,5 +1,27 @@
+# Controllers with locale
 controllers:
     resource:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+    prefix: /{_locale}
+    requirements:
+        _locale: uk|en
+    defaults:
+        _locale: uk
+
+# Core API routes without locale
+api_routes:
+    resource:
+        path: ../src/Core/
+        namespace: App\Core
+    type: attribute
+    prefix: /api
+
+# Root redirect
+index:
+    path: /
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::urlRedirectAction
+    defaults:
+        path: /uk
+        permanent: false

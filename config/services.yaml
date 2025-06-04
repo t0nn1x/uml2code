@@ -4,12 +4,18 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    locale: 'uk'
+    kernel.default_locale: 'uk'
+    kernel.enabled_locales: ['uk', 'en']
+    app.supported_locales: 'uk|en'
 
 services:
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            string $defaultLocale: '%locale%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -20,24 +26,26 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    # Parser Infrastructure
-    App\Core\Parser\ClassDiagram\Infrastructure\Parser\PlantUmlParser:
-        public: false
-
-    # Parser Interface binding
-    App\Core\Parser\ClassDiagram\Application\Service\ClassDiagramParserInterface:
-        alias: App\Core\Parser\ClassDiagram\Infrastructure\Parser\PlantUmlParser
-
-    # Application Services
-    App\Core\Parser\ClassDiagram\Application\Service\UmlParserService:
-        public: true
-        arguments:
-            - '@App\Core\Parser\ClassDiagram\Application\Service\ClassDiagramParserInterface'
-
-    # Controllers
-    App\Core\Parser\ClassDiagram\Presentation\Controller\:
-        resource: '../src/Core/Parser/ClassDiagram/Presentation/Controller/'
-        tags: ['controller.service_arguments']
-
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    # Register the locale listener
+    App\EventListener\LocaleListener:
+        arguments:
+            - '%locale%'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    # Parser, Generator, and Converter services are already configured in their bundles
+    # but we can add aliases for easier access
+    app.parser_service:
+        alias: App\Core\Parser\ClassDiagram\Application\Service\UmlParserService
+        public: true
+
+    app.generator_service:
+        alias: App\Core\Generator\ClassDiagram\Application\Service\CodeGeneratorService
+        public: true
+
+    app.converter_service:
+        alias: App\Core\Converter\ClassDiagram\Application\Service\UmlCodeConverterService
+        public: true
