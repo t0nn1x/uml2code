@@ -18,17 +18,14 @@ controllers:
 api_parser_routes:
     resource: '../src/Core/Parser/ClassDiagram/Presentation/Controller/ApiController.php'
     type: attribute
-    prefix: /api
 
 api_generator_routes:
     resource: '../src/Core/Generator/ClassDiagram/Presentation/Controller/ApiController.php'
     type: attribute
-    prefix: /api
 
 api_converter_routes:
     resource: '../src/Core/Converter/ClassDiagram/Presentation/Controller/ApiController.php'
     type: attribute
-    prefix: /api
 
 web_parser_routes:
     resource: '../src/Core/Parser/ClassDiagram/Presentation/Controller/WebController.php'

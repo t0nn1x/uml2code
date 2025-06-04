@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * API Controller for code generation
  */
-#[Route('/generator')]
+#[Route('/api/generator')]
 class ApiController extends AbstractController
 {
     /**
