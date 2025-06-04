@@ -129,7 +129,7 @@ class Order {
 User "1" --> "*" Order : places
 @enduml`,
         language: 'plaintext',
-        theme: 'vs-light',
+        theme: window.monacoTheme,
         minimap: { enabled: false },
         automaticLayout: true
     });
@@ -243,7 +243,7 @@ User "1" --> "*" Order : places
                 monaco.editor.create(document.getElementById(`file-editor-${index}`), {
                     value: file.content,
                     language: getMonacoLanguage(file.filename),
-                    theme: 'vs-light',
+                    theme: window.monacoTheme,
                     readOnly: true,
                     minimap: { enabled: false },
                     automaticLayout: true

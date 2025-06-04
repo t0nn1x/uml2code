@@ -11,10 +11,13 @@
     <!-- Monaco Editor CSS -->
     <link rel="stylesheet" data-name="vs/editor/editor.main" href="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/editor/editor.main.css">
     
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="{{ asset('css/theme.css') }}">
+
     <!-- Custom CSS -->
     {% block stylesheets %}{% endblock %}
 </head>
-<body class="min-h-screen flex flex-col bg-gray-50">
+<body data-theme="light" class="min-h-screen flex flex-col bg-gray-50">
     <!-- Header -->
     <header class="bg-white shadow-sm border-b border-gray-200">
         <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -35,11 +38,11 @@
                         <a href="{{ path('app_converter') }}" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                             {{ 'nav.converter'|trans }}
                         </a>
-                        <a href="{{ path('app_generator') }}" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                            {{ 'nav.generator'|trans }}
-                        </a>
                         <a href="{{ path('app_uml_parser') }}" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                             {{ 'nav.parser'|trans }}
+                        </a>
+                        <a href="{{ path('app_generator') }}" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                            {{ 'nav.generator'|trans }}
                         </a>
                     {% endif %}
                 </div>
@@ -67,6 +70,7 @@
                             </div>
                         </div>
                     </div>
+                    <button id="theme-toggle" class="text-gray-700 hover:text-gray-900 text-lg" aria-label="Toggle theme">🌙</button>
 
                     <!-- User Menu -->
                     {% if app.user %}
@@ -112,11 +116,11 @@
                         <a href="{{ path('app_converter') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
                             {{ 'nav.converter'|trans }}
                         </a>
-                        <a href="{{ path('app_generator') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
-                            {{ 'nav.generator'|trans }}
-                        </a>
                         <a href="{{ path('app_uml_parser') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
                             {{ 'nav.parser'|trans }}
+                        </a>
+                        <a href="{{ path('app_generator') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                            {{ 'nav.generator'|trans }}
                         </a>
                     {% endif %}
                 </div>
@@ -156,13 +160,13 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ path('app_generator') }}" class="text-sm text-gray-500 hover:text-gray-900">
-                                    {{ 'footer.generator'|trans }}
+                                <a href="{{ path('app_uml_parser') }}" class="text-sm text-gray-500 hover:text-gray-900">
+                                    {{ 'footer.parser'|trans }}
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ path('app_uml_parser') }}" class="text-sm text-gray-500 hover:text-gray-900">
-                                    {{ 'footer.parser'|trans }}
+                                <a href="{{ path('app_generator') }}" class="text-sm text-gray-500 hover:text-gray-900">
+                                    {{ 'footer.generator'|trans }}
                                 </a>
                             </li>
                         </ul>
@@ -203,15 +207,15 @@
                         </h3>
                         <ul class="mt-4 space-y-3">
                             <li>
-                                <a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_locale': 'uk'})) }}" 
-                                   class="text-sm text-gray-500 hover:text-gray-900">
-                                    🇺🇦 Українська
-                                </a>
-                            </li>
-                            <li>
                                 <a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_locale': 'en'})) }}" 
                                    class="text-sm text-gray-500 hover:text-gray-900">
                                     🇬🇧 English
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_locale': 'uk'})) }}" 
+                                   class="text-sm text-gray-500 hover:text-gray-900">
+                                    🇺🇦 Українська
                                 </a>
                             </li>
                         </ul>
@@ -261,6 +265,30 @@
 
         // Monaco Editor configuration
         require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
+        window.monacoTheme = localStorage.getItem("theme") === "dark" ? "vs-dark" : "vs-light";
+        function applyTheme(theme) {
+            document.body.setAttribute("data-theme", theme);
+            localStorage.setItem("theme", theme);
+            window.monacoTheme = theme === "dark" ? "vs-dark" : "vs-light";
+            if (window.monaco && window.monaco.editor) {
+                monaco.editor.setTheme(window.monacoTheme);
+            }
+            const tbtn = document.getElementById("theme-toggle");
+            if (tbtn) {
+            tbtn.textContent = theme === 'dark' ? '☀' : '🌙';
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            applyTheme(localStorage.getItem("theme") || "light");
+            const tbtn = document.getElementById("theme-toggle");
+            if (tbtn) {
+                tbtn.addEventListener("click", function() {
+                    const newTheme = document.body.getAttribute("data-theme") === "dark" ? "light" : "dark";
+                    applyTheme(newTheme);
+                });
+            }
+        });
     </script>
 
     {% block javascripts %}{% endblock %}
