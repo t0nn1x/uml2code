@@ -1,371 +1,352 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}UML to Code Converter{% endblock %}
-
-{% block stylesheets %}
-<style>
-    .uml-editor {
-        min-height: 300px;
-        font-family: monospace;
-        resize: vertical;
-    }
-    
-    .results {
-        max-height: 600px;
-        overflow-y: auto;
-    }
-    
-    .code-file {
-        margin-bottom: 1rem;
-        background-color: #f5f5f5;
-        border-radius: 0.375rem;
-        padding: 0.5rem;
-    }
-    
-    .file-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.5rem;
-        background-color: #e0e0e0;
-        border-radius: 0.25rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .file-content {
-        padding: 0.5rem;
-        white-space: pre-wrap;
-        font-family: monospace;
-        font-size: 0.875rem;
-    }
-    
-    .spinner {
-        display: inline-block;
-        width: 1.5rem;
-        height: 1.5rem;
-        border-radius: 50%;
-        border: 2px solid #ccc;
-        border-top-color: #3b82f6;
-        animation: spinner 0.8s linear infinite;
-    }
-    
-    @keyframes spinner {
-        to {
-            transform: rotate(360deg);
-        }
-    }
-</style>
-{% endblock %}
+{% block title %}{{ 'converter.title'|trans }} - UML2Code{% endblock %}
 
 {% block body %}
-<div class="min-h-screen flex flex-col bg-gray-100">
-    <header class="bg-white shadow">
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <h1 class="text-3xl font-bold text-gray-900">UML to Code Converter</h1>
-            <p class="mt-1 text-sm text-gray-500">Direct conversion from PlantUML to source code</p>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
+            <h1 class="text-2xl font-bold text-white">{{ 'converter.title'|trans }}</h1>
+            <p class="text-indigo-100 text-sm mt-1">{{ 'converter.subtitle'|trans }}</p>
         </div>
-    </header>
 
-    <main class="flex-grow">
-        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <div class="px-4 py-6 sm:px-0">
-                <div class="bg-white overflow-hidden shadow rounded-lg divide-y divide-gray-200">
-                    <!-- Input Section -->
-                    <div class="px-4 py-5 sm:p-6">
-                        <div class="mb-4">
-                            <label for="uml-input" class="block text-sm font-medium text-gray-700">
-                                PlantUML Code
+        <!-- Content -->
+        <div class="p-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Input Section -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            {{ 'converter.input_label'|trans }}
+                        </label>
+                        <div id="uml-editor" class="border border-gray-300 rounded-md" style="height: 400px;"></div>
+                    </div>
+
+                    <!-- Language Selection -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="language" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ 'converter.language'|trans }}
                             </label>
-                            <textarea id="uml-input" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 uml-editor" rows="10" placeholder="Enter your PlantUML code here...">@startuml
-class User {
-    +id: int
-    -password: string
-    +login(password: string): bool
-}
-
-class Order {
-    +id: int
-    +date: DateTime
-    +calculateTotal(): float
-}
-
-User "1" --> "*" Order: places
-@enduml</textarea>
+                            <select id="language" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                <option value="">{{ 'converter.select_language'|trans }}</option>
+                                <option value="PHP">PHP</option>
+                                <option value="JAVA">Java</option>
+                            </select>
                         </div>
-
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <div>
-                                <label for="language-select" class="block text-sm font-medium text-gray-700">
-                                    Programming Language
-                                </label>
-                                <select id="language-select" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                                    <option value="">Select language...</option>
-                                    {% for language, versions in supported_languages %}
-                                        <option value="{{ language }}">{{ language }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div>
-                                <label for="version-select" class="block text-sm font-medium text-gray-700">
-                                    Language Version
-                                </label>
-                                <select id="version-select" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                                    <option value="">Select version...</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="mt-4 flex justify-end">
-                            <button id="convert-button" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                Convert to Code
-                            </button>
+                        <div>
+                            <label for="version" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ 'converter.version'|trans }}
+                            </label>
+                            <select id="version" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                <option value="">{{ 'converter.select_version'|trans }}</option>
+                            </select>
                         </div>
                     </div>
 
-                    <!-- Results Section -->
-                    <div class="px-4 py-5 sm:p-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-medium leading-6 text-gray-900">Generated Code</h3>
-                            <button id="copy-all-button" type="button" class="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 hidden">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                </svg>
-                                Copy All
-                            </button>
-                        </div>
-                        
-                        <div id="loading" class="mt-4 hidden">
-                            <div class="flex justify-center items-center space-x-2">
-                                <div class="spinner"></div>
-                                <span>Converting to code...</span>
+                    <!-- Convert Button -->
+                    <button id="convert-btn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-200 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        {{ 'converter.convert_button'|trans }}
+                    </button>
+                </div>
+
+                <!-- Output Section -->
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-sm font-medium text-gray-700">
+                                {{ 'converter.output_label'|trans }}
+                            </label>
+                            <div class="flex items-center">
+                                <button id="copy-all-btn" class="text-sm text-indigo-600 hover:text-indigo-500 hidden">
+                                    {{ 'common.copy'|trans }}
+                                </button>
+                                <button id="download-all-btn" class="text-sm text-indigo-600 hover:text-indigo-500 hidden ml-4">
+                                    {{ 'common.download_all'|trans }}
+                                </button>
                             </div>
                         </div>
-                        
-                        <div id="error" class="mt-4 bg-red-50 p-4 rounded-md hidden">
-                            <div class="flex">
-                                <div class="flex-shrink-0">
-                                    <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                    </svg>
-                                </div>
-                                <div class="ml-3">
-                                    <h3 class="text-sm font-medium text-red-800" id="error-message">Error converting UML to code</h3>
+                        <div id="output-container" class="border border-gray-300 rounded-md bg-gray-50 p-4" style="min-height: 400px;">
+                            <div id="output-placeholder" class="text-gray-500 text-center">
+                                {{ 'converter.output_placeholder'|trans }}
+                            </div>
+                            <div id="output-loading" class="hidden">
+                                <div class="flex justify-center items-center h-full">
+                                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div id="generated-code" class="mt-4 results hidden">
-                            <div id="file-container" class="space-y-4"></div>
+                            <div id="output-files" class="hidden space-y-4"></div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Error Alert -->
+            <div id="error-alert" class="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md hidden">
+                <div class="flex">
+                    <svg class="h-5 w-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span id="error-message"></span>
+                </div>
+            </div>
         </div>
-    </main>
+    </div>
 </div>
 {% endblock %}
 
 {% block javascripts %}
+{{ parent() }}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const convertButton = document.getElementById('convert-button');
-    const umlInput = document.getElementById('uml-input');
-    const loadingDiv = document.getElementById('loading');
-    const errorDiv = document.getElementById('error');
-    const errorMessage = document.getElementById('error-message');
-    const copyAllButton = document.getElementById('copy-all-button');
-    const languageSelect = document.getElementById('language-select');
-    const versionSelect = document.getElementById('version-select');
-    const generatedCodeDiv = document.getElementById('generated-code');
-    const fileContainer = document.getElementById('file-container');
-    
-    // Store the supported languages
-    const supportedLanguages = {
-        {% for language, versions in supported_languages %}
-            "{{ language }}": {{ versions|json_encode|raw }},
-        {% endfor %}
+require([
+    'vs/editor/editor.main',
+    'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'
+], function(_, JSZip) {
+    // Initialize UML editor
+    const umlEditor = monaco.editor.create(document.getElementById('uml-editor'), {
+        value: `@startuml
+class User {
+    -id: int
+    -email: string
+    -password: string
+    +login(email: string, password: string): bool
+    +logout(): void
+}
+
+class Order {
+    -id: int
+    -userId: int
+    -total: float
+    -status: string
+    +calculateTotal(): float
+    +updateStatus(status: string): void
+}
+
+User "1" --> "*" Order : places
+@enduml`,
+        language: 'plaintext',
+        theme: 'vs-light',
+        minimap: { enabled: false },
+        automaticLayout: true
+    });
+
+    // Language versions mapping
+    const languageVersions = {
+        'PHP': ['7.4', '8.0'],
+        'JAVA': ['11']
     };
-    
-    // Add event listener for language selection
-    languageSelect.addEventListener('change', function() {
-        const language = this.value;
-        // Clear version select
-        while (versionSelect.options.length > 1) {
-            versionSelect.remove(1);
-        }
+
+    // Handle language selection
+    document.getElementById('language').addEventListener('change', function(e) {
+        const language = e.target.value;
+        const versionSelect = document.getElementById('version');
         
-        if (language && supportedLanguages[language]) {
-            // Add version options
-            supportedLanguages[language].forEach(version => {
+        // Clear versions
+        versionSelect.innerHTML = '<option value="">{{ 'converter.select_version'|trans }}</option>';
+        
+        if (language && languageVersions[language]) {
+            languageVersions[language].forEach(version => {
                 const option = document.createElement('option');
                 option.value = version;
                 option.textContent = version;
                 versionSelect.appendChild(option);
             });
             
-            // Select the first version by default
-            if (supportedLanguages[language].length > 0) {
-                versionSelect.value = supportedLanguages[language][0];
+            // Auto-select first version
+            if (languageVersions[language].length > 0) {
+                versionSelect.value = languageVersions[language][0];
             }
         }
     });
-    
-    // Copy all generated code
-    copyAllButton.addEventListener('click', function() {
-        const fileElements = fileContainer.querySelectorAll('.code-file');
-        const files = {};
-        
-        fileElements.forEach(fileElement => {
-            const filename = fileElement.querySelector('.file-name').textContent;
-            const content = fileElement.querySelector('.file-content').textContent;
-            files[filename] = content;
-        });
-        
-        const textToCopy = Object.entries(files).map(([filename, content]) => {
-            return `// ${filename}\n${content}\n`;
-        }).join('\n');
-        
-        navigator.clipboard.writeText(textToCopy).then(() => {
-            // Temporarily change button text to show success
-            const originalText = copyAllButton.innerHTML;
-            copyAllButton.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-                Copied!
-            `;
-            copyAllButton.classList.remove('text-gray-700', 'bg-white', 'hover:bg-gray-50');
-            copyAllButton.classList.add('text-green-700', 'bg-green-50', 'hover:bg-green-100');
-            
-            setTimeout(() => {
-                copyAllButton.innerHTML = originalText;
-                copyAllButton.classList.remove('text-green-700', 'bg-green-50', 'hover:bg-green-100');
-                copyAllButton.classList.add('text-gray-700', 'bg-white', 'hover:bg-gray-50');
-            }, 2000);
-        }).catch(err => {
-            console.error('Failed to copy text: ', err);
-        });
-    });
-    
-    // Convert UML to code
-    convertButton.addEventListener('click', function() {
-        const umlCode = umlInput.value.trim();
-        const language = languageSelect.value;
-        const version = versionSelect.value;
-        
-        if (!umlCode) {
-            errorDiv.classList.remove('hidden');
-            errorMessage.textContent = 'Please enter some UML code';
+
+    // Convert function
+    document.getElementById('convert-btn').addEventListener('click', async function() {
+        const uml = umlEditor.getValue();
+        const language = document.getElementById('language').value;
+        const version = document.getElementById('version').value;
+
+        if (!uml.trim()) {
+            showError('{{ 'converter.error.empty_uml'|trans }}');
             return;
         }
-        
+
         if (!language) {
-            errorDiv.classList.remove('hidden');
-            errorMessage.textContent = 'Please select a target language';
+            showError('{{ 'converter.error.no_language'|trans }}');
             return;
         }
-        
-        // Show loading, hide errors
-        loadingDiv.classList.remove('hidden');
-        errorDiv.classList.add('hidden');
-        generatedCodeDiv.classList.add('hidden');
-        copyAllButton.classList.add('hidden');
-        
-        // Make API request to convert code
-        fetch('/api/converter/convert', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                uml: umlCode,
-                language: language,
-                version: version
-            })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+
+        // Show loading
+        document.getElementById('output-placeholder').classList.add('hidden');
+        document.getElementById('output-loading').classList.remove('hidden');
+        document.getElementById('output-files').classList.add('hidden');
+        document.getElementById('copy-all-btn').classList.add('hidden');
+        document.getElementById('download-all-btn').classList.add('hidden');
+        hideError();
+
+        try {
+            const response = await fetch('/api/converter/convert', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    uml: uml,
+                    language: language,
+                    version: version
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.error || '{{ 'converter.error.conversion_failed'|trans }}');
             }
-            return response.json();
-        })
-        .then(data => {
-            loadingDiv.classList.add('hidden');
-            
-            if (data.success === false) {
-                errorDiv.classList.remove('hidden');
-                errorMessage.textContent = data.error || 'Error converting UML to code';
-                console.error('API Error:', data);
-                return;
-            }
-            
-            console.log('Response data:', data); // Log the response for debugging
-            
-            // Display generated files
-            fileContainer.innerHTML = ''; // Clear previous files
-            
-            if (data.files && Array.isArray(data.files) && data.files.length > 0) {
-                // Create file elements
-                data.files.forEach(fileData => {
-                    if (typeof fileData === 'object' && fileData.filename && fileData.content) {
-                        const fileDiv = document.createElement('div');
-                        fileDiv.className = 'code-file';
-                        
-                        const headerDiv = document.createElement('div');
-                        headerDiv.className = 'file-header';
-                        
-                        const filenameSpan = document.createElement('span');
-                        filenameSpan.className = 'file-name font-medium';
-                        // Use the full path if available, otherwise just the filename
-                        const displayName = fileData.path ? `${fileData.path}/${fileData.filename}` : fileData.filename;
-                        filenameSpan.textContent = displayName;
-                        
-                        const copyButton = document.createElement('button');
-                        copyButton.className = 'px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded';
-                        copyButton.textContent = 'Copy';
-                        copyButton.addEventListener('click', function() {
-                            navigator.clipboard.writeText(fileData.content).then(() => {
-                                const originalText = copyButton.textContent;
-                                copyButton.textContent = 'Copied!';
-                                copyButton.classList.add('bg-green-200');
-                                
-                                setTimeout(() => {
-                                    copyButton.textContent = originalText;
-                                    copyButton.classList.remove('bg-green-200');
-                                }, 2000);
-                            });
-                        });
-                        
-                        const contentDiv = document.createElement('div');
-                        contentDiv.className = 'file-content';
-                        contentDiv.textContent = fileData.content;
-                        
-                        headerDiv.appendChild(filenameSpan);
-                        headerDiv.appendChild(copyButton);
-                        
-                        fileDiv.appendChild(headerDiv);
-                        fileDiv.appendChild(contentDiv);
-                        
-                        fileContainer.appendChild(fileDiv);
-                    }
-                });
-                
-                // Show generated code and copy button
-                generatedCodeDiv.classList.remove('hidden');
-                copyAllButton.classList.remove('hidden');
-            } else {
-                errorDiv.classList.remove('hidden');
-                errorMessage.textContent = 'No files were generated';
-                console.warn('No files in response:', data);
-            }
-        })
-        .catch(error => {
-            loadingDiv.classList.add('hidden');
-            errorDiv.classList.remove('hidden');
-            errorMessage.textContent = 'Network error: ' + error.message;
-            console.error('Error details:', error);
-        });
+
+            displayFiles(data.files);
+        } catch (error) {
+            showError(error.message);
+            document.getElementById('output-loading').classList.add('hidden');
+            document.getElementById('output-placeholder').classList.remove('hidden');
+        }
     });
+
+    // Display generated files
+    function displayFiles(files) {
+        const container = document.getElementById('output-files');
+        container.innerHTML = '';
+
+        files.forEach((file, index) => {
+            const fileDiv = document.createElement('div');
+            fileDiv.className = 'bg-white rounded-md border border-gray-200 overflow-hidden';
+            fileDiv.innerHTML = `
+                <div class="bg-gray-50 px-4 py-2 border-b border-gray-200 flex justify-between items-center">
+                    <span class="font-medium text-sm text-gray-700">${file.filename}</span>
+                    <div>
+                        <button class="text-sm text-indigo-600 hover:text-indigo-500 mr-2" onclick="copyFile(${index})">
+                            {{ 'common.copy'|trans }}
+                        </button>
+                        <button class="text-sm text-indigo-600 hover:text-indigo-500" onclick="downloadFile(${index})">
+                            {{ 'common.download'|trans }}
+                        </button>
+                    </div>
+                </div>
+                <div id="file-editor-${index}" class="file-editor" style="height: 300px;"></div>
+            `;
+            container.appendChild(fileDiv);
+
+            // Create editor for file
+            setTimeout(() => {
+                monaco.editor.create(document.getElementById(`file-editor-${index}`), {
+                    value: file.content,
+                    language: getMonacoLanguage(file.filename),
+                    theme: 'vs-light',
+                    readOnly: true,
+                    minimap: { enabled: false },
+                    automaticLayout: true
+                });
+            }, 100);
+        });
+
+        // Store files globally for copy functionality
+        window.generatedFiles = files;
+
+        document.getElementById('output-loading').classList.add('hidden');
+        document.getElementById('output-files').classList.remove('hidden');
+        document.getElementById('copy-all-btn').classList.remove('hidden');
+        document.getElementById('download-all-btn').classList.remove('hidden');
+    }
+
+    // Get Monaco language from filename
+    function getMonacoLanguage(filename) {
+        if (filename.endsWith('.php')) return 'php';
+        if (filename.endsWith('.java')) return 'java';
+        if (filename.endsWith('.js')) return 'javascript';
+        if (filename.endsWith('.py')) return 'python';
+        return 'plaintext';
+    }
+
+    // Copy file content
+    window.copyFile = function(index) {
+        if (window.generatedFiles && window.generatedFiles[index]) {
+            navigator.clipboard.writeText(window.generatedFiles[index].content).then(() => {
+                // Show success feedback
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '{{ 'common.copied'|trans }}';
+                btn.classList.add('text-green-600');
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('text-green-600');
+                }, 2000);
+            });
+        }
+    };
+
+    // Copy all files
+    document.getElementById('copy-all-btn').addEventListener('click', function() {
+        if (window.generatedFiles) {
+            const allContent = window.generatedFiles.map(f => 
+                `// ${f.filename}\n${f.content}`
+            ).join('\n\n');
+            
+            navigator.clipboard.writeText(allContent).then(() => {
+                const btn = this;
+                const originalText = btn.textContent;
+                btn.textContent = '{{ 'common.copied'|trans }}';
+                btn.classList.add('text-green-600');
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('text-green-600');
+                }, 2000);
+            });
+        }
+    });
+
+    // Download file
+    window.downloadFile = function(index) {
+        if (window.generatedFiles && window.generatedFiles[index]) {
+            const file = window.generatedFiles[index];
+            const blob = new Blob([file.content], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = file.filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    };
+
+    // Download all files
+    document.getElementById('download-all-btn').addEventListener('click', function() {
+        if (window.generatedFiles) {
+            const zip = new JSZip();
+            window.generatedFiles.forEach(file => {
+                zip.file(file.filename, file.content);
+            });
+            zip.generateAsync({ type: 'blob' }).then(function(content) {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = 'generated_code.zip';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        }
+    });
+
+    // Error handling
+    function showError(message) {
+        document.getElementById('error-message').textContent = message;
+        document.getElementById('error-alert').classList.remove('hidden');
+    }
+
+    function hideError() {
+        document.getElementById('error-alert').classList.add('hidden');
+    }
 });
 </script>
-{% endblock %} 
+{% endblock %}
