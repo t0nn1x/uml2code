@@ -1,4 +1,213 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello World
+{% block title %}{{ 'home.hero.title'|trans }} - UML2Code{% endblock %}
+
+{% block body %}
+<!-- Hero Section -->
+<section class="relative bg-white overflow-hidden">
+    <div class="max-w-7xl mx-auto">
+        <div class="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
+            <svg class="hidden lg:block absolute right-0 inset-y-0 h-full w-48 text-white transform translate-x-1/2" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <polygon points="50,0 100,0 50,100 0,100" />
+            </svg>
+
+            <div class="relative pt-6 px-4 sm:px-6 lg:px-8"></div>
+
+            <main class="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
+                <div class="sm:text-center lg:text-left">
+                    <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+                        <span class="block xl:inline">{{ 'home.hero.title'|trans }}</span>
+                    </h1>
+                    <p class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
+                        {{ 'home.hero.subtitle'|trans }}
+                    </p>
+                    <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
+                        {% if app.user %}
+                            <div class="rounded-md shadow">
+                                <a href="{{ path('app_converter') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
+                                    {{ 'home.hero.cta'|trans }}
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="rounded-md shadow">
+                                <a href="{{ path('app_register') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
+                                    {{ 'home.hero.cta'|trans }}
+                                </a>
+                            </div>
+                            <div class="mt-3 sm:mt-0 sm:ml-3">
+                                <a href="{{ path('app_login') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 md:py-4 md:text-lg md:px-10">
+                                    {{ 'home.hero.login'|trans }}
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <div class="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
+        <div class="h-56 w-full bg-gradient-to-br from-indigo-400 to-purple-600 sm:h-72 md:h-96 lg:w-full lg:h-full flex items-center justify-center">
+            <div class="p-8 max-w-md">
+                <div class="bg-white rounded-lg shadow-xl p-6 transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                    <pre class="text-sm text-gray-800"><code>@startuml
+class User {
+  +id: int
+  +name: string
+  +email: string
+  +login(): bool
+}
+
+class Order {
+  +id: int
+  +total: float
+  +items: Item[]
+}
+
+User "1" --> "*" Order
+@enduml</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-12 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="lg:text-center">
+            <h2 class="text-base text-indigo-600 font-semibold tracking-wide uppercase">{{ 'home.features.title'|trans }}</h2>
+            <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                {{ 'home.features.subtitle'|trans }}
+            </p>
+        </div>
+
+        <div class="mt-10">
+            <dl class="space-y-10 md:space-y-0 md:grid md:grid-cols-3 md:gap-x-8 md:gap-y-10">
+                <!-- Parser Feature -->
+                <div class="relative">
+                    <dt>
+                        <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                        </div>
+                        <p class="ml-16 text-lg leading-6 font-medium text-gray-900">{{ 'home.features.parser.title'|trans }}</p>
+                    </dt>
+                    <dd class="mt-2 ml-16 text-base text-gray-500">
+                        {{ 'home.features.parser.description'|trans }}
+                    </dd>
+                </div>
+
+                <!-- Generator Feature -->
+                <div class="relative">
+                    <dt>
+                        <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                            </svg>
+                        </div>
+                        <p class="ml-16 text-lg leading-6 font-medium text-gray-900">{{ 'home.features.generator.title'|trans }}</p>
+                    </dt>
+                    <dd class="mt-2 ml-16 text-base text-gray-500">
+                        {{ 'home.features.generator.description'|trans }}
+                    </dd>
+                </div>
+
+                <!-- Converter Feature -->
+                <div class="relative">
+                    <dt>
+                        <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <p class="ml-16 text-lg leading-6 font-medium text-gray-900">{{ 'home.features.converter.title'|trans }}</p>
+                    </dt>
+                    <dd class="mt-2 ml-16 text-base text-gray-500">
+                        {{ 'home.features.converter.description'|trans }}
+                    </dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+</section>
+
+<!-- Supported Languages Section -->
+<section class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="lg:text-center">
+            <h2 class="text-base text-indigo-600 font-semibold tracking-wide uppercase">{{ 'home.languages.title'|trans }}</h2>
+            <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                {{ 'home.languages.subtitle'|trans }}
+            </p>
+        </div>
+
+        <div class="mt-10 flex flex-wrap justify-center gap-8">
+            <!-- PHP -->
+            <div class="flex flex-col items-center">
+                <div class="h-20 w-20 rounded-full bg-purple-100 flex items-center justify-center">
+                    <svg class="h-12 w-12 text-purple-600" viewBox="0 0 50 50" fill="currentColor">
+                        <path d="M25 2C12.311 2 2 12.311 2 25s10.311 23 23 23 23-10.311 23-23S37.689 2 25 2zm-7.615 29h-2.82l1.407-7.223c.246-1.26.105-2.153-.42-2.661-.516-.499-1.482-.743-2.952-.743H9.98l-2.312 11.816H4.566L7.666 18h3.102l-.647 3.313h3.245c1.907 0 3.362.391 4.326 1.164.987.791 1.349 2.058.974 3.978L17.385 31zm14.03-11.58c-.245 1.259-.871 2.337-1.862 3.201-.802.701-1.816 1.188-3.016 1.45-.632.138-1.549.207-2.798.207h-2.031l-.994 5.089h-3.103L21.353 18h5.729c1.634 0 2.848.257 3.607.764.407.272.73.635.957 1.076.232.452.318 1.008.243 1.58zm13.02.58h-2.82l1.406-7.223c.246-1.26.105-2.153-.419-2.661-.516-.499-1.482-.743-2.952-.743H38.03l-2.312 11.816h-3.102L35.717 18h3.102l-.647 3.313h3.245c1.907 0 3.362.391 4.326 1.164.987.791 1.349 2.058.975 3.978L44.435 31z"/>
+                    </svg>
+                </div>
+                <span class="mt-2 text-sm font-medium text-gray-700">PHP</span>
+            </div>
+
+            <!-- Java -->
+            <div class="flex flex-col items-center">
+                <div class="h-20 w-20 rounded-full bg-red-100 flex items-center justify-center">
+                    <svg class="h-12 w-12 text-red-600" viewBox="0 0 50 50" fill="currentColor">
+                        <path d="M28.187 0c.054.281-.137 1.328-1.641 3.223-1.5 1.894-3.254 3.254-3.668 2.844-.418-.406.074-2.324 1.578-4.219C25.957-.047 27.879-.344 28.187 0zM23.61 7.227s2.875-1.555 4.914.379c0 0-.672.648-1.727 1.348-1.058.703-2.316 1.543-2.316 2.574 0 1.028 1.152 1.297 2.109 1.524.766.18 1.547.371 1.547.926 0 .722-1.946 1.879-2.832 1.879-1.215 0-2.184-.379-2.184-1.528 0-1.417 1.406-2.644 2.113-3.437.622-.711.942-1.074.711-1.344-.297-.351-1.273-.113-1.953.543-.68.653-1.887 1.739-3.238 1.739-1.16 0-2.242-.454-2.242-1.907C18.512 8.117 23.61 7.227 23.61 7.227zM16.898 36.773c0 .887 1.743 3.168 10.106 3.168s14.539-1.937 14.539-5.105c0-2.059-3.457-2.91-3.457-2.91s1.969.855.551 2.215c-1.148 1.098-6.945 1.098-11.156 1.172-6.101.109-9.488-.609-9.758-.797-.332-.23.035-.523.59-.758.304-.125.75-.312 1.062-.664.481-.543.352-1.399.352-1.399s-2.829 1.313-2.829 4.078zm0 0"/>
+                    </svg>
+                </div>
+                <span class="mt-2 text-sm font-medium text-gray-700">Java</span>
+            </div>
+
+            <!-- Python (Future) -->
+            <div class="flex flex-col items-center opacity-50">
+                <div class="h-20 w-20 rounded-full bg-yellow-100 flex items-center justify-center">
+                    <svg class="h-12 w-12 text-yellow-600" viewBox="0 0 50 50" fill="currentColor">
+                        <path d="M24.047 5c-1.555.005-3.031.135-4.395.385-3.977.73-4.695 2.175-4.695 4.885v3.585h9.39v1.19h-9.39H9.777c-2.73 0-5.12 1.64-5.87 4.755-.865 3.58-.905 5.81 0 9.545.67 2.775 2.27 4.755 5 4.755h3.235v-4.285c0-3.1 2.68-5.835 5.87-5.835h9.375c2.615 0 4.695-2.155 4.695-4.77v-8.94c0-2.545-2.145-4.46-4.695-5.155-1.615-.44-3.295-.64-4.85-.635zm-4.98 2.885c.97 0 1.765.805 1.765 1.795s-.795 1.8-1.765 1.8-1.765-.81-1.765-1.8.795-1.795 1.765-1.795zM39.855 15.045v4.17c0 3.235-2.745 5.95-5.87 5.95h-9.375c-2.57 0-4.695 2.2-4.695 4.77v8.94c0 2.545 2.21 4.04 4.695 4.77 2.975.875 5.825.875 9.375 0 2.36-.58 4.695-1.745 4.695-4.77v-3.585h-9.375v-1.19h9.375 4.695c2.73 0 3.745-1.905 4.695-4.755.98-2.935.94-5.755 0-9.545-.675-2.725-1.965-4.755-4.695-4.755h-3.525zm-5.25 22.59c.97 0 1.765.81 1.765 1.8s-.795 1.795-1.765 1.795-1.765-.805-1.765-1.795.795-1.8 1.765-1.8z"/>
+                    </svg>
+                </div>
+                <span class="mt-2 text-sm font-medium text-gray-500">Python</span>
+                <span class="text-xs text-gray-400">{{ 'common.soon'|trans|default('Soon') }}</span>
+            </div>
+
+            <!-- C# (Future) -->
+            <div class="flex flex-col items-center opacity-50">
+                <div class="h-20 w-20 rounded-full bg-green-100 flex items-center justify-center">
+                    <span class="text-3xl font-bold text-green-600">C#</span>
+                </div>
+                <span class="mt-2 text-sm font-medium text-gray-500">C#</span>
+                <span class="text-xs text-gray-400">{{ 'common.soon'|trans|default('Soon') }}</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="bg-indigo-700">
+    <div class="max-w-2xl mx-auto text-center py-16 px-4 sm:py-20 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
+            <span class="block">{{ 'home.cta.title'|trans }}</span>
+            <span class="block">{{ 'home.cta.subtitle'|trans }}</span>
+        </h2>
+        <p class="mt-4 text-lg leading-6 text-indigo-200">
+            {{ 'home.cta.subtitle'|trans }}
+        </p>
+        {% if not app.user %}
+            <a href="{{ path('app_register') }}" class="mt-8 w-full inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 sm:w-auto">
+                {{ 'home.cta.button'|trans }}
+            </a>
+            <p class="mt-4 text-sm text-indigo-200">
+                {{ 'home.cta.login'|trans|raw }}
+            </p>
+        {% else %}
+            <a href="{{ path('app_converter') }}" class="mt-8 w-full inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 sm:w-auto">
+                {{ 'home.hero.cta'|trans }}
+            </a>
+        {% endif %}
+    </div>
+</section>
 {% endblock %}

@@ -1,7 +1,212 @@
-{# templates/dashboard/index.html.twig #}
 {% extends 'base.html.twig' %}
 
+{% block title %}{{ 'dashboard.title'|trans }} - UML2Code{% endblock %}
+
 {% block body %}
-    <h1>Dashboard</h1>
-    <p>Welcome to your dashboard.</p>
+<div class="min-h-full">
+    <!-- Page header -->
+    <div class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="py-6">
+                <h1 class="text-3xl font-bold text-gray-900">
+                    {{ 'dashboard.welcome'|trans }}, {{ app.user.firstName|default(app.user.email|split('@')[0]) }}!
+                </h1>
+            </div>
+        </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Statistics -->
+        <div class="mb-8">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">{{ 'dashboard.stats.title'|trans }}</h2>
+            <dl class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+                <!-- Diagrams Processed -->
+                <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <dt class="text-sm font-medium text-gray-500 truncate">
+                            {{ 'dashboard.stats.diagrams'|trans }}
+                        </dt>
+                        <dd class="mt-1 text-3xl font-semibold text-gray-900">
+                            <span id="diagrams-count">0</span>
+                        </dd>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-4 sm:px-6">
+                        <div class="text-sm">
+                            <a href="{{ path('app_uml_parser') }}" class="font-medium text-indigo-600 hover:text-indigo-500">
+                                {{ 'nav.parser'|trans }} →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Files Generated -->
+                <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <dt class="text-sm font-medium text-gray-500 truncate">
+                            {{ 'dashboard.stats.files'|trans }}
+                        </dt>
+                        <dd class="mt-1 text-3xl font-semibold text-gray-900">
+                            <span id="files-count">0</span>
+                        </dd>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-4 sm:px-6">
+                        <div class="text-sm">
+                            <a href="{{ path('app_generator') }}" class="font-medium text-indigo-600 hover:text-indigo-500">
+                                {{ 'nav.generator'|trans }} →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last Activity -->
+                <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <dt class="text-sm font-medium text-gray-500 truncate">
+                            {{ 'dashboard.stats.last_activity'|trans }}
+                        </dt>
+                        <dd class="mt-1 text-3xl font-semibold text-gray-900">
+                            {% if app.user.lastLoginAt %}
+                                <span class="text-lg">{{ app.user.lastLoginAt|date('d.m.Y') }}</span>
+                            {% else %}
+                                <span class="text-lg">{{ 'now'|date('d.m.Y') }}</span>
+                            {% endif %}
+                        </dd>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-4 sm:px-6">
+                        <div class="text-sm text-gray-500">
+                            {% if app.user.lastLoginAt %}
+                                {{ app.user.lastLoginAt|date('H:i') }}
+                            {% else %}
+                                {{ 'now'|date('H:i') }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </dl>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="mb-8">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">{{ 'dashboard.quick_actions.title'|trans }}</h2>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <!-- Convert UML to Code -->
+                <div class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                    <div class="flex-shrink-0">
+                        <div class="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center">
+                            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <a href="{{ path('app_converter') }}" class="focus:outline-none">
+                            <span class="absolute inset-0" aria-hidden="true"></span>
+                            <p class="text-sm font-medium text-gray-900">
+                                {{ 'dashboard.quick_actions.convert'|trans }}
+                            </p>
+                            <p class="text-sm text-gray-500 truncate">
+                                PlantUML → Code
+                            </p>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Generate Code -->
+                <div class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                    <div class="flex-shrink-0">
+                        <div class="h-10 w-10 rounded-full bg-purple-500 flex items-center justify-center">
+                            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <a href="{{ path('app_generator') }}" class="focus:outline-none">
+                            <span class="absolute inset-0" aria-hidden="true"></span>
+                            <p class="text-sm font-medium text-gray-900">
+                                {{ 'dashboard.quick_actions.generate'|trans }}
+                            </p>
+                            <p class="text-sm text-gray-500 truncate">
+                                JSON → Code
+                            </p>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Parse UML -->
+                <div class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                    <div class="flex-shrink-0">
+                        <div class="h-10 w-10 rounded-full bg-green-500 flex items-center justify-center">
+                            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <a href="{{ path('app_uml_parser') }}" class="focus:outline-none">
+                            <span class="absolute inset-0" aria-hidden="true"></span>
+                            <p class="text-sm font-medium text-gray-900">
+                                {{ 'dashboard.quick_actions.parse'|trans }}
+                            </p>
+                            <p class="text-sm text-gray-500 truncate">
+                                PlantUML → JSON
+                            </p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-white shadow overflow-hidden sm:rounded-md">
+            <div class="px-4 py-5 sm:px-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    {{ 'dashboard.recent_activity'|trans|default('Recent Activity') }}
+                </h3>
+            </div>
+            <ul class="divide-y divide-gray-200" id="activity-list">
+                <li class="px-4 py-4 sm:px-6 text-center text-gray-500">
+                    <p>{{ 'dashboard.no_activity'|trans|default('No recent activity') }}</p>
+                </li>
+            </ul>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load statistics from localStorage (for demo purposes)
+    // In a real application, these would come from the backend
+    const stats = {
+        diagrams: localStorage.getItem('uml2code_diagrams_count') || 0,
+        files: localStorage.getItem('uml2code_files_count') || 0
+    };
+    
+    document.getElementById('diagrams-count').textContent = stats.diagrams;
+    document.getElementById('files-count').textContent = stats.files;
+    
+    // Animate numbers
+    animateValue('diagrams-count', 0, parseInt(stats.diagrams), 1000);
+    animateValue('files-count', 0, parseInt(stats.files), 1000);
+});
+
+function animateValue(id, start, end, duration) {
+    if (start === end) return;
+    const range = end - start;
+    const increment = end > start ? 1 : -1;
+    const stepTime = Math.abs(Math.floor(duration / range));
+    const obj = document.getElementById(id);
+    let current = start;
+    const timer = setInterval(function() {
+        current += increment;
+        obj.textContent = current;
+        if (current == end) {
+            clearInterval(timer);
+        }
+    }, stepTime);
+}
+</script>
 {% endblock %}
