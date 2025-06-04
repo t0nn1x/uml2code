@@ -323,7 +323,7 @@ require([
                             <div class="bg-gray-50 px-4 py-2 border-b border-gray-200 flex justify-between items-center">
                                 <span class="file-name font-medium text-sm text-gray-700">${fileData.filename}</span>
                                 <div>
-                                    <button class="text-sm text-indigo-600 hover:text-indigo-500 mr-2" onclick="copyFile(${index})">
+                                    <button class="text-sm text-indigo-600 hover:text-indigo-500 mr-2" onclick="copyFile(${index}, this)">
                                         {{ 'common.copy'|trans }}
                                     </button>
                                     <button class="text-sm text-indigo-600 hover:text-indigo-500" onclick="downloadFile(${index})">
@@ -374,16 +374,15 @@ require([
     }
 
     // Copy file content
-    window.copyFile = function(index) {
+    window.copyFile = function(index, buttonElement) {
         if (window.generatedFiles && window.generatedFiles[index]) {
             navigator.clipboard.writeText(window.generatedFiles[index].content).then(() => {
-                const btn = event.target;
-                const originalText = btn.textContent;
-                btn.textContent = '{{ 'common.copied'|trans }}';
-                btn.classList.add('text-green-600');
+                const originalText = buttonElement.textContent;
+                buttonElement.textContent = '{{ 'common.copied'|trans }}';
+                buttonElement.classList.add('text-green-600');
                 setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.classList.remove('text-green-600');
+                    buttonElement.textContent = originalText;
+                    buttonElement.classList.remove('text-green-600');
                 }, 2000);
             });
         }
