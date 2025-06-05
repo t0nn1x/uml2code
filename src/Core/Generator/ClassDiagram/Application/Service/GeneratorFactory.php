@@ -7,6 +7,10 @@ use App\Core\Generator\ClassDiagram\Domain\Model\CodeGenerator;
 use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Java\Java11CodeGenerator;
 use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Php\Php74CodeGenerator;
 use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Php\Php80CodeGenerator;
+use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Php\Php81CodeGenerator;
+use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Php\Php82CodeGenerator;
+use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Php\Php83CodeGenerator;
+use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Php\Php84CodeGenerator;
 
 /**
  * Factory for creating code generator instances
@@ -33,6 +37,14 @@ class GeneratorFactory
                     return new Php74CodeGenerator($diagram, $language, $version);
                 } elseif (version_compare($version, '8.0', '>=') && version_compare($version, '8.1', '<')) {
                     return new Php80CodeGenerator($diagram, $language, $version);
+                } elseif (version_compare($version, '8.1', '>=') && version_compare($version, '8.2', '<')) {
+                    return new Php81CodeGenerator($diagram, $language, $version);
+                } elseif (version_compare($version, '8.2', '>=') && version_compare($version, '8.3', '<')) {
+                    return new Php82CodeGenerator($diagram, $language, $version);
+                } elseif (version_compare($version, '8.3', '>=') && version_compare($version, '8.4', '<')) {
+                    return new Php83CodeGenerator($diagram, $language, $version);
+                } elseif (version_compare($version, '8.4', '>=') && version_compare($version, '8.5', '<')) {
+                    return new Php84CodeGenerator($diagram, $language, $version);
                 }
                 break;
                 
@@ -59,7 +71,7 @@ class GeneratorFactory
     public function getSupportedLanguages(): array
     {
         return [
-            'PHP' => ['7.4', '8.0'],
+            'PHP' => ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4'],
             'JAVA' => ['11'],
             // Add more languages here as they are implemented
         ];
