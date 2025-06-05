@@ -85,6 +85,9 @@
                                     <a href="{{ path('app_dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         {{ 'nav.dashboard'|trans }}
                                     </a>
+                                    <button onclick="window.HistoryManager && window.HistoryManager.open('general')" class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        {{ 'nav.history'|trans }}
+                                    </button>
                                     <a href="{{ path('app_logout') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         {{ 'nav.logout'|trans }}
                                     </a>
@@ -230,6 +233,9 @@
         </div>
     </footer>
 
+    <!-- History Modal - available on all pages -->
+    {% include 'history/moda.html.twig' %}
+
     <!-- Monaco Editor Loader -->
     <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
     
@@ -291,6 +297,12 @@
         });
     </script>
 
+    <!-- JSZip for history export functionality -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
+    <!-- History management - available on all pages -->
+    <script src="{{ asset('js/history.js') }}"></script>
+    
     {% block javascripts %}{% endblock %}
 </body>
 </html>

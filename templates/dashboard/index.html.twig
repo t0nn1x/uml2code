@@ -172,41 +172,11 @@
         </div>
     </main>
 </div>
+
 {% endblock %}
 
 {% block javascripts %}
-{{ parent() }}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Load statistics from localStorage (for demo purposes)
-    // In a real application, these would come from the backend
-    const stats = {
-        diagrams: localStorage.getItem('uml2code_diagrams_count') || 0,
-        files: localStorage.getItem('uml2code_files_count') || 0
-    };
-    
-    document.getElementById('diagrams-count').textContent = stats.diagrams;
-    document.getElementById('files-count').textContent = stats.files;
-    
-    // Animate numbers
-    animateValue('diagrams-count', 0, parseInt(stats.diagrams), 1000);
-    animateValue('files-count', 0, parseInt(stats.files), 1000);
-});
-
-function animateValue(id, start, end, duration) {
-    if (start === end) return;
-    const range = end - start;
-    const increment = end > start ? 1 : -1;
-    const stepTime = Math.abs(Math.floor(duration / range));
-    const obj = document.getElementById(id);
-    let current = start;
-    const timer = setInterval(function() {
-        current += increment;
-        obj.textContent = current;
-        if (current == end) {
-            clearInterval(timer);
-        }
-    }, stepTime);
-}
-</script>
+    {{ parent() }}
+    <!-- Dashboard management -->
+    <script src="{{ asset('js/dashboard.js') }}"></script>
 {% endblock %}
