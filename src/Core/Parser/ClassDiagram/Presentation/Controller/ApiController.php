@@ -4,11 +4,14 @@ namespace App\Core\Parser\ClassDiagram\Presentation\Controller;
 
 use App\Core\Parser\ClassDiagram\Application\Service\UmlParserService;
 use App\Core\Parser\ClassDiagram\Domain\Exception\ParserException;
+use App\Service\ActionHistoryService;
+use App\Entity\ActionHistory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * API Controller for UML parsing endpoints
@@ -22,19 +25,29 @@ class ApiController extends AbstractController
     private UmlParserService $parserService;
 
     /**
+     * @var ActionHistoryService The action history service
+     */
+    private ActionHistoryService $historyService;
+
+    /**
      * Create a new UML API controller
      *
      * @param UmlParserService $parserService The UML parser service
+     * @param ActionHistoryService $historyService The action history service
      */
-    public function __construct(UmlParserService $parserService)
-    {
+    public function __construct(
+        UmlParserService $parserService,
+        ActionHistoryService $historyService
+    ) {
         $this->parserService = $parserService;
+        $this->historyService = $historyService;
     }
 
     /**
      * Parse UML content into JSON
      */
     #[Route('/parse', name: 'api_uml_parse', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
     public function parse(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -54,6 +67,22 @@ class ApiController extends AbstractController
 
             // Clean the array (remove duplicates)
             $diagram = $this->parserService->cleanDiagramArray($diagram);
+
+            // Record in history - store the parsed JSON as a single file
+            $user = $this->getUser();
+            if ($user) {
+                $files = [[
+                    'filename' => 'parsed_diagram.json',
+                    'content' => json_encode($diagram, JSON_PRETTY_PRINT)
+                ]];
+
+                $this->historyService->record(
+                    $user,
+                    ActionHistory::ACTION_PARSE,
+                    $files,
+                    'ClassDiagram'
+                );
+            }
 
             return $this->json([
                 'success' => true,
