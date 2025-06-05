@@ -32,8 +32,6 @@
             window.require = originalRequire;
         }
         
-        console.log('JSZip loaded globally via wrapper');
-        
         // Dispatch a custom event to notify that JSZip is ready
         if (window.JSZip) {
             window.dispatchEvent(new CustomEvent('jszipReady', { detail: window.JSZip }));
@@ -49,19 +47,15 @@
             window.require = originalRequire;
         }
         
-        console.error('Failed to load JSZip via wrapper');
-        
         // Try fallback to local file
         var fallbackScript = document.createElement('script');
         fallbackScript.src = '/js/lib/jszip.min.js';
         fallbackScript.onload = function() {
-            console.log('JSZip loaded from local fallback via wrapper');
             if (window.JSZip) {
                 window.dispatchEvent(new CustomEvent('jszipReady', { detail: window.JSZip }));
             }
         };
         fallbackScript.onerror = function() {
-            console.error('JSZip wrapper: both CDN and local failed');
             window.dispatchEvent(new CustomEvent('jszipError', { detail: 'Failed to load JSZip' }));
         };
         document.head.appendChild(fallbackScript);
