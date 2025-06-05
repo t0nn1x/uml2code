@@ -19,7 +19,7 @@
         <!-- Statistics -->
         <div class="mb-8">
             <h2 class="text-lg font-medium text-gray-900 mb-4">{{ 'dashboard.stats.title'|trans }}</h2>
-            <dl class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+            <dl class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 <!-- Diagrams Processed -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="px-4 py-5 sm:p-6">
@@ -58,31 +58,71 @@
                     </div>
                 </div>
 
-                <!-- Last Activity -->
+                <!-- Lines of Code -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="px-4 py-5 sm:p-6">
                         <dt class="text-sm font-medium text-gray-500 truncate">
-                            {{ 'dashboard.stats.last_activity'|trans }}
+                            {{ 'dashboard.stats.lines_of_code'|trans }}
                         </dt>
                         <dd class="mt-1 text-3xl font-semibold text-gray-900">
-                            {% if app.user.lastLoginAt %}
-                                <span class="text-lg">{{ app.user.lastLoginAt|date('d.m.Y') }}</span>
-                            {% else %}
-                                <span class="text-lg">{{ 'now'|date('d.m.Y') }}</span>
-                            {% endif %}
+                            <span id="lines-count">0</span>
+                        </dd>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-4 sm:px-6">
+                        <div class="text-sm text-gray-500">
+                            {{ 'dashboard.stats.total_generated'|trans }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Actions -->
+                <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <dt class="text-sm font-medium text-gray-500 truncate">
+                            {{ 'dashboard.stats.total_actions'|trans }}
+                        </dt>
+                        <dd class="mt-1 text-3xl font-semibold text-gray-900">
+                            <span id="total-actions-count">0</span>
                         </dd>
                     </div>
                     <div class="bg-gray-50 px-4 py-4 sm:px-6">
                         <div class="text-sm text-gray-500">
                             {% if app.user.lastLoginAt %}
-                                {{ app.user.lastLoginAt|date('H:i') }}
+                                {{ 'dashboard.stats.last_login'|trans }}: {{ app.user.lastLoginAt|date('d.m.Y H:i') }}
                             {% else %}
-                                {{ 'now'|date('H:i') }}
+                                {{ 'dashboard.stats.first_time'|trans }}
                             {% endif %}
                         </div>
                     </div>
                 </div>
             </dl>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Activity Trends Chart -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="px-4 py-5 sm:p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">{{ 'dashboard.charts.activity_trends'|trans }}</h3>
+                    <div class="h-64" id="activity-trends-chart">
+                        <div class="flex items-center justify-center h-full">
+                            <div class="text-gray-500">{{ 'dashboard.loading'|trans }}...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Language Usage Chart -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="px-4 py-5 sm:p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">{{ 'dashboard.charts.language_usage'|trans }}</h3>
+                    <div class="h-64" id="language-usage-chart">
+                        <div class="flex items-center justify-center h-full">
+                            <div class="text-gray-500">{{ 'dashboard.loading'|trans }}...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Quick Actions -->
@@ -177,6 +217,8 @@
 
 {% block javascripts %}
     {{ parent() }}
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Dashboard management -->
     <script src="{{ asset('js/dashboard.js') }}"></script>
 {% endblock %}
