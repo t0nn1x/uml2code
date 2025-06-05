@@ -100,13 +100,17 @@ class PlantUmlParser implements ClassDiagramParserInterface
 
             if (strpos($line, 'title ') === 0) {
                 $this->parseTitle($line);
+                $this->currentLine++;
             } elseif (preg_match('/^(class|abstract\s+class|interface|enum)\s+(\w+)/', $line, $matches)) {
                 $this->parseClassElement($matches[1], $matches[2]);
+                // parseClassElement handles its own line counter, so don't increment here
             } elseif ($this->isRelationship($line)) {
                 $this->relationships[] = $line;
+                $this->currentLine++;
+            } else {
+                // Unknown line, just skip it
+                $this->currentLine++;
             }
-
-            $this->currentLine++;
         }
 
         // Process relationships
@@ -306,10 +310,30 @@ class PlantUmlParser implements ClassDiagramParserInterface
             $classElement->setTypeParameters($typeParams);
         }
 
-        // Check if there's a class body
+        // Check if there's a class body on the same line
         if (strpos($line, '{') !== false) {
+            // Check if it's an empty class body (both { and } on the same line)
+            if (strpos($line, '}') !== false) {
+                // Empty class body, no need to parse anything
+                $this->currentLine++; // Move to the next line
+            } else {
+                // Class body starts on this line, parse it
+                $this->currentLine++; // Move to the next line
+                $this->parseClassBody($classElement);
+            }
+        } else {
+            // Look for the opening brace on the next line
             $this->currentLine++; // Move to the next line
-            $this->parseClassBody($classElement);
+            if ($this->currentLine < count($this->lines)) {
+                $nextLine = trim($this->lines[$this->currentLine]);
+                if ($nextLine === '{') {
+                    $this->currentLine++; // Move past the opening brace
+                    $this->parseClassBody($classElement);
+                } else {
+                    // No class body found, currentLine is already positioned correctly
+                    // for the next iteration (pointing to the line after the class declaration)
+                }
+            }
         }
 
         // Add the class to the diagram
@@ -334,6 +358,7 @@ class PlantUmlParser implements ClassDiagramParserInterface
 
             // End of class body
             if ($line === '}') {
+                $this->currentLine++; // Move past the closing brace
                 return;
             }
 
@@ -341,35 +366,10 @@ class PlantUmlParser implements ClassDiagramParserInterface
             if (strpos($line, '(') !== false && strpos($line, ')') !== false) {
                 $this->parseMethod($line, $classElement);
             } else {
-                // Check if this is an enum with default value
-                if ($classElement->getType() === 'enum' && strpos($line, '=') !== false) {
-                    $this->parseEnumWithValue($line, $classElement);
-                } else {
-                    $this->parseAttribute($line, $classElement);
-                }
+                $this->parseAttribute($line, $classElement);
             }
 
             $this->currentLine++;
-        }
-    }
-
-    /**
-     * Parse an enum value with default value
-     *
-     * @param string $line The line containing the enum value
-     * @param ClassElement $classElement The enum to add the value to
-     */
-    private function parseEnumWithValue(string $line, ClassElement $classElement): void
-    {
-        // Pattern: ENUM_VALUE = value
-        if (preg_match('/^(\w+)\s*=\s*(.+)$/', $line, $matches)) {
-            $name = $matches[1];
-            $value = trim($matches[2]);
-
-            $attribute = Attribute::fromParsed($name, 'public');
-            $attribute->setDefaultValue($value);
-
-            $classElement->addAttribute($attribute);
         }
     }
 
@@ -384,6 +384,21 @@ class PlantUmlParser implements ClassDiagramParserInterface
         // Skip section separator lines
         if (preg_match('/^[-_.=]{2,}$/', $line)) {
             return;
+        }
+
+        // Special handling for enum values
+        if ($classElement->getType() === 'enum') {
+            // For enums, handle simple values like "RED" or "LOW = 1"
+            if (preg_match('/^(\w+)(?:\s*=\s*(.+))?$/', $line, $matches)) {
+                $enumValue = [
+                    'name' => $matches[1],
+                    'value' => isset($matches[2]) ? trim($matches[2]) : null
+                ];
+                
+                // Add to enum values instead of attributes
+                $classElement->addEnumValue($enumValue);
+                return;
+            }
         }
 
         // Visibility pattern: +, -, #, or ~ followed by name: type (with potential generics)
@@ -431,6 +446,11 @@ class PlantUmlParser implements ClassDiagramParserInterface
             $name = $matches[2];
             $paramsStr = trim($matches[3]);
             $returnType = isset($matches[4]) ? trim($matches[4]) : null;
+
+            // Force public visibility for interface methods
+            if ($classElement->getType() === 'interface') {
+                $visibility = 'public';
+            }
 
             $method = Method::fromParsed($name, $visibility, $returnType);
 
