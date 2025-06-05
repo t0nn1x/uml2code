@@ -85,11 +85,19 @@ class ApiController extends AbstractController
             // Record in history
             $user = $this->getUser();
             if ($user) {
+                $metadata = [
+                    'programmingLanguage' => $language,
+                    'generatorVersion' => $version,
+                    'diagramName' => $data['diagramName'] ?? null,
+                    'diagramSize' => substr_count($umlContent, 'class ') + substr_count($umlContent, 'interface ')
+                ];
+
                 $this->historyService->record(
                     $user,
                     ActionHistory::ACTION_CONVERT,
                     $generatedFiles,
-                    'ClassDiagram'
+                    'ClassDiagram',
+                    $metadata
                 );
             }
 
@@ -165,11 +173,19 @@ class ApiController extends AbstractController
             // Record in history
             $user = $this->getUser();
             if ($user) {
+                $metadata = [
+                    'programmingLanguage' => $language,
+                    'generatorVersion' => $version,
+                    'diagramName' => $data['diagramName'] ?? null,
+                    'diagramSize' => substr_count($umlContent, 'class ') + substr_count($umlContent, 'interface ')
+                ];
+
                 $this->historyService->record(
                     $user,
                     ActionHistory::ACTION_CONVERT,
                     $generatedFiles,
-                    'ClassDiagram'
+                    'ClassDiagram',
+                    $metadata
                 );
             }
 

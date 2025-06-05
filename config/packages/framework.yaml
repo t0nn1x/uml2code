@@ -18,8 +18,8 @@ framework:
         log: true
 
     # Locale configuration
-    default_locale: uk
-    enabled_locales: ['uk', 'en']
+    default_locale: en
+    enabled_locales: ['en', 'uk']
     
 when@test:
     framework:

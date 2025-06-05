@@ -76,11 +76,17 @@ class ApiController extends AbstractController
                     'content' => json_encode($diagram, JSON_PRETTY_PRINT)
                 ]];
 
+                $metadata = [
+                    'diagramName' => $data['diagramName'] ?? null,
+                    'diagramSize' => substr_count($umlContent, 'class ') + substr_count($umlContent, 'interface ')
+                ];
+
                 $this->historyService->record(
                     $user,
                     ActionHistory::ACTION_PARSE,
                     $files,
-                    'ClassDiagram'
+                    'ClassDiagram',
+                    $metadata
                 );
             }
 

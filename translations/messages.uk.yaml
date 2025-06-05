@@ -83,11 +83,22 @@ home:
 dashboard:
   title: "Панель керування"
   welcome: "Ласкаво просимо"
+  loading: "Завантаження"
+  no_activity: "Немає нещодавньої активності"
+  recent_activity: "Нещодавня активність"
   stats:
     title: "Ваша статистика"
     diagrams: "Діаграм оброблено"
-    files: "Файлів згенеровано"
+    files: "Файлів конвертовано"
+    lines_of_code: "Рядків коду"
+    total_actions: "Всього дій"
+    total_generated: "Всього згенеровано"
+    last_login: "Останній вхід"
+    first_time: "Вперше тут"
     last_activity: "Остання активність"
+  charts:
+    activity_trends: "Тенденції активності (30 днів)"
+    language_usage: "Використання мов"
   quick_actions:
     title: "Швидкі дії"
     convert: "Конвертувати UML в код"

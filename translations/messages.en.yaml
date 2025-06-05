@@ -83,11 +83,22 @@ home:
 dashboard:
   title: "Dashboard"
   welcome: "Welcome"
+  loading: "Loading"
+  no_activity: "No recent activity"
+  recent_activity: "Recent Activity"
   stats:
     title: "Your Statistics"
     diagrams: "Diagrams Processed"
-    files: "Files Generated"
+    files: "Files Converted"
+    lines_of_code: "Lines of Code"
+    total_actions: "Total Actions"
+    total_generated: "Total Generated"
+    last_login: "Last login"
+    first_time: "First time here"
     last_activity: "Last Activity"
+  charts:
+    activity_trends: "Activity Trends (30 days)"
+    language_usage: "Language Usage"
   quick_actions:
     title: "Quick Actions"
     convert: "Convert UML to Code"

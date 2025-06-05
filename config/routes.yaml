@@ -15,9 +15,9 @@ controllers:
     type: attribute
     prefix: /{_locale}
     requirements:
-        _locale: uk|en
+        _locale: en|uk
     defaults:
-        _locale: uk
+        _locale: en
 
 # Core API routes without locale
 api_parser_routes:
@@ -37,27 +37,27 @@ web_parser_routes:
     type: attribute
     prefix: /{_locale}
     requirements:
-        _locale: uk|en
+        _locale: en|uk
     defaults:
-        _locale: uk
+        _locale: en
 
 web_generator_routes:
     resource: '../src/Core/Generator/ClassDiagram/Presentation/Controller/WebController.php'
     type: attribute
     prefix: /{_locale}
     requirements:
-        _locale: uk|en
+        _locale: en|uk
     defaults:
-        _locale: uk
+        _locale: en
 
 web_converter_routes:
     resource: '../src/Core/Converter/ClassDiagram/Presentation/Controller/WebController.php'
     type: attribute
     prefix: /{_locale}
     requirements:
-        _locale: uk|en
+        _locale: en|uk
     defaults:
-        _locale: uk
+        _locale: en
 
 
 # Root redirect
@@ -65,5 +65,5 @@ index:
     path: /
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::urlRedirectAction
     defaults:
-        path: /uk
+        path: /en
         permanent: false

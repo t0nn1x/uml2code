@@ -77,11 +77,19 @@ class ApiController extends AbstractController
             // Record in history
             $user = $this->getUser();
             if ($user) {
+                $metadata = [
+                    'programmingLanguage' => $language,
+                    'generatorVersion' => $version,
+                    'diagramName' => $data['diagramName'] ?? null,
+                    'diagramSize' => isset($diagram['classes']) ? count($diagram['classes']) : null
+                ];
+
                 $this->historyService->record(
                     $user,
                     ActionHistory::ACTION_GENERATE,
                     $generatedFiles,
-                    'ClassDiagram'
+                    'ClassDiagram',
+                    $metadata
                 );
             }
 

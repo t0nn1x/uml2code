@@ -28,9 +28,10 @@ class ActionHistoryService
      * @param string $actionType The type of action (convert, parse, generate)
      * @param array $files Array of files with 'filename' and 'content' keys
      * @param string $diagramType The type of diagram (default: ClassDiagram)
+     * @param array $metadata Additional metadata (programmingLanguage, generatorVersion, etc.)
      * @return ActionHistory The created history entry
      */
-    public function record(User $user, string $actionType, array $files, string $diagramType = 'ClassDiagram'): ActionHistory
+    public function record(User $user, string $actionType, array $files, string $diagramType = 'ClassDiagram', array $metadata = []): ActionHistory
     {
         // Create new history entry
         $history = new ActionHistory();
@@ -38,6 +39,25 @@ class ActionHistoryService
         $history->setActionType($actionType);
         $history->setDiagramType($diagramType);
         $history->setFiles($files);
+
+        // Set additional metadata
+        if (isset($metadata['programmingLanguage'])) {
+            $history->setProgrammingLanguage($metadata['programmingLanguage']);
+        }
+        if (isset($metadata['generatorVersion'])) {
+            $history->setGeneratorVersion($metadata['generatorVersion']);
+        }
+        if (isset($metadata['diagramName'])) {
+            $history->setDiagramName($metadata['diagramName']);
+        }
+        if (isset($metadata['diagramSize'])) {
+            $history->setDiagramSize($metadata['diagramSize']);
+        }
+        if (isset($metadata['totalLinesOfCode'])) {
+            $history->setTotalLinesOfCode($metadata['totalLinesOfCode']);
+        } else {
+            $history->calculateTotalLinesOfCode();
+        }
 
         // Save the entry
         $this->repository->save($history, true);
@@ -117,5 +137,52 @@ class ActionHistoryService
         }
 
         return null;
+    }
+
+    /**
+     * Get comprehensive dashboard statistics for a user
+     *
+     * @param User $user The user
+     * @return array Comprehensive statistics
+     */
+    public function getDashboardStatistics(User $user): array
+    {
+        $basicStats = $this->repository->getStatsByUser($user);
+        $languageStats = $this->repository->getLanguageStatsByUser($user);
+        $dailyStats = $this->repository->getDailyActivityByUser($user, 30);
+        $totalLines = $this->repository->getTotalLinesOfCodeByUser($user);
+        $totalFiles = $this->repository->getTotalFilesByUser($user);
+
+        return [
+            'basic' => $basicStats,
+            'languages' => $languageStats,
+            'daily_activity' => $dailyStats,
+            'total_lines_of_code' => $totalLines,
+            'total_files' => $totalFiles,
+            'last_activity' => $this->repository->getLastActivityByUser($user)
+        ];
+    }
+
+    /**
+     * Get activity trends for a user
+     *
+     * @param User $user The user
+     * @param int $days Number of days to look back
+     * @return array Time-series data for charts
+     */
+    public function getActivityTrends(User $user, int $days = 30): array
+    {
+        return $this->repository->getDailyActivityByUser($user, $days);
+    }
+
+    /**
+     * Get language usage statistics for a user
+     *
+     * @param User $user The user
+     * @return array Language usage breakdown
+     */
+    public function getLanguageStatistics(User $user): array
+    {
+        return $this->repository->getLanguageStatsByUser($user);
     }
 }

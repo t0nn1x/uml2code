@@ -41,6 +41,21 @@ class ActionHistory
     #[ORM\Column(type: 'datetime_immutable')]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $programmingLanguage = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $generatorVersion = null;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $totalLinesOfCode = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $diagramName = null;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $diagramSize = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -136,5 +151,81 @@ class ActionHistory
     public function getFileNames(): array
     {
         return array_map(fn($file) => $file['filename'], $this->files);
+    }
+
+    public function getProgrammingLanguage(): ?string
+    {
+        return $this->programmingLanguage;
+    }
+
+    public function setProgrammingLanguage(?string $programmingLanguage): static
+    {
+        $this->programmingLanguage = $programmingLanguage;
+
+        return $this;
+    }
+
+    public function getGeneratorVersion(): ?string
+    {
+        return $this->generatorVersion;
+    }
+
+    public function setGeneratorVersion(?string $generatorVersion): static
+    {
+        $this->generatorVersion = $generatorVersion;
+
+        return $this;
+    }
+
+    public function getTotalLinesOfCode(): ?int
+    {
+        return $this->totalLinesOfCode;
+    }
+
+    public function setTotalLinesOfCode(?int $totalLinesOfCode): static
+    {
+        $this->totalLinesOfCode = $totalLinesOfCode;
+
+        return $this;
+    }
+
+    public function getDiagramName(): ?string
+    {
+        return $this->diagramName;
+    }
+
+    public function setDiagramName(?string $diagramName): static
+    {
+        $this->diagramName = $diagramName;
+
+        return $this;
+    }
+
+    public function getDiagramSize(): ?int
+    {
+        return $this->diagramSize;
+    }
+
+    public function setDiagramSize(?int $diagramSize): static
+    {
+        $this->diagramSize = $diagramSize;
+
+        return $this;
+    }
+
+    /**
+     * Calculate total lines of code from files if not set
+     */
+    public function calculateTotalLinesOfCode(): void
+    {
+        if ($this->totalLinesOfCode === null && !empty($this->files)) {
+            $totalLines = 0;
+            foreach ($this->files as $file) {
+                if (isset($file['content'])) {
+                    $totalLines += substr_count($file['content'], "\n") + 1;
+                }
+            }
+            $this->totalLinesOfCode = $totalLines;
+        }
     }
 }
