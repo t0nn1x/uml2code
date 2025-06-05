@@ -53,6 +53,11 @@ class ClassElement
     private array $stereotypes = [];
 
     /**
+     * @var array List of enum values (for enum types only)
+     */
+    private array $enumValues = [];
+
+    /**
      * Create a new class element
      *
      * @param string $name Name of the class element
@@ -253,6 +258,40 @@ class ClassElement
     }
 
     /**
+     * Add an enum value
+     *
+     * @param array $enumValue The enum value to add
+     * @return self
+     */
+    public function addEnumValue(array $enumValue): self
+    {
+        $this->enumValues[] = $enumValue;
+        return $this;
+    }
+
+    /**
+     * Get all enum values
+     *
+     * @return array
+     */
+    public function getEnumValues(): array
+    {
+        return $this->enumValues;
+    }
+
+    /**
+     * Set enum values
+     *
+     * @param array $enumValues Array of enum values
+     * @return self
+     */
+    public function setEnumValues(array $enumValues): self
+    {
+        $this->enumValues = $enumValues;
+        return $this;
+    }
+
+    /**
      * Convert to an array representation
      *
      * @return array
@@ -295,6 +334,11 @@ class ClassElement
             $methods[] = $method->toArray();
         }
         $result['methods'] = $methods;
+
+        // Add enum values for enum types
+        if (!empty($this->enumValues)) {
+            $result['enumValues'] = $this->enumValues;
+        }
 
         return $result;
     }
