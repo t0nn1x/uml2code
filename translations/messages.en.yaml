@@ -7,6 +7,34 @@ nav:
   login: "Login"
   logout: "Logout"
   register: "Register"
+  history: "History"
+
+# History
+history:
+    title: "Action History"
+    button: "History"
+    loading: "Loading history..."
+    empty: "No history found"
+    
+    tabs:
+        all: "All Actions"
+        converter: "Converter"
+        parser: "Parser"
+        generator: "Generator"
+    
+    table:
+        date: "Date"
+        action: "Action"
+        diagram_type: "Diagram Type"
+        files: "Files"
+        actions: "Actions"
+    
+    detail:
+        title: "History Detail"
+    
+    error:
+        load_failed: "Failed to load history"
+        network: "Network error"
 
 # Footer
 footer:
@@ -124,6 +152,7 @@ common:
   edit: "Edit"
   back: "Back"
   next: "Next"
+  close: "Close"
   copy: "Copy"
   copied: "Copied!"
   download: "Download"
