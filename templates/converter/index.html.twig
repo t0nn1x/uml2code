@@ -41,8 +41,9 @@
                             </label>
                             <select id="language" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                                 <option value="">{{ 'converter.select_language'|trans }}</option>
-                                <option value="PHP">PHP</option>
-                                <option value="JAVA">Java</option>
+                                {% for language, versions in supported_languages %}
+                                    <option value="{{ language }}">{{ language }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div>
@@ -146,8 +147,9 @@ User "1" --> "*" Order : places
 
     // Language versions mapping
     const languageVersions = {
-        'PHP': ['7.4', '8.0'],
-        'JAVA': ['11']
+        {% for language, versions in supported_languages %}
+            "{{ language }}": {{ versions|json_encode|raw }},
+        {% endfor %}
     };
 
     // Handle language selection
