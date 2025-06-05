@@ -13,7 +13,7 @@ use Psr\Log\LoggerInterface;
  */
 class ActionHistoryService
 {
-    private const MAX_ENTRIES_PER_ACTION = 30;
+    private const MAX_ENTRIES_PER_ACTION = 20;
 
     public function __construct(
         private readonly ActionHistoryRepository $repository,
