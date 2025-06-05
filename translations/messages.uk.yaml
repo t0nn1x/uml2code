@@ -7,6 +7,34 @@ nav:
   login: "Увійти"
   logout: "Вийти"
   register: "Реєстрація"
+  history: "Історія"
+
+# History
+history:
+    title: "Історія дій"
+    button: "Історія"
+    loading: "Завантаження історії..."
+    empty: "Історія не знайдена"
+    
+    tabs:
+        all: "Всі дії"
+        converter: "Конвертер"
+        parser: "Парсер"
+        generator: "Генератор"
+    
+    table:
+        date: "Дата"
+        action: "Дія"
+        diagram_type: "Тип діаграми"
+        files: "Файли"
+        actions: "Дії"
+    
+    detail:
+        title: "Деталі історії"
+    
+    error:
+        load_failed: "Не вдалося завантажити історію"
+        network: "Помилка мережі"
 
 # Footer
 footer:
@@ -124,6 +152,7 @@ common:
   edit: "Редагувати"
   back: "Назад"
   next: "Далі"
+  close: "Закрити"
   copy: "Копіювати"
   copied: "Скопійовано!"
   download: "Завантажити"

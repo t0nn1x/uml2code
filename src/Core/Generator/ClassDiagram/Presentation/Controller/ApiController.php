@@ -4,11 +4,14 @@ namespace App\Core\Generator\ClassDiagram\Presentation\Controller;
 
 use App\Core\Generator\ClassDiagram\Application\Service\CodeGeneratorService;
 use App\Core\Generator\ClassDiagram\Domain\Exception\GeneratorException;
+use App\Service\ActionHistoryService;
+use App\Entity\ActionHistory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * API Controller for code generation
@@ -20,47 +23,68 @@ class ApiController extends AbstractController
      * @var CodeGeneratorService The code generator service
      */
     private CodeGeneratorService $generatorService;
-    
+
+    /**
+     * @var ActionHistoryService The action history service
+     */
+    private ActionHistoryService $historyService;
+
     /**
      * Create a new generator API controller
      *
      * @param CodeGeneratorService $generatorService The code generator service
+     * @param ActionHistoryService $historyService The action history service
      */
-    public function __construct(CodeGeneratorService $generatorService)
-    {
+    public function __construct(
+        CodeGeneratorService $generatorService,
+        ActionHistoryService $historyService
+    ) {
         $this->generatorService = $generatorService;
+        $this->historyService = $historyService;
     }
-    
+
     /**
      * Generate code from JSON diagram
      */
     #[Route('/generate', name: 'api_generator_generate', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
     public function generate(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-        
+
         if (!isset($data['diagram']) || empty($data['diagram'])) {
             return $this->json([
                 'success' => false,
                 'error' => 'Diagram data is required'
             ], Response::HTTP_BAD_REQUEST);
         }
-        
+
         if (!isset($data['language']) || empty($data['language'])) {
             return $this->json([
                 'success' => false,
                 'error' => 'Target language is required'
             ], Response::HTTP_BAD_REQUEST);
         }
-        
+
         $diagram = $data['diagram'];
         $language = $data['language'];
         $version = $data['version'] ?? '';
-        
+
         try {
             // Generate code using the specified language and version
             $generatedFiles = $this->generatorService->generateCode($diagram, $language, $version);
-            
+
+            // Record in history
+            $user = $this->getUser();
+            if ($user) {
+                $this->historyService->record(
+                    $user,
+                    ActionHistory::ACTION_GENERATE,
+                    $generatedFiles,
+                    'ClassDiagram'
+                );
+            }
+
             return $this->json([
                 'success' => true,
                 'files' => array_values($generatedFiles)
@@ -77,7 +101,7 @@ class ApiController extends AbstractController
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     /**
      * Get supported languages for code generation
      */
@@ -89,4 +113,4 @@ class ApiController extends AbstractController
             'languages' => $this->generatorService->getSupportedLanguages()
         ]);
     }
-} 
+}

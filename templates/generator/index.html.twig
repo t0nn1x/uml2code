@@ -7,8 +7,18 @@
     <div class="bg-white shadow-lg rounded-lg overflow-hidden">
         <!-- Header -->
         <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
-            <h1 class="text-2xl font-bold text-white">{{ 'generator.title'|trans }}</h1>
-            <p class="text-indigo-100 text-sm mt-1">{{ 'generator.subtitle'|trans }}</p>
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold text-white">{{ 'generator.title'|trans }}</h1>
+                    <p class="text-indigo-100 text-sm mt-1">{{ 'generator.subtitle'|trans }}</p>
+                </div>
+                <button onclick="window.HistoryManager && window.HistoryManager.open('generator')" class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                    <svg class="w-5 h-5 inline mr-1" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    {{ 'history.button'|trans }}
+                </button>
+            </div>
         </div>
 
         <!-- Content -->

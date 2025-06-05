@@ -2,6 +2,11 @@
 security_routes:
     resource: 'routes/security.yaml'
 
+# History API routes without locale
+history_api_routes:
+    resource: '../src/Controller/HistoryController.php'
+    type: attribute
+
 # Controllers with locale
 controllers:
     resource:
