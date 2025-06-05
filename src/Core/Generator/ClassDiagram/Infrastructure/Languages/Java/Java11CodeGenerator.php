@@ -88,14 +88,39 @@ class Java11CodeGenerator extends AbstractJavaCodeGenerator
             case 'enum':
                 $code .= "public enum {$name} {\n";
                 
+                $hasValues = false;
                 // Generate enum constants
-                if (!empty($classData['attributes'])) {
-                    $code .= $this->generateEnumValues($classData['attributes']);
+                if (!empty($classData['enumValues'])) {
+                    $code .= $this->generateEnumValues($classData['enumValues']);
+                    // Check if any enum values have backing values
+                    foreach ($classData['enumValues'] as $enumValue) {
+                        if (is_array($enumValue) && isset($enumValue['value']) && $enumValue['value'] !== null) {
+                            $hasValues = true;
+                            break;
+                        }
+                    }
+                } elseif (!empty($classData['attributes'])) {
+                    // Fallback to legacy format
+                    $code .= $this->generateEnumValuesFromAttributes($classData['attributes']);
+                }
+                
+                // Add field and constructor for enums with values
+                if ($hasValues) {
+                    $code .= "\n";
+                    $code .= "    private final String value;\n\n";
+                    $code .= "    {$name}(String value) {\n";
+                    $code .= "        this.value = value;\n";
+                    $code .= "    }\n\n";
+                    $code .= "    public String getValue() {\n";
+                    $code .= "        return value;\n";
+                    $code .= "    }\n";
                 }
                 
                 // Generate methods for enum
                 if (!empty($classData['methods'])) {
-                    $code .= "\n";
+                    if ($hasValues) {
+                        $code .= "\n";
+                    }
                     $code .= $this->generateMethods($classData['methods']);
                 }
                 break;
@@ -468,12 +493,46 @@ class Java11CodeGenerator extends AbstractJavaCodeGenerator
     }
     
     /**
-     * Generate enum values
+     * Generate enum values from modern enumValues format
+     *
+     * @param array $enumValues
+     * @return string
+     */
+    protected function generateEnumValues(array $enumValues): string
+    {
+        $code = "";
+        $values = [];
+        
+        foreach ($enumValues as $enumValue) {
+            $name = is_array($enumValue) ? $enumValue['name'] : $enumValue;
+            $value = is_array($enumValue) && isset($enumValue['value']) ? $enumValue['value'] : null;
+            
+            if ($value !== null) {
+                // Java enums with values need constructor and field
+                $values[] = "    {$name}(\"{$value}\")";
+            } else {
+                // Simple enum case
+                $values[] = "    {$name}";
+            }
+        }
+        
+        $code .= implode(",\n", $values);
+        
+        // Add semicolon if we have values
+        if (!empty($values)) {
+            $code .= ";\n";
+        }
+        
+        return $code;
+    }
+
+    /**
+     * Generate enum values from legacy attributes format
      *
      * @param array $attributes
      * @return string
      */
-    protected function generateEnumValues(array $attributes): string
+    protected function generateEnumValuesFromAttributes(array $attributes): string
     {
         $code = "";
         $values = [];
