@@ -298,7 +298,40 @@
     </script>
 
     <!-- JSZip for history export functionality -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="{{ asset('js/lib/jszip-global.js') }}"></script>
+    <script>
+        // JSZip loader helper using event-based approach
+        window.ensureJSZip = function() {
+            return new Promise((resolve, reject) => {
+                if (window.JSZip) {
+                    resolve(window.JSZip);
+                    return;
+                }
+                
+                // Listen for JSZip ready event
+                const timeout = setTimeout(() => {
+                    reject(new Error('JSZip loading timeout'));
+                }, 10000); // 10 second timeout
+                
+                const onReady = function(event) {
+                    clearTimeout(timeout);
+                    window.removeEventListener('jszipReady', onReady);
+                    window.removeEventListener('jszipError', onError);
+                    resolve(event.detail);
+                };
+                
+                const onError = function(event) {
+                    clearTimeout(timeout);
+                    window.removeEventListener('jszipReady', onReady);
+                    window.removeEventListener('jszipError', onError);
+                    reject(new Error(event.detail));
+                };
+                
+                window.addEventListener('jszipReady', onReady);
+                window.addEventListener('jszipError', onError);
+            });
+        };
+    </script>
     
     <!-- History management - available on all pages -->
     <script src="{{ asset('js/history.js') }}"></script>
