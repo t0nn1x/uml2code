@@ -4,7 +4,10 @@ namespace App\Core\Generator\ClassDiagram\Application\Service;
 
 use App\Core\Generator\ClassDiagram\Domain\Exception\GeneratorException;
 use App\Core\Generator\ClassDiagram\Domain\Model\CodeGenerator;
+use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Java\Java8CodeGenerator;
 use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Java\Java11CodeGenerator;
+use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Java\Java17CodeGenerator;
+use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Java\Java21CodeGenerator;
 use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Php\Php74CodeGenerator;
 use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Php\Php80CodeGenerator;
 use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Php\Php81CodeGenerator;
@@ -49,8 +52,14 @@ class GeneratorFactory
                 break;
                 
             case 'JAVA':
-                if (version_compare($version, '11', '>=') && version_compare($version, '12', '<')) {
+                if (version_compare($version, '8', '>=') && version_compare($version, '11', '<')) {
+                    return new Java8CodeGenerator($diagram, $language, $version);
+                } elseif (version_compare($version, '11', '>=') && version_compare($version, '17', '<')) {
                     return new Java11CodeGenerator($diagram, $language, $version);
+                } elseif (version_compare($version, '17', '>=') && version_compare($version, '21', '<')) {
+                    return new Java17CodeGenerator($diagram, $language, $version);
+                } elseif (version_compare($version, '21', '>=') && version_compare($version, '22', '<')) {
+                    return new Java21CodeGenerator($diagram, $language, $version);
                 }
                 break;
             
@@ -72,7 +81,7 @@ class GeneratorFactory
     {
         return [
             'PHP' => ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4'],
-            'JAVA' => ['11'],
+            'JAVA' => ['8', '11', '17', '21'],
             // Add more languages here as they are implemented
         ];
     }
