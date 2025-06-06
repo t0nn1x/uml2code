@@ -75,6 +75,8 @@ class Java11CodeGenerator extends Java8CodeGenerator
         // Class documentation
         $code .= "/**\n";
         $code .= " * " . ucfirst($type) . " {$name}\n";
+        $code .= " *\n";
+        $code .= " * Generated for Java 11+\n";
         $code .= " */\n";
         
         // Class declaration

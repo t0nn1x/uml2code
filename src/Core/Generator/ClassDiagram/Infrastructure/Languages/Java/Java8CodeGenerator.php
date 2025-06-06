@@ -130,7 +130,6 @@ class Java8CodeGenerator extends AbstractJavaCodeGenerator
         $code .= " * " . ucfirst($type) . " {$name}\n";
         $code .= " * \n";
         $code .= " * Generated for Java 8+\n";
-        $code .= " * Supports lambda expressions, streams, and functional interfaces\n";
         $code .= " */\n";
         
         // Class declaration
