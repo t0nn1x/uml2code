@@ -145,41 +145,51 @@ User "1" --> "*" Order
         <div class="mt-10 flex flex-wrap justify-center gap-8">
             <!-- PHP -->
             <div class="flex flex-col items-center">
-                <div class="h-20 w-20 rounded-full bg-purple-100 flex items-center justify-center">
-                    <svg class="h-12 w-12 text-purple-600" viewBox="0 0 50 50" fill="currentColor">
-                        <path d="M25 2C12.311 2 2 12.311 2 25s10.311 23 23 23 23-10.311 23-23S37.689 2 25 2zm-7.615 29h-2.82l1.407-7.223c.246-1.26.105-2.153-.42-2.661-.516-.499-1.482-.743-2.952-.743H9.98l-2.312 11.816H4.566L7.666 18h3.102l-.647 3.313h3.245c1.907 0 3.362.391 4.326 1.164.987.791 1.349 2.058.974 3.978L17.385 31zm14.03-11.58c-.245 1.259-.871 2.337-1.862 3.201-.802.701-1.816 1.188-3.016 1.45-.632.138-1.549.207-2.798.207h-2.031l-.994 5.089h-3.103L21.353 18h5.729c1.634 0 2.848.257 3.607.764.407.272.73.635.957 1.076.232.452.318 1.008.243 1.58zm13.02.58h-2.82l1.406-7.223c.246-1.26.105-2.153-.419-2.661-.516-.499-1.482-.743-2.952-.743H38.03l-2.312 11.816h-3.102L35.717 18h3.102l-.647 3.313h3.245c1.907 0 3.362.391 4.326 1.164.987.791 1.349 2.058.975 3.978L44.435 31z"/>
-                    </svg>
+                <div class="language-icon-circle h-20 w-20 rounded-full bg-white flex items-center justify-center shadow-lg border border-gray-200">
+                    <img src="{{ asset('svg/php-svgrepo-com.svg') }}" alt="PHP" class="h-12 w-12">
                 </div>
                 <span class="mt-2 text-sm font-medium text-gray-700">PHP</span>
             </div>
 
             <!-- Java -->
             <div class="flex flex-col items-center">
-                <div class="h-20 w-20 rounded-full bg-red-100 flex items-center justify-center">
-                    <svg class="h-12 w-12 text-red-600" viewBox="0 0 50 50" fill="currentColor">
-                        <path d="M28.187 0c.054.281-.137 1.328-1.641 3.223-1.5 1.894-3.254 3.254-3.668 2.844-.418-.406.074-2.324 1.578-4.219C25.957-.047 27.879-.344 28.187 0zM23.61 7.227s2.875-1.555 4.914.379c0 0-.672.648-1.727 1.348-1.058.703-2.316 1.543-2.316 2.574 0 1.028 1.152 1.297 2.109 1.524.766.18 1.547.371 1.547.926 0 .722-1.946 1.879-2.832 1.879-1.215 0-2.184-.379-2.184-1.528 0-1.417 1.406-2.644 2.113-3.437.622-.711.942-1.074.711-1.344-.297-.351-1.273-.113-1.953.543-.68.653-1.887 1.739-3.238 1.739-1.16 0-2.242-.454-2.242-1.907C18.512 8.117 23.61 7.227 23.61 7.227zM16.898 36.773c0 .887 1.743 3.168 10.106 3.168s14.539-1.937 14.539-5.105c0-2.059-3.457-2.91-3.457-2.91s1.969.855.551 2.215c-1.148 1.098-6.945 1.098-11.156 1.172-6.101.109-9.488-.609-9.758-.797-.332-.23.035-.523.59-.758.304-.125.75-.312 1.062-.664.481-.543.352-1.399.352-1.399s-2.829 1.313-2.829 4.078zm0 0"/>
-                    </svg>
+                <div class="language-icon-circle h-20 w-20 rounded-full bg-white flex items-center justify-center shadow-lg border border-gray-200">
+                    <img src="{{ asset('svg/java-4-logo-svgrepo-com.svg') }}" alt="Java" class="h-12 w-12">
                 </div>
                 <span class="mt-2 text-sm font-medium text-gray-700">Java</span>
             </div>
 
-            <!-- Python (Future) -->
-            <div class="flex flex-col items-center opacity-50">
-                <div class="h-20 w-20 rounded-full bg-yellow-100 flex items-center justify-center">
-                    <svg class="h-12 w-12 text-yellow-600" viewBox="0 0 50 50" fill="currentColor">
-                        <path d="M24.047 5c-1.555.005-3.031.135-4.395.385-3.977.73-4.695 2.175-4.695 4.885v3.585h9.39v1.19h-9.39H9.777c-2.73 0-5.12 1.64-5.87 4.755-.865 3.58-.905 5.81 0 9.545.67 2.775 2.27 4.755 5 4.755h3.235v-4.285c0-3.1 2.68-5.835 5.87-5.835h9.375c2.615 0 4.695-2.155 4.695-4.77v-8.94c0-2.545-2.145-4.46-4.695-5.155-1.615-.44-3.295-.64-4.85-.635zm-4.98 2.885c.97 0 1.765.805 1.765 1.795s-.795 1.8-1.765 1.8-1.765-.81-1.765-1.8.795-1.795 1.765-1.795zM39.855 15.045v4.17c0 3.235-2.745 5.95-5.87 5.95h-9.375c-2.57 0-4.695 2.2-4.695 4.77v8.94c0 2.545 2.21 4.04 4.695 4.77 2.975.875 5.825.875 9.375 0 2.36-.58 4.695-1.745 4.695-4.77v-3.585h-9.375v-1.19h9.375 4.695c2.73 0 3.745-1.905 4.695-4.755.98-2.935.94-5.755 0-9.545-.675-2.725-1.965-4.755-4.695-4.755h-3.525zm-5.25 22.59c.97 0 1.765.81 1.765 1.8s-.795 1.795-1.765 1.795-1.765-.805-1.765-1.795.795-1.8 1.765-1.8z"/>
-                    </svg>
+            <!-- Python -->
+            <div class="flex flex-col items-center">
+                <div class="language-icon-circle h-20 w-20 rounded-full bg-white flex items-center justify-center shadow-lg border border-gray-200">
+                    <img src="{{ asset('svg/python-svgrepo-com.svg') }}" alt="Python" class="h-12 w-12">
                 </div>
-                <span class="mt-2 text-sm font-medium text-gray-500">Python</span>
+                <span class="mt-2 text-sm font-medium text-gray-700">Python</span>
+            </div>
+
+            <!-- C# -->
+            <div class="flex flex-col items-center">
+                <div class="language-icon-circle h-20 w-20 rounded-full bg-white flex items-center justify-center shadow-lg border border-gray-200">
+                    <img src="{{ asset('svg/csharp-svgrepo-com.svg') }}" alt="C#" class="h-12 w-12">
+                </div>
+                <span class="mt-2 text-sm font-medium text-gray-700">C#</span>
+            </div>
+
+            <!-- JavaScript (Future) -->
+            <div class="flex flex-col items-center opacity-50">
+                <div class="language-icon-circle h-20 w-20 rounded-full bg-white flex items-center justify-center shadow-lg border border-gray-200">
+                    <img src="{{ asset('svg/js-official-svgrepo-com.svg') }}" alt="JavaScript" class="h-12 w-12">
+                </div>
+                <span class="mt-2 text-sm font-medium text-gray-500">JavaScript</span>
                 <span class="text-xs text-gray-400">{{ 'common.soon'|trans|default('Soon') }}</span>
             </div>
 
-            <!-- C# (Future) -->
+            <!-- Go (Future) -->
             <div class="flex flex-col items-center opacity-50">
-                <div class="h-20 w-20 rounded-full bg-green-100 flex items-center justify-center">
-                    <span class="text-3xl font-bold text-green-600">C#</span>
+                <div class="language-icon-circle h-20 w-20 rounded-full bg-white flex items-center justify-center shadow-lg border border-gray-200">
+                    <img src="{{ asset('svg/go-svgrepo-com.svg') }}" alt="Go" class="h-12 w-12">
                 </div>
-                <span class="mt-2 text-sm font-medium text-gray-500">C#</span>
+                <span class="mt-2 text-sm font-medium text-gray-500">Go</span>
                 <span class="text-xs text-gray-400">{{ 'common.soon'|trans|default('Soon') }}</span>
             </div>
         </div>
