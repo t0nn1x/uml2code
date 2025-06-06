@@ -10,6 +10,11 @@ use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Java\Java17CodeGene
 use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Java\Java21CodeGenerator;
 use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Php\Php74CodeGenerator;
 use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Php\Php80CodeGenerator;
+use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Python\Python38CodeGenerator;
+use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Python\Python39CodeGenerator;
+use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Python\Python310CodeGenerator;
+use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Python\Python311CodeGenerator;
+use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Python\Python312CodeGenerator;
 use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Php\Php81CodeGenerator;
 use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Php\Php82CodeGenerator;
 use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Php\Php83CodeGenerator;
@@ -62,6 +67,21 @@ class GeneratorFactory
                     return new Java21CodeGenerator($diagram, $language, $version);
                 }
                 break;
+                
+            case 'PYTHON':
+                // Handle Python versions like "3.8", "3.9", "3.10", "3.11", "3.12"
+                if (version_compare($version, '3.8', '>=') && version_compare($version, '3.9', '<')) {
+                    return new Python38CodeGenerator($diagram, $language, $version);
+                } elseif (version_compare($version, '3.9', '>=') && version_compare($version, '3.10', '<')) {
+                    return new Python39CodeGenerator($diagram, $language, $version);
+                } elseif (version_compare($version, '3.10', '>=') && version_compare($version, '3.11', '<')) {
+                    return new Python310CodeGenerator($diagram, $language, $version);
+                } elseif (version_compare($version, '3.11', '>=') && version_compare($version, '3.12', '<')) {
+                    return new Python311CodeGenerator($diagram, $language, $version);
+                } elseif (version_compare($version, '3.12', '>=') && version_compare($version, '3.13', '<')) {
+                    return new Python312CodeGenerator($diagram, $language, $version);
+                }
+                break;
             
             // Add cases for other languages here
         }
@@ -82,6 +102,7 @@ class GeneratorFactory
         return [
             'PHP' => ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4'],
             'JAVA' => ['8', '11', '17', '21'],
+            'PYTHON' => ['3.8', '3.9', '3.10', '3.11', '3.12'],
             // Add more languages here as they are implemented
         ];
     }
