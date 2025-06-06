@@ -589,3 +589,41 @@ body[data-theme='dark'] .border-l-4 {
 body[data-theme='dark'] .border-b-2 {
     border-bottom-width: 2px !important;
 }
+
+/* History action badges dark theme support */
+body[data-theme='dark'] .bg-green-100 {
+    background-color: #064e3b !important;
+}
+
+body[data-theme='dark'] .text-green-800 {
+    color: #86efac !important;
+}
+
+body[data-theme='dark'] .bg-blue-100 {
+    background-color: #1e3a8a !important;
+}
+
+body[data-theme='dark'] .text-blue-800 {
+    color: #93c5fd !important;
+}
+
+body[data-theme='dark'] .bg-indigo-100 {
+    background-color: #312e81 !important;
+}
+
+body[data-theme='dark'] .text-indigo-800 {
+    color: #a5b4fc !important;
+}
+
+/* History modal dark theme support */
+body[data-theme='dark'] .bg-white {
+    background-color: #1e293b !important;
+}
+
+body[data-theme='dark'] .text-gray-400 {
+    color: #94a3b8 !important;
+}
+
+body[data-theme='dark'] .hover\:text-gray-600:hover {
+    color: #e2e8f0 !important;
+}

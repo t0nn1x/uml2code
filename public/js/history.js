@@ -13,10 +13,15 @@ const HistoryManager = (function () {
 
   // Setup event listeners
   function setupEventListeners() {
-    // History modal close button
+    // History modal close buttons
     const closeBtn = document.getElementById("history-close-btn");
     if (closeBtn) {
       closeBtn.addEventListener("click", closeHistoryModal);
+    }
+    
+    const closeXBtn = document.getElementById("history-close-x-btn");
+    if (closeXBtn) {
+      closeXBtn.addEventListener("click", closeHistoryModal);
     }
 
     // History detail modal close button
@@ -200,7 +205,7 @@ const HistoryManager = (function () {
       parse:
         '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Parse</span>',
       generate:
-        '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">Generate</span>',
+        '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">Generate</span>',
     };
 
     return badges[actionType] || actionType;
