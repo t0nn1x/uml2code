@@ -116,8 +116,11 @@ class UmlParserService
                                 // For attributes with type arguments, make sure the type string includes the generic parameters
                                 if (isset($attribute['type'])) {
                                     $baseType = $attribute['type'];
-                                    $typeArgs = implode(', ', $attribute['typeArguments']);
-                                    $class['attributes'][$index]['type'] = "$baseType<$typeArgs>";
+                                    // Only add generics if they're not already present in the type string
+                                    if (!preg_match('/<.+>/', $baseType)) {
+                                        $typeArgs = implode(', ', $attribute['typeArguments']);
+                                        $class['attributes'][$index]['type'] = "$baseType<$typeArgs>";
+                                    }
                                 }
                             }
                         }
