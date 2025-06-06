@@ -266,7 +266,10 @@ require([
         language: 'json',
         theme: window.monacoTheme,
         minimap: { enabled: false },
-        automaticLayout: true
+        automaticLayout: true,
+        fontSize: 13,
+        lineNumbers: 'on',
+        wordWrap: 'on'
     });
 
     // Generate code
@@ -352,7 +355,10 @@ require([
                                 theme: window.monacoTheme,
                                 readOnly: true,
                                 minimap: { enabled: false },
-                                automaticLayout: true
+                                automaticLayout: true,
+                                fontSize: 13,
+                                lineNumbers: 'on',
+                                wordWrap: 'on'
                             });
                         }, 100);
                     }

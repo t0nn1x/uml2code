@@ -117,12 +117,19 @@ require([
     'vs/editor/editor.main',
     'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'
 ], function(_, JSZip) {
-    // Initialize UML editor
-    const umlEditor = monaco.editor.create(document.getElementById('uml-editor'), {
-        value: `@startuml
+    // Wait for PlantUML registration before creating editor
+    function createUMLEditor() {
+        if (window.isPlantUMLRegistered && window.isPlantUMLRegistered()) {
+            const currentTheme = localStorage.getItem("theme") === "dark" ? "dark" : "light";
+            const plantumlTheme = window.getPlantUMLTheme ? window.getPlantUMLTheme(currentTheme === "dark") : 
+                                 (currentTheme === "dark" ? 'plantuml-dark' : 'plantuml-light');
+            
+            // Initialize UML editor with PlantUML syntax highlighting
+            const umlEditor = monaco.editor.create(document.getElementById('uml-editor'), {
+                value: `@startuml
 class User {
     -id: int
-    -email: string
+    -email: string  
     -password: string
     +login(email: string, password: string): bool
     +logout(): void
@@ -139,18 +146,32 @@ class Order {
 
 User "1" --> "*" Order : places
 @enduml`,
-        language: 'plaintext',
-        theme: window.monacoTheme,
-        minimap: { enabled: false },
-        automaticLayout: true
-    });
-
-    // Language versions mapping
-    const languageVersions = {
-        {% for language, versions in supported_languages %}
-            "{{ language }}": {{ versions|json_encode|raw }},
-        {% endfor %}
-    };
+                language: 'plantuml',
+                theme: plantumlTheme,
+                minimap: { enabled: false },
+                automaticLayout: true,
+                fontSize: 13,
+                lineNumbers: 'on',
+                wordWrap: 'on'
+            });
+            
+            // Store editor reference for theme updates
+            window.umlEditor = umlEditor;
+            
+            initializeEventHandlers();
+        } else {
+            // Retry after a short delay
+            setTimeout(createUMLEditor, 100);
+        }
+    }
+    
+    function initializeEventHandlers() {
+        // Language versions mapping
+        const languageVersions = {
+            {% for language, versions in supported_languages %}
+                "{{ language }}": {{ versions|json_encode|raw }},
+            {% endfor %}
+        };
 
     // Handle language selection
     document.getElementById('language').addEventListener('change', function(e) {
@@ -258,7 +279,10 @@ User "1" --> "*" Order : places
                     theme: window.monacoTheme,
                     readOnly: true,
                     minimap: { enabled: false },
-                    automaticLayout: true
+                    automaticLayout: true,
+                    fontSize: 13,
+                    lineNumbers: 'on',
+                    wordWrap: 'on'
                 });
             }, 100);
         });
@@ -360,6 +384,11 @@ User "1" --> "*" Order : places
     function hideError() {
         document.getElementById('error-alert').classList.add('hidden');
     }
+    
+    } // End of initializeEventHandlers function
+    
+    // Start the initialization process
+    createUMLEditor();
 });
 </script>
 {% endblock %}

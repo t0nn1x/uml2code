@@ -26,12 +26,13 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Input Section -->
                 <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <div class="mb-2">
+                        <label class="block text-sm font-medium text-gray-700">
                             {{ 'parser.input_label'|trans }}
                         </label>
-                        <div id="uml-editor" class="border border-gray-300 rounded-md" style="height: 400px;"></div>
                     </div>
+                    
+                    <div id="uml-editor" class="border border-gray-300 rounded-md" style="height: 400px;"></div>
 
                     <!-- Parse Button -->
                     <button id="parse-button" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-200 flex items-center justify-center">
@@ -44,29 +45,26 @@
 
                 <!-- Output Section -->
                 <div class="space-y-4">
-                    <div>
-                        <div class="flex justify-between items-center mb-2">
-                            <label class="block text-sm font-medium text-gray-700">
-                                {{ 'parser.output_label'|trans }}
-                            </label>
-                            <div class="flex items-center">
-                                <button id="copy-button" class="text-sm text-indigo-600 hover:text-indigo-500 hidden">
-                                    {{ 'common.copy'|trans }}
-                                </button>
-                            </div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-sm font-medium text-gray-700">
+                            {{ 'parser.output_label'|trans }}
+                        </label>
+                        <div class="flex items-center">
+                            <button id="copy-button" class="text-sm text-indigo-600 hover:text-indigo-500 hidden">
+                                {{ 'common.copy'|trans }}
+                            </button>
                         </div>
-                        <div id="output-container" class="border border-gray-300 rounded-md bg-gray-50 p-4" style="min-height: 400px;">
-                            <div id="output-placeholder" class="text-gray-500 text-center">
-                                {{ 'parser.output_placeholder'|trans }}
-                            </div>
-                            <div id="loading" class="hidden">
-                                <div class="flex justify-center items-center h-full">
-                                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-                                </div>
-                            </div>
-                            <div id="results" class="hidden">
-                                <div id="json-editor" style="height: 350px;"></div>
-                            </div>
+                    </div>
+                    
+                    <div id="output-container" class="border border-gray-300 rounded-md overflow-hidden" style="height: 400px;">
+                        <div id="output-placeholder" class="flex items-center justify-center h-full text-gray-500 bg-gray-50">
+                            {{ 'parser.output_placeholder'|trans }}
+                        </div>
+                        <div id="loading" class="hidden flex items-center justify-center h-full bg-gray-50">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                        </div>
+                        <div id="results" class="hidden h-full">
+                            <div id="json-editor" class="h-full"></div>
                         </div>
                     </div>
                 </div>
@@ -90,9 +88,16 @@
 {{ parent() }}
 <script>
 require(['vs/editor/editor.main'], function() {
-    // Initialize UML editor
-    const umlEditor = monaco.editor.create(document.getElementById('uml-editor'), {
-        value: `@startuml
+    // Wait for PlantUML registration before creating editor
+    function createUMLEditor() {
+        if (window.isPlantUMLRegistered && window.isPlantUMLRegistered()) {
+            const currentTheme = localStorage.getItem("theme") === "dark" ? "dark" : "light";
+            const plantumlTheme = window.getPlantUMLTheme ? window.getPlantUMLTheme(currentTheme === "dark") : 
+                                 (currentTheme === "dark" ? 'plantuml-dark' : 'plantuml-light');
+            
+            // Initialize UML editor with PlantUML syntax highlighting
+            const umlEditor = monaco.editor.create(document.getElementById('uml-editor'), {
+                value: `@startuml
 class User {
     +id: int
     -password: string
@@ -107,11 +112,27 @@ class Order {
 
 User "1" --> "*" Order: places
 @enduml`,
-        language: 'plaintext',
-        theme: window.monacoTheme,
-        minimap: { enabled: false },
-        automaticLayout: true
-    });
+                language: 'plantuml',
+                theme: plantumlTheme,
+                minimap: { enabled: false },
+                automaticLayout: true,
+                fontSize: 13,
+                lineNumbers: 'on',
+                wordWrap: 'on',
+                scrollBeyondLastLine: false
+            });
+            
+            // Store editor reference for theme updates
+            window.umlEditor = umlEditor;
+            
+            initializeEventHandlers();
+        } else {
+            // Retry after a short delay
+            setTimeout(createUMLEditor, 100);
+        }
+    }
+    
+    function initializeEventHandlers() {
 
     // Initialize JSON editor (for output)
     let jsonEditor = null;
@@ -185,8 +206,15 @@ User "1" --> "*" Order: places
                     theme: window.monacoTheme,
                     readOnly: true,
                     minimap: { enabled: false },
-                    automaticLayout: true
+                    automaticLayout: true,
+                    fontSize: 13,
+                    lineNumbers: 'on',
+                    wordWrap: 'on',
+                    scrollBeyondLastLine: false
                 });
+                
+                // Store reference globally for theme updates
+                window.jsonEditor = jsonEditor;
             }, 100);
 
             resultsDiv.classList.remove('hidden');
@@ -208,6 +236,11 @@ User "1" --> "*" Order: places
     function hideError() {
         errorDiv.classList.add('hidden');
     }
+    
+    } // End of initializeEventHandlers function
+    
+    // Start the initialization process
+    createUMLEditor();
 });
 </script>
 {% endblock %}

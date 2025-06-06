@@ -239,6 +239,9 @@
     <!-- Monaco Editor Loader -->
     <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
     
+    <!-- PlantUML Syntax Highlighting -->
+    <script src="{{ asset('js/plantuml-syntax.js') }}"></script>
+    
     <!-- Base JavaScript -->
     <script>
         // Language switcher dropdown
@@ -276,12 +279,32 @@
             document.body.setAttribute("data-theme", theme);
             localStorage.setItem("theme", theme);
             window.monacoTheme = theme === "dark" ? "vs-dark" : "vs-light";
+            const plantumlTheme = theme === "dark" ? "plantuml-dark" : "plantuml-light";
+            
             if (window.monaco && window.monaco.editor) {
-                monaco.editor.setTheme(window.monacoTheme);
+                // Update themes for all editors
+                if (window.isPlantUMLRegistered && window.isPlantUMLRegistered()) {
+                    // Apply PlantUML theme to PlantUML editors
+                    monaco.editor.setTheme(plantumlTheme);
+                    
+                    // Update specific editor instances if they exist
+                    if (window.umlEditor && typeof window.umlEditor.updateOptions === 'function') {
+                        window.umlEditor.updateOptions({ theme: plantumlTheme });
+                    }
+                } else {
+                    // Use standard Monaco theme
+                    monaco.editor.setTheme(window.monacoTheme);
+                }
+                
+                // Update any other Monaco editors (like JSON editors) with standard theme
+                if (window.jsonEditor && typeof window.jsonEditor.updateOptions === 'function') {
+                    window.jsonEditor.updateOptions({ theme: window.monacoTheme });
+                }
             }
+            
             const tbtn = document.getElementById("theme-toggle");
             if (tbtn) {
-            tbtn.textContent = theme === 'dark' ? '☀' : '🌙';
+                tbtn.textContent = theme === 'dark' ? '☀' : '🌙';
             }
         }
 
