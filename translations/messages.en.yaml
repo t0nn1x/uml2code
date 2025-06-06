@@ -169,3 +169,16 @@ common:
   download: "Download"
   download_all: "Download All as ZIP"
   soon: "Soon"
+  import: "Import"
+  import_puml_file: "Import PUML File"
+  import_json_file: "Import JSON File"
+  file_imported: "File Imported!"
+  
+# Import errors
+import:
+  error:
+    invalid_puml_file: "Please select a valid PlantUML file (.puml, .plantuml, or .txt)"
+    invalid_json_file: "Please select a valid JSON file (.json or .txt)"
+    file_too_large: "File size must be less than 1MB"
+    invalid_json_syntax: "Invalid JSON syntax"
+    read_error: "Error reading file"

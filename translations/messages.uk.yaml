@@ -169,3 +169,16 @@ common:
   download: "Завантажити"
   download_all: "Завантажити все (ZIP)"
   soon: "Незабаром"
+  import: "Імпорт"
+  import_puml_file: "Імпорт PUML файлу"
+  import_json_file: "Імпорт JSON файлу"
+  file_imported: "Файл імпортовано!"
+  
+# Import errors
+import:
+  error:
+    invalid_puml_file: "Будь ласка, оберіть правильний PlantUML файл (.puml, .plantuml, або .txt)"
+    invalid_json_file: "Будь ласка, оберіть правильний JSON файл (.json або .txt)"
+    file_too_large: "Розмір файлу повинен бути менше 1МБ"
+    invalid_json_syntax: "Невірний синтаксис JSON"
+    read_error: "Помилка читання файлу"

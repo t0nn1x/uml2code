@@ -34,7 +34,7 @@
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
                             </svg>
-                            Import PUML File
+                            {{ 'common.import_puml_file'|trans }}
                         </button>
                     </div>
                     
@@ -157,13 +157,13 @@ User "1" --> "*" Order: places
             const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
             
             if (!validExtensions.includes(fileExtension)) {
-                showError('Please select a valid PlantUML file (.puml, .plantuml, or .txt)');
+                showError('{{ 'import.error.invalid_puml_file'|trans }}');
                 return;
             }
             
             // Check file size (max 1MB)
             if (file.size > 1024 * 1024) {
-                showError('File size must be less than 1MB');
+                showError('{{ 'import.error.file_too_large'|trans }}');
                 return;
             }
             
@@ -179,21 +179,21 @@ User "1" --> "*" Order: places
                     
                     // Show success feedback
                     const originalText = importBtn.textContent;
-                    importBtn.innerHTML = '<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>File Imported!';
+                    importBtn.innerHTML = '<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>{{ 'common.file_imported'|trans }}';
                     importBtn.classList.add('text-green-600');
                     
                     setTimeout(() => {
-                        importBtn.innerHTML = '<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path></svg>Import PUML File';
+                        importBtn.innerHTML = '<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path></svg>{{ 'common.import_puml_file'|trans }}';
                         importBtn.classList.remove('text-green-600');
                     }, 2000);
                     
                 } catch (error) {
-                    showError('Error reading file: ' + error.message);
+                    showError('{{ 'import.error.read_error'|trans }}: ' + error.message);
                 }
             };
             
             reader.onerror = function() {
-                showError('Error reading file');
+                showError('{{ 'import.error.read_error'|trans }}');
             };
             
             reader.readAsText(file);
