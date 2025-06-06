@@ -278,6 +278,9 @@ User "1" --> "*" Order : places
         if (filename.endsWith('.java')) return 'java';
         if (filename.endsWith('.js')) return 'javascript';
         if (filename.endsWith('.py')) return 'python';
+        if (filename.endsWith('.cs')) return 'csharp';
+        if (filename.endsWith('.ts')) return 'typescript';
+        if (filename.endsWith('.js')) return 'javascript';
         return 'plaintext';
     }
 
