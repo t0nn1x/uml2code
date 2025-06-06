@@ -572,3 +572,20 @@ body[data-theme='dark'] .language-icon-circle {
 body[data-theme='dark'] .language-icon-circle:hover {
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.4) !important;
 }
+
+/* Active navigation states for dark theme */
+body[data-theme='dark'] .bg-indigo-50 {
+    background-color: #312e81 !important;
+}
+
+body[data-theme='dark'] .border-indigo-600 {
+    border-color: #6366f1 !important;
+}
+
+body[data-theme='dark'] .border-l-4 {
+    border-left-width: 4px !important;
+}
+
+body[data-theme='dark'] .border-b-2 {
+    border-bottom-width: 2px !important;
+}
