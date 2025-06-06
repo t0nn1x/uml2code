@@ -118,8 +118,8 @@ class UmlParserService
                                     $baseType = $attribute['type'];
                                     // Only add generics if they're not already present in the type string
                                     if (!preg_match('/<.+>/', $baseType)) {
-                                        $typeArgs = implode(', ', $attribute['typeArguments']);
-                                        $class['attributes'][$index]['type'] = "$baseType<$typeArgs>";
+                                    $typeArgs = implode(', ', $attribute['typeArguments']);
+                                    $class['attributes'][$index]['type'] = "$baseType<$typeArgs>";
                                     }
                                 }
                             }
