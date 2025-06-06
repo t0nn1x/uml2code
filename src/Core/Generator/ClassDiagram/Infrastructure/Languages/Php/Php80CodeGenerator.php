@@ -22,7 +22,7 @@ class Php80CodeGenerator extends Php74CodeGenerator
         
         foreach ($attributes as $attr) {
             $name = $attr['name'];
-            $visibility = $attr['visibility'] ?? 'public';
+            $visibility = $this->mapVisibility($attr['visibility'] ?? 'public');
             $type = isset($attr['type']) ? $this->mapType($attr['type']) : null;
             
             // Property docblock
@@ -157,5 +157,40 @@ class Php80CodeGenerator extends Php74CodeGenerator
         $this->addFile($file);
         
         return $file;
+    }
+
+    /**
+     * Generate enum constants (for PHP 8.0 which doesn't support enums)
+     * Override parent method to use modern enum format
+     *
+     * @param array $classData
+     * @return string
+     */
+    protected function generateEnumConstants(array $classData): string
+    {
+        $code = "";
+        
+        // Check for enum values first (modern parser format)
+        if (!empty($classData['enumValues'])) {
+            foreach ($classData['enumValues'] as $enumValue) {
+                $name = is_array($enumValue) ? $enumValue['name'] : $enumValue;
+                $value = is_array($enumValue) && isset($enumValue['value']) ? $enumValue['value'] : null;
+                
+                // Default value handling
+                if ($value === null) {
+                    $defaultValue = "'{$name}'"; // String default
+                } else {
+                    // If it's numeric, don't quote it
+                    $defaultValue = is_numeric($value) ? $value : "'{$value}'";
+                }
+                
+                $code .= "    public const {$name} = {$defaultValue};\n";
+            }
+            $code .= "\n";
+            return $code;
+        }
+        
+        // Fallback to parent implementation for legacy format
+        return parent::generateEnumConstants($classData);
     }
 } 

@@ -7,13 +7,21 @@ use App\Core\Generator\ClassDiagram\Domain\Model\CodeFile;
 
 /**
  * Java 11 code generator for class diagrams
+ *
+ * New features in Java 11:
+ * - Local-Variable Type Inference
+ * - JShell (REPL)
+ * - HTTP Client
+ * - ZGC and Shenandoah GC
+ * - Text Blocks
+ * - Pattern Matching for instanceof
  */
-class Java11CodeGenerator extends AbstractJavaCodeGenerator
+class Java11CodeGenerator extends Java8CodeGenerator
 {
     /**
      * @var int The index of the current class being generated
      */
-    private int $currentClassIndex = 0;
+    protected int $currentClassIndex = 0;
     
     /**
      * @inheritDoc
@@ -67,6 +75,8 @@ class Java11CodeGenerator extends AbstractJavaCodeGenerator
         // Class documentation
         $code .= "/**\n";
         $code .= " * " . ucfirst($type) . " {$name}\n";
+        $code .= " *\n";
+        $code .= " * Generated for Java 11+\n";
         $code .= " */\n";
         
         // Class declaration
@@ -88,20 +98,51 @@ class Java11CodeGenerator extends AbstractJavaCodeGenerator
             case 'enum':
                 $code .= "public enum {$name} {\n";
                 
+                $hasValues = false;
                 // Generate enum constants
-                if (!empty($classData['attributes'])) {
-                    $code .= $this->generateEnumValues($classData['attributes']);
+                if (!empty($classData['enumValues'])) {
+                    $code .= $this->generateEnumValues($classData['enumValues']);
+                    // Check if any enum values have backing values
+                    foreach ($classData['enumValues'] as $enumValue) {
+                        if (is_array($enumValue) && isset($enumValue['value']) && $enumValue['value'] !== null) {
+                            $hasValues = true;
+                            break;
+                        }
+                    }
+                } elseif (!empty($classData['attributes'])) {
+                    // Fallback to legacy format
+                    $code .= $this->generateEnumValuesFromAttributes($classData['attributes']);
+                }
+                
+                // Add field and constructor for enums with values
+                if ($hasValues) {
+                    $code .= "\n";
+                    $code .= "    private final String value;\n\n";
+                    $code .= "    {$name}(String value) {\n";
+                    $code .= "        this.value = value;\n";
+                    $code .= "    }\n\n";
+                    $code .= "    public String getValue() {\n";
+                    $code .= "        return value;\n";
+                    $code .= "    }\n";
                 }
                 
                 // Generate methods for enum
                 if (!empty($classData['methods'])) {
-                    $code .= "\n";
+                    if ($hasValues) {
+                        $code .= "\n";
+                    }
                     $code .= $this->generateMethods($classData['methods']);
                 }
                 break;
                 
             case 'abstract':
                 $code .= "public abstract class {$name}";
+                
+                // Add generic type parameters if present
+                if (!empty($classData['typeParameters'])) {
+                    $code .= "<" . implode(', ', $classData['typeParameters']) . ">";
+                }
+                
                 if (!empty($classData['extends'])) {
                     $code .= " extends {$classData['extends']}";
                 }
@@ -123,6 +164,12 @@ class Java11CodeGenerator extends AbstractJavaCodeGenerator
                 
             default: // regular class
                 $code .= "public class {$name}";
+                
+                // Add generic type parameters if present
+                if (!empty($classData['typeParameters'])) {
+                    $code .= "<" . implode(', ', $classData['typeParameters']) . ">";
+                }
+                
                 if (!empty($classData['extends'])) {
                     $code .= " extends {$classData['extends']}";
                 }
@@ -152,125 +199,7 @@ class Java11CodeGenerator extends AbstractJavaCodeGenerator
         return $file;
     }
     
-    /**
-     * Generate necessary import statements
-     *
-     * @param array $classData
-     * @return string
-     */
-    protected function generateImports(array $classData): string
-    {
-        $imports = [];
-        
-        // Check for imports in attributes
-        if (!empty($classData['attributes'])) {
-            foreach ($classData['attributes'] as $attr) {
-                if (isset($attr['type']) && $this->needsImport($attr['type'])) {
-                    $imports[] = $this->getImportForType($attr['type']);
-                }
-            }
-        }
-        
-        // Check for imports in methods (return types and parameter types)
-        if (!empty($classData['methods'])) {
-            foreach ($classData['methods'] as $method) {
-                // Return type
-                if (isset($method['returnType']) && $this->needsImport($method['returnType'])) {
-                    $imports[] = $this->getImportForType($method['returnType']);
-                }
-                
-                // Parameter types
-                if (!empty($method['parameters'])) {
-                    foreach ($method['parameters'] as $param) {
-                        if (isset($param['type']) && $this->needsImport($param['type'])) {
-                            $imports[] = $this->getImportForType($param['type']);
-                        }
-                    }
-                }
-            }
-        }
-        
-        // Remove duplicates and sort
-        $imports = array_unique($imports);
-        sort($imports);
-        
-        return implode("\n", $imports);
-    }
-    
-    /**
-     * Check if a type needs to be imported
-     *
-     * @param string $type
-     * @return bool
-     */
-    private function needsImport(string $type): bool
-    {
-        // Don't import primitive types, core java.lang.* classes, or array types
-        $noImportTypes = ['boolean', 'byte', 'char', 'double', 'float', 'int', 'long', 'short', 
-                          'String', 'Object', 'Class', 'Throwable', 'Exception', 'Error'];
-        
-        // Check if it's an array type
-        $baseType = rtrim($type, '[]');
-        
-        // If the type contains a dot, it's likely a fully qualified name that needs an import
-        if (strpos($baseType, '.') !== false) {
-            return true;
-        }
-        
-        // Make sure we correctly handle built-in types regardless of case
-        // e.g., 'string' in UML should map to 'String' in Java and not be imported
-        $mappedType = $this->mapType($baseType);
-        if (in_array($mappedType, $noImportTypes)) {
-            return false;
-        }
-        
-        return !in_array($baseType, $noImportTypes);
-    }
-    
-    /**
-     * Get import statement for a type
-     *
-     * @param string $type
-     * @return string
-     */
-    private function getImportForType(string $type): string
-    {
-        // Handle array types
-        $baseType = rtrim($type, '[]');
-        
-        // For types that already have packages defined
-        if (strpos($baseType, '.') !== false) {
-            return "import {$baseType};";
-        }
-        
-        // For types that map to specific Java types
-        $mappedType = self::TYPE_MAPPING[strtolower($baseType)] ?? null;
-        if ($mappedType !== null && strpos($mappedType, '.') !== false) {
-            return "import {$mappedType};";
-        }
-        
-        // Handle special cases like DateTime which should use java.time
-        if (strtolower($baseType) === 'datetime') {
-            return "import java.time.LocalDateTime;";
-        }
-        
-        // For generic types like List<String> or Map<String, Integer>
-        if (preg_match('/^(\w+)<.*>$/', $baseType, $matches)) {
-            $containerType = $matches[1];
-            $mappedContainerType = self::TYPE_MAPPING[strtolower($containerType)] ?? null;
-            
-            if ($mappedContainerType !== null && strpos($mappedContainerType, '.') !== false) {
-                return "import {$mappedContainerType};";
-            }
-        }
-        
-        // For other custom types in the same package
-        if (!in_array($baseType, ['String', 'Object', 'Integer', 'Boolean', 'Character', 'Byte', 'Short', 'Long', 'Float', 'Double'])) {
-            return "import {$this->packageName}.{$baseType};";
-        }
-        
-        return '';
-    }
+
     
     /**
      * Generate Java properties from attributes
@@ -285,7 +214,8 @@ class Java11CodeGenerator extends AbstractJavaCodeGenerator
         foreach ($attributes as $attr) {
             $name = $attr['name'];
             $visibility = $this->mapVisibility($attr['visibility'] ?? 'private');
-            $type = isset($attr['type']) ? $this->mapType($attr['type']) : 'Object';
+            $originalType = $attr['type'] ?? 'Object';
+            $mappedType = $this->mapType($originalType);
             
             // Property documentation
             $code .= "    /**\n";
@@ -293,25 +223,25 @@ class Java11CodeGenerator extends AbstractJavaCodeGenerator
             $code .= "     */\n";
             
             // Property declaration
-            $code .= "    {$visibility} {$type} {$name}";
+            $code .= "    {$visibility} {$mappedType} {$name}";
             
             // Add default value if provided
             if (isset($attr['defaultValue'])) {
-                $defaultValue = $this->formatDefaultValue($attr['defaultValue'], $type);
+                $defaultValue = $this->formatDefaultValue($attr['defaultValue'], $mappedType);
                 $code .= " = {$defaultValue}";
             }
             
             $code .= ";\n\n";
             
             // Generate getter
-            $getterPrefix = ($type === 'boolean' || $type === 'Boolean') ? 'is' : 'get';
+            $getterPrefix = ($mappedType === 'boolean' || $mappedType === 'Boolean') ? 'is' : 'get';
             $capitalizedName = ucfirst($name);
             
             $code .= "    /**\n";
             $code .= "     * Get the {$name} value\n";
-            $code .= "     * @return {$type}\n";
+            $code .= "     * @return {$mappedType}\n";
             $code .= "     */\n";
-            $code .= "    public {$type} {$getterPrefix}{$capitalizedName}() {\n";
+            $code .= "    public {$mappedType} {$getterPrefix}{$capitalizedName}() {\n";
             $code .= "        return this.{$name};\n";
             $code .= "    }\n\n";
             
@@ -321,7 +251,7 @@ class Java11CodeGenerator extends AbstractJavaCodeGenerator
                 $code .= "     * Set the {$name} value\n";
                 $code .= "     * @param {$name} The {$name} value\n";
                 $code .= "     */\n";
-                $code .= "    public void set{$capitalizedName}({$type} {$name}) {\n";
+                $code .= "    public void set{$capitalizedName}({$mappedType} {$name}) {\n";
                 $code .= "        this.{$name} = {$name};\n";
                 $code .= "    }\n\n";
             }
@@ -468,12 +398,46 @@ class Java11CodeGenerator extends AbstractJavaCodeGenerator
     }
     
     /**
-     * Generate enum values
+     * Generate enum values from modern enumValues format
+     *
+     * @param array $enumValues
+     * @return string
+     */
+    protected function generateEnumValues(array $enumValues): string
+    {
+        $code = "";
+        $values = [];
+        
+        foreach ($enumValues as $enumValue) {
+            $name = is_array($enumValue) ? $enumValue['name'] : $enumValue;
+            $value = is_array($enumValue) && isset($enumValue['value']) ? $enumValue['value'] : null;
+            
+            if ($value !== null) {
+                // Java enums with values need constructor and field
+                $values[] = "    {$name}(\"{$value}\")";
+            } else {
+                // Simple enum case
+                $values[] = "    {$name}";
+            }
+        }
+        
+        $code .= implode(",\n", $values);
+        
+        // Add semicolon if we have values
+        if (!empty($values)) {
+            $code .= ";\n";
+        }
+        
+        return $code;
+    }
+
+    /**
+     * Generate enum values from legacy attributes format
      *
      * @param array $attributes
      * @return string
      */
-    protected function generateEnumValues(array $attributes): string
+    protected function generateEnumValuesFromAttributes(array $attributes): string
     {
         $code = "";
         $values = [];
@@ -499,7 +463,7 @@ class Java11CodeGenerator extends AbstractJavaCodeGenerator
      * @param string $visibility
      * @return string
      */
-    private function mapVisibility(string $visibility): string
+    protected function mapVisibility(string $visibility): string
     {
         switch ($visibility) {
             case 'private':
@@ -518,7 +482,7 @@ class Java11CodeGenerator extends AbstractJavaCodeGenerator
      * @param string $type
      * @return string
      */
-    private function getDefaultReturnValue(string $type): string
+    protected function getDefaultReturnValue(string $type): string
     {
         switch ($type) {
             case 'boolean':
@@ -561,7 +525,7 @@ class Java11CodeGenerator extends AbstractJavaCodeGenerator
      * @param string $type
      * @return string
      */
-    private function formatDefaultValue(string $value, string $type): string
+    protected function formatDefaultValue(string $value, string $type): string
     {
         switch ($type) {
             case 'float':
@@ -585,21 +549,5 @@ class Java11CodeGenerator extends AbstractJavaCodeGenerator
         }
     }
     
-    /**
-     * Map a UML type to a Java type
-     *
-     * @param string|null $type
-     * @return string|null
-     */
-    protected function mapType(?string $type): ?string
-    {
-        $mappedType = parent::mapType($type);
-        
-        // Special handling for DateTime to ensure consistency
-        if ($type !== null && strtolower($type) === 'datetime') {
-            return 'LocalDateTime';
-        }
-        
-        return $mappedType;
-    }
+
 } 

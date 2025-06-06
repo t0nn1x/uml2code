@@ -26,11 +26,24 @@ abstract class AbstractPhpCodeGenerator extends AbstractLanguageCodeGenerator im
         'object' => 'object',
         'mixed' => 'mixed',
         'DateTime' => '\\DateTime',
+        'datetime' => '\\DateTime',
         'Map' => 'array',
+        'map' => 'array',
         'List' => 'array',
-        'byte[]' => 'string',
+        'list' => 'array',
+        'Set' => 'array',
+        'set' => 'array',
+        'Collection' => 'array',
+        'collection' => 'array',
+        'Vector' => 'array',
+        'vector' => 'array',
+        'byte' => 'int',
+        'byte[]' => 'array',
         'long' => 'int',
         'UUID' => 'string',
+        'uuid' => 'string',
+        'Status' => 'string',
+        'status' => 'string',
     ];
 
     /**
@@ -58,6 +71,21 @@ abstract class AbstractPhpCodeGenerator extends AbstractLanguageCodeGenerator im
     public function getNamespacePrefix(): string
     {
         return $this->namespacePrefix;
+    }
+    
+    /**
+     * Map UML visibility to PHP visibility
+     *
+     * @param string $visibility The UML visibility
+     * @return string The PHP visibility
+     */
+    protected function mapVisibility(string $visibility): string
+    {
+        return match ($visibility) {
+            'package' => 'protected', // UML package visibility maps to protected in PHP
+            'public', 'private', 'protected' => $visibility,
+            default => 'public',
+        };
     }
     
     /**

@@ -26,13 +26,21 @@ abstract class AbstractJavaCodeGenerator extends AbstractLanguageCodeGenerator i
         'object' => 'Object',
         'mixed' => 'Object',
         'DateTime' => 'java.time.LocalDateTime',
+        'datetime' => 'java.time.LocalDateTime',
+        'LocalDateTime' => 'java.time.LocalDateTime',
+        'localdatetime' => 'java.time.LocalDateTime',
         'Map' => 'java.util.Map',
+        'map' => 'java.util.Map',
         'List' => 'java.util.List',
+        'list' => 'java.util.List',
         'Set' => 'java.util.Set',
+        'set' => 'java.util.Set',
         'Collection' => 'java.util.Collection',
+        'collection' => 'java.util.Collection',
         'byte[]' => 'byte[]',
         'long' => 'long',
         'UUID' => 'java.util.UUID',
+        'uuid' => 'java.util.UUID',
     ];
 
     /**
@@ -89,15 +97,86 @@ abstract class AbstractJavaCodeGenerator extends AbstractLanguageCodeGenerator i
             // Map the base type
             $javaBaseType = self::TYPE_MAPPING[strtolower($baseType)] ?? $baseType;
             
-            // If it's a fully qualified name already, don't wrap in java.util
-            if (strpos($javaBaseType, '.') === false && in_array(strtolower($baseType), ['list', 'map', 'set', 'collection'])) {
-                $javaBaseType = 'java.util.' . $javaBaseType;
+            // Extract just the class name if it's fully qualified
+            if (strpos($javaBaseType, '.') !== false) {
+                $parts = explode('.', $javaBaseType);
+                $simpleBaseType = end($parts);
+            } else {
+                $simpleBaseType = $javaBaseType;
             }
             
-            return $javaBaseType . '<' . $typeArgs . '>';
+            // Process type arguments recursively
+            $processedTypeArgs = $this->processTypeArguments($typeArgs);
+            
+            return $simpleBaseType . '<' . $processedTypeArgs . '>';
+        }
+        
+        // Special handling for void - only allow in return types, not field types
+        if (strtolower($type) === 'void') {
+            return 'void';
         }
         
         // Look up in the mapping table
-        return self::TYPE_MAPPING[strtolower($type)] ?? $type;
+        $mapped = self::TYPE_MAPPING[strtolower($type)] ?? $type;
+        
+        // If it's a fully qualified type, extract just the class name for use in code
+        if (strpos($mapped, '.') !== false) {
+            $parts = explode('.', $mapped);
+            return end($parts);
+        }
+        
+        return $mapped;
+    }
+    
+    /**
+     * Process type arguments for generics
+     *
+     * @param string $typeArgs
+     * @return string
+     */
+    protected function processTypeArguments(string $typeArgs): string
+    {
+        // Split type arguments by comma (but respect nested generics)
+        $args = [];
+        $current = '';
+        $depth = 0;
+        
+        for ($i = 0; $i < strlen($typeArgs); $i++) {
+            $char = $typeArgs[$i];
+            
+            if ($char === '<') {
+                $depth++;
+            } elseif ($char === '>') {
+                $depth--;
+            } elseif ($char === ',' && $depth === 0) {
+                $args[] = trim($current);
+                $current = '';
+                continue;
+            }
+            
+            $current .= $char;
+        }
+        
+        if (!empty($current)) {
+            $args[] = trim($current);
+        }
+        
+        // Map each type argument, but avoid recursive mapping for simple types
+        $mappedArgs = [];
+        foreach ($args as $arg) {
+            $trimmedArg = trim($arg);
+            // Direct mapping lookup without recursive mapType call to avoid duplication
+            $mapped = self::TYPE_MAPPING[strtolower($trimmedArg)] ?? $trimmedArg;
+            
+            // If it's a fully qualified type, extract just the class name
+            if (strpos($mapped, '.') !== false) {
+                $parts = explode('.', $mapped);
+                $mapped = end($parts);
+            }
+            
+            $mappedArgs[] = $mapped;
+        }
+        
+        return implode(', ', $mappedArgs);
     }
 } 

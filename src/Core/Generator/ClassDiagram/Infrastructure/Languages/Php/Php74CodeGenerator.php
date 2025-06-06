@@ -213,9 +213,35 @@ class Php74CodeGenerator extends AbstractPhpCodeGenerator
             'string', 'int', 'float', 'bool', 'array', 'object', 'mixed', 'void', 'null', 'callable', 'iterable', 'resource'
         ];
         
+        // Remove array notation
         $typeWithoutArrayNotation = rtrim($type, '[]');
-        return in_array(strtolower($typeWithoutArrayNotation), $builtinTypes) || 
-               array_key_exists(strtolower($typeWithoutArrayNotation), self::TYPE_MAPPING);
+        
+        // Check if it's a basic built-in type
+        if (in_array(strtolower($typeWithoutArrayNotation), $builtinTypes)) {
+            return true;
+        }
+        
+        // Check if it's in the type mapping (these are treated as built-in for import purposes)
+        if (array_key_exists(strtolower($typeWithoutArrayNotation), static::TYPE_MAPPING)) {
+            return true;
+        }
+        
+        // Handle generic types like Map<string, string>, List<Type>
+        if (preg_match('/^(\w+)\s*<.+>$/', $typeWithoutArrayNotation, $matches)) {
+            $baseType = strtolower($matches[1]);
+            // Generic containers that map to PHP built-ins should not generate imports
+            if (in_array($baseType, ['map', 'list', 'set', 'collection', 'array', 'vector'])) {
+                return true;
+            }
+        }
+        
+        // Handle template parameters (single letters or common template names)
+        if (preg_match('/^[A-Z]$/', $typeWithoutArrayNotation) || 
+            in_array($typeWithoutArrayNotation, ['T', 'K', 'V', 'E', 'R'])) {
+            return true;
+        }
+        
+        return false;
     }
     
     /**
@@ -226,9 +252,14 @@ class Php74CodeGenerator extends AbstractPhpCodeGenerator
      */
     protected function extractBaseType(string $type): string
     {
-        // For array types like 'string[]'
+        // For array types like 'string[]', check if the base type should be ignored
         if (substr($type, -2) === '[]') {
-            return $this->extractBaseType(substr($type, 0, -2));
+            $baseType = substr($type, 0, -2);
+            // If the base type is in our type mapping, don't extract it for imports
+            if (array_key_exists(strtolower($baseType), static::TYPE_MAPPING)) {
+                return $type; // Return the full type which will be handled by isBuiltinType
+            }
+            return $this->extractBaseType($baseType);
         }
         
         // For generic types like 'List<string>'
@@ -249,13 +280,34 @@ class Php74CodeGenerator extends AbstractPhpCodeGenerator
     {
         $code = "";
         
+        // Check for enum values first (modern parser format)
+        if (!empty($classData['enumValues'])) {
+            foreach ($classData['enumValues'] as $enumValue) {
+                $name = is_array($enumValue) ? $enumValue['name'] : $enumValue;
+                $value = is_array($enumValue) && isset($enumValue['value']) ? $enumValue['value'] : null;
+                
+                // Default value handling
+                if ($value === null) {
+                    $defaultValue = "'{$name}'"; // String default
+                } else {
+                    // If it's numeric, don't quote it
+                    $defaultValue = is_numeric($value) ? $value : "'{$value}'";
+                }
+                
+                $code .= "    public const {$name} = {$defaultValue};\n";
+            }
+            $code .= "\n";
+            return $code;
+        }
+        
+        // Fallback to old format (legacy parser)
         if (empty($classData['attributes'])) {
             return $code;
         }
         
         foreach ($classData['attributes'] as $attr) {
             $name = $attr['name'];
-            $visibility = $attr['visibility'] ?? 'public';
+            $visibility = $this->mapVisibility($attr['visibility'] ?? 'public');
             $defaultValue = $attr['defaultValue'] ?? "'{$name}'";
             
             $code .= "    {$visibility} const {$name} = {$defaultValue};\n";
@@ -277,7 +329,7 @@ class Php74CodeGenerator extends AbstractPhpCodeGenerator
         
         foreach ($attributes as $attr) {
             $name = $attr['name'];
-            $visibility = $attr['visibility'] ?? 'public';
+            $visibility = $this->mapVisibility($attr['visibility'] ?? 'public');
             $type = isset($attr['type']) ? $this->mapType($attr['type']) : null;
             
             // Property docblock
@@ -344,7 +396,7 @@ class Php74CodeGenerator extends AbstractPhpCodeGenerator
         
         foreach ($methods as $method) {
             $name = $method['name'];
-            $visibility = $method['visibility'] ?? 'public';
+            $visibility = $this->mapVisibility($method['visibility'] ?? 'public');
             $returnType = isset($method['returnType']) ? $this->mapType($method['returnType']) : null;
             $parameters = $method['parameters'] ?? [];
             
