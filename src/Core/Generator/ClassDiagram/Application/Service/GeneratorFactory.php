@@ -4,6 +4,12 @@ namespace App\Core\Generator\ClassDiagram\Application\Service;
 
 use App\Core\Generator\ClassDiagram\Domain\Exception\GeneratorException;
 use App\Core\Generator\ClassDiagram\Domain\Model\CodeGenerator;
+use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Csharp\Csharp10CodeGenerator;
+use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Csharp\Csharp11CodeGenerator;
+use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Csharp\Csharp6CodeGenerator;
+use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Csharp\Csharp7CodeGenerator;
+use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Csharp\Csharp8CodeGenerator;
+use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Csharp\Csharp9CodeGenerator;
 use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Java\Java8CodeGenerator;
 use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Java\Java11CodeGenerator;
 use App\Core\Generator\ClassDiagram\Infrastructure\Languages\Java\Java17CodeGenerator;
@@ -83,6 +89,21 @@ class GeneratorFactory
                 }
                 break;
             
+            case 'C#':
+                if (version_compare($version, '6', '>=') && version_compare($version, '7', '<')) {
+                    return new Csharp6CodeGenerator($diagram, $language, $version);
+                } elseif (version_compare($version, '7', '>=') && version_compare($version, '8', '<')) {
+                    return new Csharp7CodeGenerator($diagram, $language, $version);
+                } elseif (version_compare($version, '8', '>=') && version_compare($version, '9', '<')) {
+                    return new Csharp8CodeGenerator($diagram, $language, $version);
+                } elseif (version_compare($version, '9', '>=') && version_compare($version, '10', '<')) {
+                    return new Csharp9CodeGenerator($diagram, $language, $version);
+                } elseif (version_compare($version, '10', '>=') && version_compare($version, '11', '<')) {
+                    return new Csharp10CodeGenerator($diagram, $language, $version);
+                } elseif (version_compare($version, '11', '>=') && version_compare($version, '12', '<')) {
+                    return new Csharp11CodeGenerator($diagram, $language, $version);
+                }
+                break;
             // Add cases for other languages here
         }
         
@@ -103,6 +124,7 @@ class GeneratorFactory
             'PHP' => ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4'],
             'JAVA' => ['8', '11', '17', '21'],
             'PYTHON' => ['3.8', '3.9', '3.10', '3.11', '3.12'],
+            'C#' => ['6', '7', '8', '9', '10', '11'],
             // Add more languages here as they are implemented
         ];
     }
