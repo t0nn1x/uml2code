@@ -1,0 +1,167 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}
+    <h1 class="content-title">
+        <i class="fas fa-tachometer-alt"></i>
+        UML2Code Admin Dashboard
+    </h1>
+{% endblock %}
+
+{% block main %}
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ user_count ?? 0 }}</h4>
+                            <p>Total Users</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ action_count ?? 0 }}</h4>
+                            <p>Total Actions</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-history fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ error_logs ?? 0 }}</h4>
+                            <p>Error Logs</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ active_users ?? 0 }}</h4>
+                            <p>Active Users (24h)</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-user-check fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-line"></i> Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_actions is defined and recent_actions|length > 0 %}
+                        <div class="list-group list-group-flush">
+                            {% for action in recent_actions %}
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ action.actionType|title }}</strong>
+                                        {% if action.user %}
+                                            by {{ action.user.email }}
+                                        {% endif %}
+                                        <br>
+                                        <small class="text-muted">{{ action.createdAt|date('Y-m-d H:i:s') }}</small>
+                                    </div>
+                                    <span class="badge badge-primary">{{ action.programmingLanguage|default('N/A') }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No recent activity</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-exclamation-circle"></i> Recent Errors</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_errors is defined and recent_errors|length > 0 %}
+                        <div class="list-group list-group-flush">
+                            {% for error in recent_errors %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="badge badge-{{ error.level == 'error' ? 'danger' : 'warning' }}">{{ error.level|upper }}</span>
+                                        <small class="text-muted">{{ error.createdAt|date('Y-m-d H:i:s') }}</small>
+                                    </div>
+                                    <p class="mb-1">{{ error.message|slice(0, 100) }}{% if error.message|length > 100 %}...{% endif %}</p>
+                                    <small class="text-muted">{{ error.channel }}</small>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No recent errors</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-tools"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a href="{{ ea_url().setController('App\\Controller\\Admin\\UserCrudController') }}" class="btn btn-primary btn-block">
+                                <i class="fas fa-users"></i> Manage Users
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ ea_url().setController('App\\Controller\\Admin\\ActionHistoryCrudController') }}" class="btn btn-success btn-block">
+                                <i class="fas fa-history"></i> View Actions
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ ea_url().setController('App\\Controller\\Admin\\SystemLogCrudController') }}" class="btn btn-warning btn-block">
+                                <i class="fas fa-file-alt"></i> System Logs
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ path('app_dashboard') }}" class="btn btn-info btn-block">
+                                <i class="fas fa-arrow-left"></i> Back to Site
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %} 
