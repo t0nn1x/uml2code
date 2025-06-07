@@ -70,16 +70,20 @@ class UserCrudController extends AbstractCrudController
 
     public function configureActions(Actions $actions): Actions
     {
-        $deleteAction = Action::new('safeDelete', 'Delete', 'fa fa-trash')
-            ->linkToCrudAction('delete')
-            ->addCssClass('btn btn-danger')
-            ->setHtmlAttributes(['onclick' => 'return confirm("⚠️ WARNING: This will permanently delete the user and all related data (OAuth connections, reset password requests)!\\n\\nThis action cannot be undone. Are you sure?")']);
-
         return $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->remove(Crud::PAGE_INDEX, Action::DELETE)
-            ->add(Crud::PAGE_INDEX, $deleteAction)
-            ->setPermission('safeDelete', 'ROLE_SUPER_ADMIN')
+            ->update(Crud::PAGE_INDEX, Action::DELETE, function (Action $action) {
+                return $action
+                    ->setIcon('fa fa-trash')
+                    ->setLabel('Delete')
+                    ->addCssClass('text-danger')
+                    ->setHtmlAttributes([
+                        'onclick' => 'return confirm("⚠️ WARNING: This will permanently delete the user and all related data (OAuth connections, reset password requests)!\\n\\nThis action cannot be undone. Are you sure?")',
+                        'title' => 'Delete User',
+                        'style' => 'color: #dc3545 !important;'
+                    ]);
+            })
+            ->setPermission(Action::DELETE, 'ROLE_SUPER_ADMIN')
             ->setPermission(Action::EDIT, 'ROLE_ADMIN')
             ->setPermission(Action::NEW, 'ROLE_ADMIN');
     }
