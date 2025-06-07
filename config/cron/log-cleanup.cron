@@ -1,0 +1,12 @@
+# UML2Code Automatic Log Cleanup
+# Add this to your system crontab with: crontab -e
+# Then add the line below (adjust paths as needed):
+
+# Clean logs daily at 2:00 AM (forces cleanup regardless of thresholds)
+0 2 * * * /usr/bin/php /path/to/your/project/bin/console app:auto-cleanup-logs --force >> /var/log/uml2code-cleanup.log 2>&1
+
+# Alternative: Run every 6 hours (only cleans if thresholds are met)
+# 0 */6 * * * /usr/bin/php /path/to/your/project/bin/console app:auto-cleanup-logs >> /var/log/uml2code-cleanup.log 2>&1
+
+# Weekly forced cleanup with longer retention (optional)
+# 0 3 * * 0 /usr/bin/php /path/to/your/project/bin/console app:clean-logs 60 >> /var/log/uml2code-cleanup.log 2>&1 

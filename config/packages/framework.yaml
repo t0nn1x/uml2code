@@ -21,6 +21,11 @@ framework:
     default_locale: en
     enabled_locales: ['en', 'uk']
     
+    # Log cleanup configuration
+    # Add these environment variables to your .env file:
+    # LOG_RETENTION_DAYS=30
+    # AUTO_LOG_CLEANUP_ENABLED=true
+
 when@test:
     framework:
         test: true
