@@ -116,20 +116,22 @@ class SystemLogCrudController extends AbstractCrudController
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
-            ->add(ChoiceFilter::new('level')
+            ->add(ChoiceFilter::new('level', 'Log Level')
                 ->setChoices([
-                    'Emergency' => SystemLog::LEVEL_EMERGENCY,
-                    'Alert' => SystemLog::LEVEL_ALERT,
-                    'Critical' => SystemLog::LEVEL_CRITICAL,
-                    'Error' => SystemLog::LEVEL_ERROR,
-                    'Warning' => SystemLog::LEVEL_WARNING,
-                    'Notice' => SystemLog::LEVEL_NOTICE,
-                    'Info' => SystemLog::LEVEL_INFO,
-                    'Debug' => SystemLog::LEVEL_DEBUG,
-                ]))
-            ->add(TextFilter::new('channel'))
-            ->add(EntityFilter::new('user'))
-            ->add(TextFilter::new('ipAddress'))
-            ->add(DateTimeFilter::new('createdAt'));
+                    '🚨 Emergency' => SystemLog::LEVEL_EMERGENCY,
+                    '🔥 Alert' => SystemLog::LEVEL_ALERT,
+                    '💥 Critical' => SystemLog::LEVEL_CRITICAL,
+                    '❌ Error' => SystemLog::LEVEL_ERROR,
+                    '⚠️ Warning' => SystemLog::LEVEL_WARNING,
+                    'ℹ️ Notice' => SystemLog::LEVEL_NOTICE,
+                    '✅ Info' => SystemLog::LEVEL_INFO,
+                    '🔍 Debug' => SystemLog::LEVEL_DEBUG,
+                ])
+                ->canSelectMultiple()
+            )
+            ->add(TextFilter::new('channel', 'Channel'))
+            ->add(EntityFilter::new('user', 'User'))
+            ->add(TextFilter::new('ipAddress', 'IP Address'))
+            ->add(DateTimeFilter::new('createdAt', 'Created At'));
     }
 } 
