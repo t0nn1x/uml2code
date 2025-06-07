@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\ActionHistoryService;
+use App\Service\UserStatisticsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,7 +14,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class DashboardController extends AbstractController
 {
     public function __construct(
-        private readonly ActionHistoryService $historyService
+        private readonly ActionHistoryService $historyService,
+        private readonly UserStatisticsService $statisticsService
     ) {}
 
     #[Route('/dashboard', name: 'app_dashboard')]
@@ -42,18 +44,19 @@ class DashboardController extends AbstractController
                 ], 401);
             }
             
-            $stats = $this->historyService->getDashboardStatistics($user);
+            // Get comprehensive statistics from the new service
+            $stats = $this->statisticsService->getSummaryStatistics($user);
 
             return $this->json([
                 'success' => true,
                 'stats' => [
-                    'diagrams_processed' => $stats['basic']['parse'] ?? 0,
-                    'files_generated' => $stats['total_files'],
-                    'lines_of_code' => $stats['total_lines_of_code'],
-                    'total_actions' => array_sum($stats['basic']),
+                    'diagrams_processed' => $stats['diagrams_processed'],
+                    'files_generated' => $stats['files_generated'],
+                    'lines_of_code' => $stats['lines_of_code'],
+                    'total_actions' => $stats['total_actions'],
                     'last_login' => $user->getLastLoginAt()?->format('c'),
                     'member_since' => $user->getCreatedAt()->format('c'),
-                    'breakdown' => $stats['basic']
+                    'breakdown' => $stats['breakdown']
                 ]
             ]);
         } catch (\Exception $e) {
@@ -109,7 +112,7 @@ class DashboardController extends AbstractController
             $user = $this->getUser();
             $days = (int) $request->query->get('days', 30);
             
-            $trends = $this->historyService->getActivityTrends($user, $days);
+            $trends = $this->statisticsService->getActivityTrends($user, $days);
 
             return $this->json([
                 'success' => true,
@@ -132,7 +135,7 @@ class DashboardController extends AbstractController
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
-        $languages = $this->historyService->getLanguageStatistics($user);
+        $languages = $this->statisticsService->getLanguageStatistics($user);
 
         return $this->json([
             'success' => true,
