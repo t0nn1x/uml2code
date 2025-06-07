@@ -10,11 +10,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\CodeEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\DateTimeFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
@@ -64,13 +64,10 @@ class ActionHistoryCrudController extends AbstractCrudController
 
         // Show files content only on detail page
         if ($pageName === Crud::PAGE_DETAIL) {
-            $fields[] = CodeEditorField::new('files', 'Files')
-                ->setLanguage('javascript')
+            $fields[] = ArrayField::new('files', 'Generated Files')
+                ->setTemplatePath('admin/fields/files_viewer.html.twig')
                 ->hideOnForm()
-                ->setNumOfRows(20)
-                ->formatValue(function ($value) {
-                    return is_array($value) ? json_encode($value, JSON_PRETTY_PRINT) : $value;
-                });
+                ->hideOnIndex();
         }
 
         return $fields;

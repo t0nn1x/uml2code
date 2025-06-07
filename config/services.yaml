@@ -58,3 +58,8 @@ services:
             $entityManager: '@doctrine.orm.entity_manager'
             $requestStack: '@request_stack'
             $security: '@security.helper'
+
+    # Admin Panel Twig Extension
+    App\Twig\AdminExtension:
+        tags:
+            - { name: twig.extension }
