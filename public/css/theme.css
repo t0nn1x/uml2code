@@ -106,7 +106,8 @@ body[data-theme='dark'] input[type="text"],
 body[data-theme='dark'] input[type="email"],
 body[data-theme='dark'] input[type="password"],
 body[data-theme='dark'] textarea {
-    background-color: #334155 !important;
+    background: #1e293b !important;
+    background-color: #1e293b !important;
     border-color: #475569 !important;
     color: #f1f5f9 !important;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3) !important;
@@ -115,7 +116,7 @@ body[data-theme='dark'] textarea {
 body[data-theme='dark'] select:hover,
 body[data-theme='dark'] input:hover,
 body[data-theme='dark'] textarea:hover {
-    background-color: #3f4f5f !important;
+    background-color: #334155 !important;
     border-color: #64748b !important;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4) !important;
 }
@@ -123,13 +124,16 @@ body[data-theme='dark'] textarea:hover {
 body[data-theme='dark'] select:focus,
 body[data-theme='dark'] input:focus,
 body[data-theme='dark'] textarea:focus {
-    background-color: #3f4f5f !important;
+    background-color: #334155 !important;
     border-color: #6366f1 !important;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2), 0 1px 2px 0 rgba(0, 0, 0, 0.3) !important;
 }
 
 body[data-theme='dark'] select {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23cbd5e1' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") !important;
+    background-position: right 0.5rem center !important;
+    background-repeat: no-repeat !important;
+    background-size: 1.5em 1.5em !important;
 }
 
 body[data-theme='dark'] select option {
@@ -170,4 +174,611 @@ body[data-theme='dark'] .shadow-lg {
 
 body[data-theme='dark'] .shadow-sm {
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Login/Register page dark theme fixes */
+body[data-theme='dark'] .bg-gray-100 {
+    background-color: #0f172a !important;
+}
+
+body[data-theme='dark'] .bg-gray-600 {
+    background-color: #475569 !important;
+}
+
+/* Success/Error message backgrounds */
+body[data-theme='dark'] .bg-green-50 {
+    background-color: #064e3b !important;
+}
+
+body[data-theme='dark'] .text-green-800 {
+    color: #86efac !important;
+}
+
+body[data-theme='dark'] .text-green-400 {
+    color: #4ade80 !important;
+}
+
+/* Form container backgrounds */
+body[data-theme='dark'] .bg-white.rounded-md {
+    background-color: #1e293b !important;
+}
+
+/* Specific overrides for login/register form inputs */
+body[data-theme='dark'] input.appearance-none {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+}
+
+body[data-theme='dark'] input.appearance-none:hover {
+    background-color: #334155 !important;
+    border-color: #64748b !important;
+}
+
+body[data-theme='dark'] input.appearance-none:focus {
+    background-color: #334155 !important;
+    border-color: #6366f1 !important;
+}
+
+/* Override any white backgrounds in forms */
+body[data-theme='dark'] form input[type="text"],
+body[data-theme='dark'] form input[type="email"],
+body[data-theme='dark'] form input[type="password"] {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+}
+
+/* Additional specific overrides for registration form fields */
+body[data-theme='dark'] input.w-full,
+body[data-theme='dark'] .w-full input {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+}
+
+body[data-theme='dark'] input.w-full:hover,
+body[data-theme='dark'] .w-full input:hover {
+    background-color: #334155 !important;
+    border-color: #64748b !important;
+}
+
+body[data-theme='dark'] input.w-full:focus,
+body[data-theme='dark'] .w-full input:focus {
+    background-color: #334155 !important;
+    border-color: #6366f1 !important;
+}
+
+/* Override Tailwind specific input styling in dark mode */
+body[data-theme='dark'] input.border-gray-300 {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+}
+
+body[data-theme='dark'] input.text-gray-900 {
+    color: #f1f5f9 !important;
+}
+
+/* Force dark background even when input has content */
+body[data-theme='dark'] input:not(:placeholder-shown) {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+}
+
+body[data-theme='dark'] input:valid {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+}
+
+body[data-theme='dark'] input:invalid {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+}
+
+/* Override any autocomplete styling */
+body[data-theme='dark'] input:-webkit-autofill,
+body[data-theme='dark'] input:-webkit-autofill:hover,
+body[data-theme='dark'] input:-webkit-autofill:focus,
+body[data-theme='dark'] input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #1e293b inset !important;
+    -webkit-text-fill-color: #f1f5f9 !important;
+    background-color: #1e293b !important;
+}
+
+/* Additional specificity for all input states */
+body[data-theme='dark'] form input,
+body[data-theme='dark'] div input,
+body[data-theme='dark'] .bg-white input {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+}
+
+/* Nuclear option - override ALL input styling in dark theme */
+body[data-theme='dark'] input[type="email"],
+body[data-theme='dark'] input[type="password"],
+body[data-theme='dark'] input[type="text"] {
+    background: #1e293b !important;
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+}
+
+/* Ensure empty inputs are also dark */
+body[data-theme='dark'] input:placeholder-shown {
+    background: #1e293b !important;
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+}
+
+/* Target inputs in their default state */
+body[data-theme='dark'] input {
+    background: #1e293b !important;
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+}
+
+/* Super aggressive targeting for all possible input states */
+body[data-theme='dark'] * input,
+body[data-theme='dark'] form * input,
+body[data-theme='dark'] div * input {
+    background: #1e293b !important;
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+}
+
+body[data-theme='dark'] input[type="email"]:focus,
+body[data-theme='dark'] input[type="password"]:focus,
+body[data-theme='dark'] input[type="text"]:focus,
+body[data-theme='dark'] input[type="email"]:active,
+body[data-theme='dark'] input[type="password"]:active,
+body[data-theme='dark'] input[type="text"]:active {
+    background: #334155 !important;
+    background-color: #334155 !important;
+    color: #f1f5f9 !important;
+    border-color: #6366f1 !important;
+}
+
+/* Divider line colors */
+body[data-theme='dark'] .border-t {
+    border-top-color: #475569 !important;
+}
+
+/* "Or continue with" text background */
+body[data-theme='dark'] .bg-white.text-gray-500 {
+    background-color: #1e293b !important;
+    color: #94a3b8 !important;
+}
+
+/* Social login buttons */
+body[data-theme='dark'] a[href*="connect_google"],
+body[data-theme='dark'] a[href*="connect_github"] {
+    background-color: #334155 !important;
+    border-color: #475569 !important;
+    color: #cbd5e1 !important;
+}
+
+body[data-theme='dark'] a[href*="connect_google"]:hover,
+body[data-theme='dark'] a[href*="connect_github"]:hover {
+    background-color: #475569 !important;
+}
+
+/* Home page specific dark theme fixes */
+body[data-theme='dark'] .bg-gradient-to-br {
+    opacity: 0.9;
+}
+
+/* Code preview box on home page */
+body[data-theme='dark'] .bg-white.rounded-lg.shadow-xl {
+    background-color: #1e293b !important;
+}
+
+body[data-theme='dark'] .bg-white.rounded-lg.shadow-xl code {
+    color: #f1f5f9 !important;
+}
+
+/* Feature cards */
+body[data-theme='dark'] .bg-indigo-500 {
+    background-color: #6366f1 !important;
+}
+
+body[data-theme='dark'] .bg-indigo-100 {
+    background-color: #312e81 !important;
+}
+
+body[data-theme='dark'] .text-indigo-700 {
+    color: #a5b4fc !important;
+}
+
+/* Language section circles */
+body[data-theme='dark'] .bg-purple-100 {
+    background-color: #581c87 !important;
+}
+
+body[data-theme='dark'] .bg-red-100 {
+    background-color: #7f1d1d !important;
+}
+
+body[data-theme='dark'] .bg-yellow-100 {
+    background-color: #713f12 !important;
+}
+
+body[data-theme='dark'] .bg-green-100 {
+    background-color: #14532d !important;
+}
+
+/* CTA section */
+body[data-theme='dark'] .bg-indigo-700 {
+    background-color: #312e81 !important;
+}
+
+body[data-theme='dark'] .text-indigo-200 {
+    color: #c7d2fe !important;
+}
+
+body[data-theme='dark'] .bg-white.hover\:bg-indigo-50 {
+    background-color: #e0e7ff !important;
+    color: #312e81 !important;
+}
+
+body[data-theme='dark'] .bg-white.hover\:bg-indigo-50:hover {
+    background-color: #c7d2fe !important;
+}
+
+/* Checkbox styling for dark theme */
+body[data-theme='dark'] input[type="checkbox"] {
+    background-color: #334155 !important;
+    border-color: #475569 !important;
+}
+
+body[data-theme='dark'] input[type="checkbox"]:checked {
+    background-color: #6366f1 !important;
+    border-color: #6366f1 !important;
+}
+
+/* Additional checkbox overrides */
+body[data-theme='dark'] input.h-4.w-4 {
+    background-color: #334155 !important;
+    border-color: #475569 !important;
+}
+
+body[data-theme='dark'] input.h-4.w-4:checked {
+    background-color: #6366f1 !important;
+    border-color: #6366f1 !important;
+}
+
+/* Focus states for form elements */
+body[data-theme='dark'] .focus\:ring-indigo-500:focus {
+    --tw-ring-color: rgba(99, 102, 241, 0.5) !important;
+}
+
+body[data-theme='dark'] .focus\:border-indigo-500:focus {
+    border-color: #6366f1 !important;
+}
+
+/* Placeholder text color */
+body[data-theme='dark'] input::placeholder,
+body[data-theme='dark'] textarea::placeholder {
+    color: #64748b !important;
+}
+
+/* SVG polygon for home page hero section */
+body[data-theme='dark'] .dark\:text-gray-900 {
+    color: #1e293b !important;
+}
+
+/* Form error messages */
+body[data-theme='dark'] .text-red-800 {
+    color: #fca5a5 !important;
+}
+
+body[data-theme='dark'] .text-red-400 {
+    color: #f87171 !important;
+}
+
+/* Additional form field states */
+body[data-theme='dark'] .placeholder-gray-400::placeholder {
+    color: #64748b !important;
+}
+
+/* Labels in forms */
+body[data-theme='dark'] label {
+    color: #cbd5e1 !important;
+}
+
+/* Links in dark theme */
+body[data-theme='dark'] a.text-indigo-600 {
+    color: #818cf8 !important;
+}
+
+body[data-theme='dark'] a.text-indigo-600:hover {
+    color: #a5b4fc !important;
+}
+
+/* Hero section background fix */
+body[data-theme='dark'] section.bg-white {
+    background-color: #0f172a !important;
+}
+
+/* Fix for nested bg-white elements in hero */
+body[data-theme='dark'] .bg-white.sm\:pb-16 {
+    background-color: #0f172a !important;
+}
+
+/* Language icons text color */
+body[data-theme='dark'] .text-purple-600 {
+    color: #a78bfa !important;
+}
+
+body[data-theme='dark'] .text-red-600 {
+    color: #f87171 !important;
+}
+
+body[data-theme='dark'] .text-yellow-600 {
+    color: #fbbf24 !important;
+}
+
+body[data-theme='dark'] .text-green-600 {
+    color: #4ade80 !important;
+}
+
+/* Updated language icon colors for dark theme */
+body[data-theme='dark'] .text-indigo-600 {
+    color: #818cf8 !important;
+}
+
+body[data-theme='dark'] .text-orange-600 {
+    color: #fb923c !important;
+}
+
+body[data-theme='dark'] .text-blue-600 {
+    color: #60a5fa !important;
+}
+
+body[data-theme='dark'] .text-cyan-600 {
+    color: #22d3ee !important;
+}
+
+/* Background colors for language icons in dark theme */
+body[data-theme='dark'] .bg-indigo-100 {
+    background-color: #312e81 !important;
+}
+
+body[data-theme='dark'] .bg-orange-100 {
+    background-color: #9a3412 !important;
+}
+
+body[data-theme='dark'] .bg-blue-100 {
+    background-color: #1e3a8a !important;
+}
+
+body[data-theme='dark'] .bg-cyan-100 {
+    background-color: #164e63 !important;
+}
+
+/* Border colors for language icons in dark theme */
+body[data-theme='dark'] .border-purple-200 {
+    border-color: #6b46c1 !important;
+}
+
+body[data-theme='dark'] .border-orange-200 {
+    border-color: #ea580c !important;
+}
+
+body[data-theme='dark'] .border-green-200 {
+    border-color: #16a34a !important;
+}
+
+body[data-theme='dark'] .border-indigo-200 {
+    border-color: #6366f1 !important;
+}
+
+body[data-theme='dark'] .border-yellow-200 {
+    border-color: #eab308 !important;
+}
+
+body[data-theme='dark'] .border-cyan-200 {
+    border-color: #0891b2 !important;
+}
+
+/* Fix opacity for disabled language items */
+body[data-theme='dark'] .opacity-50 {
+    opacity: 0.5 !important;
+}
+
+/* Z-index fixes for header and hero section layering */
+header {
+    position: relative;
+    z-index: 50 !important;
+}
+
+/* Ensure language menu and user menu are above everything */
+#language-menu,
+#user-menu {
+    z-index: 60 !important;
+}
+
+/* Hero section should be below header */
+.hero-section {
+    position: relative;
+    z-index: 1 !important;
+}
+
+/* Z-index utility classes */
+.z-1 {
+    z-index: 1 !important;
+}
+
+/* Language switcher dropdown improvements */
+#language-menu {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    backdrop-filter: blur(8px);
+}
+
+#language-menu a {
+    color: #374151 !important;
+    transition: all 0.15s ease-in-out !important;
+    font-weight: 500 !important;
+}
+
+#language-menu a:hover {
+    background-color: #f3f4f6 !important;
+    color: #1f2937 !important;
+    transform: translateX(2px);
+}
+
+/* Dark theme language switcher */
+body[data-theme='dark'] #language-menu {
+    background-color: #1e293b !important;
+    border-color: #475569 !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2) !important;
+}
+
+body[data-theme='dark'] #language-menu a {
+    color: #e2e8f0 !important;
+}
+
+body[data-theme='dark'] #language-menu a:hover {
+    background-color: #334155 !important;
+    color: #f1f5f9 !important;
+}
+
+/* Language switcher button styling improvements */
+#language-switcher {
+    padding: 6px 12px !important;
+    border-radius: 6px !important;
+    transition: all 0.15s ease-in-out !important;
+    font-weight: 500 !important;
+}
+
+#language-switcher:hover {
+    background-color: #f9fafb !important;
+    color: #1f2937 !important;
+}
+
+body[data-theme='dark'] #language-switcher:hover {
+    background-color: #374151 !important;
+    color: #f9fafb !important;
+}
+
+/* User menu improvements for consistency */
+#user-menu {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    backdrop-filter: blur(8px);
+}
+
+#user-menu a,
+#user-menu button {
+    color: #374151 !important;
+    transition: all 0.15s ease-in-out !important;
+    font-weight: 500 !important;
+}
+
+#user-menu a:hover,
+#user-menu button:hover {
+    background-color: #f3f4f6 !important;
+    color: #1f2937 !important;
+    transform: translateX(2px);
+}
+
+/* Dark theme user menu */
+body[data-theme='dark'] #user-menu {
+    background-color: #1e293b !important;
+    border-color: #475569 !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2) !important;
+}
+
+body[data-theme='dark'] #user-menu a,
+body[data-theme='dark'] #user-menu button {
+    color: #e2e8f0 !important;
+}
+
+body[data-theme='dark'] #user-menu a:hover,
+body[data-theme='dark'] #user-menu button:hover {
+    background-color: #334155 !important;
+    color: #f1f5f9 !important;
+}
+
+/* Language section improvements for SVG icons */
+.language-icon-circle {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.language-icon-circle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Dark theme support for language icons */
+body[data-theme='dark'] .language-icon-circle {
+    background-color: #1e293b !important;
+    border-color: #475569 !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2) !important;
+}
+
+body[data-theme='dark'] .language-icon-circle:hover {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Active navigation states for dark theme */
+body[data-theme='dark'] .bg-indigo-50 {
+    background-color: #312e81 !important;
+}
+
+body[data-theme='dark'] .border-indigo-600 {
+    border-color: #6366f1 !important;
+}
+
+body[data-theme='dark'] .border-l-4 {
+    border-left-width: 4px !important;
+}
+
+body[data-theme='dark'] .border-b-2 {
+    border-bottom-width: 2px !important;
+}
+
+/* History action badges dark theme support */
+body[data-theme='dark'] .bg-green-100 {
+    background-color: #064e3b !important;
+}
+
+body[data-theme='dark'] .text-green-800 {
+    color: #86efac !important;
+}
+
+body[data-theme='dark'] .bg-blue-100 {
+    background-color: #1e3a8a !important;
+}
+
+body[data-theme='dark'] .text-blue-800 {
+    color: #93c5fd !important;
+}
+
+body[data-theme='dark'] .bg-indigo-100 {
+    background-color: #312e81 !important;
+}
+
+body[data-theme='dark'] .text-indigo-800 {
+    color: #a5b4fc !important;
+}
+
+/* History modal dark theme support */
+body[data-theme='dark'] .bg-white {
+    background-color: #1e293b !important;
+}
+
+body[data-theme='dark'] .text-gray-400 {
+    color: #94a3b8 !important;
+}
+
+body[data-theme='dark'] .hover\:text-gray-600:hover {
+    color: #e2e8f0 !important;
 }

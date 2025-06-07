@@ -4,16 +4,67 @@
 
 The UML2Code Dashboard provides users with a comprehensive overview of their activity, usage statistics, and visual insights into their UML processing history. The dashboard combines real-time data visualization with detailed analytics to help users track their productivity and understand their usage patterns.
 
+## NEW: Comprehensive Statistics System
+
+### Problem Solved
+
+The original dashboard had a critical limitation: statistics were calculated from the `action_history` table which only kept the latest 20 records per action type (parse, convert, generate). This meant:
+
+1. **Total actions** could never exceed 60 (20 × 3 action types)
+2. **Diagrams processed** was capped at 20
+3. **Files generated** and **lines of code** were recalculated each time, losing historical data
+4. **Language usage** statistics were incomplete and would reset when old records were deleted
+
+### Solution: UserStatistics Entity
+
+We've implemented a comprehensive statistics tracking system with a new `UserStatistics` entity that stores persistent, cumulative data:
+
+#### New Database Table: `user_statistics`
+
+```sql
+CREATE TABLE user_statistics (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL UNIQUE,
+    total_parse_actions INT DEFAULT 0,
+    total_convert_actions INT DEFAULT 0, 
+    total_generate_actions INT DEFAULT 0,
+    total_files_generated INT DEFAULT 0,
+    total_lines_of_code BIGINT DEFAULT 0,
+    language_statistics JSON,
+    last_updated TIMESTAMP,
+    created_at TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+```
+
+#### Key Improvements
+
+- ✅ **Unlimited action tracking** (no more 60-action limit)
+- ✅ **Accurate all-time statistics** (persistent cumulative data)
+- ✅ **Complete language usage data** (never resets)
+- ✅ **Real-time updates via events** (automatic statistics updates)
+- ✅ **Backward compatible** (existing functionality unchanged)
+
+#### Migration Commands
+
+```bash
+# Migrate existing users to new statistics system
+php bin/console app:migrate-user-statistics
+
+# Run database migrations
+php bin/console doctrine:migrations:migrate
+```
+
 ## Features
 
 ### 📊 Enhanced Statistics
 
-The dashboard displays four key metrics in an improved grid layout with fast-loading animated counters:
+The dashboard displays four key metrics in an improved grid layout with fast-loading animated counters. **Now powered by the comprehensive statistics system** for unlimited, accurate tracking:
 
-- **Diagrams Processed**: Total number of UML diagrams parsed
-- **Files Converted**: Total number of code files created through conversion and generation
-- **Lines of Code**: Cumulative lines of code generated across all operations (optimized for fast loading)
-- **Total Actions**: Sum of all user activities (parse, convert, generate)
+- **Diagrams Processed**: Total number of UML diagrams parsed *(unlimited - no longer capped at 20)*
+- **Files Converted**: Total number of code files created through conversion and generation *(persistent cumulative total)*
+- **Lines of Code**: Cumulative lines of code generated across all operations *(never resets, all-time total)*
+- **Total Actions**: Sum of all user activities (parse, convert, generate) *(unlimited - no longer capped at 60)*
 
 ### 📈 Interactive Charts
 
@@ -45,6 +96,30 @@ Recent activity list now shows:
 
 ### Backend Architecture
 
+#### Comprehensive Statistics System
+
+The new statistics system consists of:
+
+1. **UserStatistics Entity** (`src/Entity/UserStatistics.php`)
+   - Stores cumulative statistics per user
+   - Provides increment methods for atomic updates
+   - Handles language statistics as JSON
+
+2. **UserStatisticsRepository** (`src/Repository/UserStatisticsRepository.php`)
+   - CRUD operations for statistics
+   - Migration methods from action history
+   - Comprehensive statistics retrieval
+
+3. **UserStatisticsService** (`src/Service/UserStatisticsService.php`)
+   - Business logic for statistics management
+   - Dashboard data aggregation
+   - Batch migration capabilities
+
+4. **Event System**
+   - `ActionRecordedEvent`: Dispatched when actions are recorded
+   - `ActionRecordedListener`: Updates statistics automatically
+   - Prevents circular dependencies between services
+
 #### Enhanced ActionHistory Entity
 
 The `ActionHistory` entity has been extended with new fields:
@@ -60,12 +135,11 @@ private ?int $diagramSize = null;
 
 #### ActionHistoryService Enhancements
 
-New methods added for comprehensive dashboard statistics:
+The service now integrates with the comprehensive statistics system via events:
 
 ```php
-public function getDashboardStatistics(User $user): array
-public function getActivityTrends(User $user, int $days = 30): array
-public function getLanguageStatistics(User $user): array
+// Dispatches events to update comprehensive statistics
+$this->eventDispatcher->dispatch(new ActionRecordedEvent($user, $history));
 ```
 
 #### Repository Methods
@@ -92,21 +166,21 @@ GET /api/dashboard/languages    - Programming language usage breakdown
 
 #### Response Formats
 
-**Summary Response:**
+**Summary Response (now with unlimited values):**
 ```json
 {
     "success": true,
     "stats": {
-        "diagrams_processed": 15,
-        "files_generated": 45,
-        "lines_of_code": 1250,
-        "total_actions": 60,
+        "diagrams_processed": 150,    // All-time total (no longer capped)
+        "files_generated": 450,       // All-time total (persistent)
+        "lines_of_code": 15000,       // All-time total (never resets)
+        "total_actions": 500,         // All-time total (unlimited)
         "last_login": "2024-06-05T14:30:00Z",
         "member_since": "2024-05-01T09:15:00Z",
         "breakdown": {
-            "parse": 15,
-            "convert": 25,
-            "generate": 20
+            "parse": 150,             // Comprehensive statistics
+            "convert": 200,
+            "generate": 150
         }
     }
 }
@@ -447,6 +521,16 @@ This adds the new fields to the `action_history` table without data loss.
 
 ## Changelog
 
+### Version 3.0 (December 2024) - **Comprehensive Statistics System**
+- **🚀 MAJOR**: Implemented comprehensive statistics system with UserStatistics entity
+- **📊 UNLIMITED**: Removed 20-record limitation for all dashboard statistics
+- **💾 PERSISTENT**: All-time cumulative data that never resets
+- **🔄 EVENTS**: Event-driven statistics updates via ActionRecordedEvent
+- **📈 ACCURATE**: Complete language usage tracking with persistent counts
+- **🛠️ MIGRATION**: Console command for migrating existing users
+- **⚡ PERFORMANCE**: Optimized incremental updates instead of recalculation
+- **🔄 COMPATIBLE**: Fully backward compatible with existing functionality
+
 ### Version 2.1 (December 2024)
 - **Performance**: Optimized counter animations (800ms duration, 60 FPS)
 - **Compatibility**: Full PostgreSQL support with native date functions
@@ -464,5 +548,5 @@ This adds the new fields to the `action_history` table without data loss.
 ---
 
 **Last Updated**: December 2024  
-**Version**: 2.1  
+**Version**: 3.0 - Comprehensive Statistics System  
 **Maintainer**: UML2Code Development Team 

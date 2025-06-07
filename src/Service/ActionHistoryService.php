@@ -4,9 +4,11 @@ namespace App\Service;
 
 use App\Entity\ActionHistory;
 use App\Entity\User;
+use App\Event\ActionRecordedEvent;
 use App\Repository\ActionHistoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Service for managing action history
@@ -18,7 +20,8 @@ class ActionHistoryService
     public function __construct(
         private readonly ActionHistoryRepository $repository,
         private readonly EntityManagerInterface $entityManager,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly EventDispatcherInterface $eventDispatcher
     ) {}
 
     /**
@@ -61,6 +64,9 @@ class ActionHistoryService
 
         // Save the entry
         $this->repository->save($history, true);
+
+        // Dispatch event to update comprehensive user statistics
+        $this->eventDispatcher->dispatch(new ActionRecordedEvent($user, $history));
 
         // Clean up old entries (keep only the latest 30)
         $deletedCount = $this->repository->deleteOldEntries($user, $actionType, self::MAX_ENTRIES_PER_ACTION);
@@ -140,31 +146,7 @@ class ActionHistoryService
     }
 
     /**
-     * Get comprehensive dashboard statistics for a user
-     *
-     * @param User $user The user
-     * @return array Comprehensive statistics
-     */
-    public function getDashboardStatistics(User $user): array
-    {
-        $basicStats = $this->repository->getStatsByUser($user);
-        $languageStats = $this->repository->getLanguageStatsByUser($user);
-        $dailyStats = $this->repository->getDailyActivityByUser($user, 30);
-        $totalLines = $this->repository->getTotalLinesOfCodeByUser($user);
-        $totalFiles = $this->repository->getTotalFilesByUser($user);
-
-        return [
-            'basic' => $basicStats,
-            'languages' => $languageStats,
-            'daily_activity' => $dailyStats,
-            'total_lines_of_code' => $totalLines,
-            'total_files' => $totalFiles,
-            'last_activity' => $this->repository->getLastActivityByUser($user)
-        ];
-    }
-
-    /**
-     * Get activity trends for a user
+     * Get activity trends for a user from history (for recent trends)
      *
      * @param User $user The user
      * @param int $days Number of days to look back
@@ -173,16 +155,5 @@ class ActionHistoryService
     public function getActivityTrends(User $user, int $days = 30): array
     {
         return $this->repository->getDailyActivityByUser($user, $days);
-    }
-
-    /**
-     * Get language usage statistics for a user
-     *
-     * @param User $user The user
-     * @return array Language usage breakdown
-     */
-    public function getLanguageStatistics(User $user): array
-    {
-        return $this->repository->getLanguageStatsByUser($user);
     }
 }

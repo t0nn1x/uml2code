@@ -27,10 +27,19 @@
                 <!-- Input Section -->
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            {{ 'generator.input_label'|trans }}
-                        </label>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-sm font-medium text-gray-700">
+                                {{ 'generator.input_label'|trans }}
+                            </label>
+                                                    <button id="import-json-btn" class="text-sm text-indigo-600 hover:text-indigo-500 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+                            </svg>
+                            {{ 'common.import_json_file'|trans }}
+                        </button>
+                        </div>
                         <div id="json-editor" class="border border-gray-300 rounded-md" style="height: 400px;"></div>
+                        <input type="file" id="json-file-input" accept=".json,.txt" class="hidden">
                     </div>
 
                     <!-- Language Selection -->
@@ -266,7 +275,81 @@ require([
         language: 'json',
         theme: window.monacoTheme,
         minimap: { enabled: false },
-        automaticLayout: true
+        automaticLayout: true,
+        fontSize: 13,
+        lineNumbers: 'on',
+        wordWrap: 'on'
+    });
+
+    // Handle JSON file import
+    const importJsonBtn = document.getElementById('import-json-btn');
+    const jsonFileInput = document.getElementById('json-file-input');
+    
+    importJsonBtn.addEventListener('click', function() {
+        jsonFileInput.click();
+    });
+    
+    jsonFileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Check file extension
+            const validExtensions = ['.json', '.txt'];
+            const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+            
+            if (!validExtensions.includes(fileExtension)) {
+                showError('{{ 'import.error.invalid_json_file'|trans }}');
+                return;
+            }
+            
+            // Check file size (max 1MB)
+            if (file.size > 1024 * 1024) {
+                showError('{{ 'import.error.file_too_large'|trans }}');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const content = e.target.result;
+                    
+                    // Validate JSON syntax
+                    try {
+                        JSON.parse(content);
+                    } catch (jsonError) {
+                        showError('{{ 'import.error.invalid_json_syntax'|trans }}: ' + jsonError.message);
+                        return;
+                    }
+                    
+                    // Set the content in the Monaco editor
+                    jsonEditorInstance.setValue(content);
+                    
+                    // Clear any errors
+                    hideError();
+                    
+                    // Show success feedback
+                    const originalText = importJsonBtn.textContent;
+                    importJsonBtn.innerHTML = '<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>{{ 'common.file_imported'|trans }}';
+                    importJsonBtn.classList.add('text-green-600');
+                    
+                    setTimeout(() => {
+                        importJsonBtn.innerHTML = '<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path></svg>{{ 'common.import_json_file'|trans }}';
+                        importJsonBtn.classList.remove('text-green-600');
+                    }, 2000);
+                    
+                } catch (error) {
+                    showError('{{ 'import.error.read_error'|trans }}: ' + error.message);
+                }
+            };
+            
+            reader.onerror = function() {
+                showError('{{ 'import.error.read_error'|trans }}');
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        // Reset file input
+        jsonFileInput.value = '';
     });
 
     // Generate code
@@ -352,7 +435,10 @@ require([
                                 theme: window.monacoTheme,
                                 readOnly: true,
                                 minimap: { enabled: false },
-                                automaticLayout: true
+                                automaticLayout: true,
+                                fontSize: 13,
+                                lineNumbers: 'on',
+                                wordWrap: 'on'
                             });
                         }, 100);
                     }
