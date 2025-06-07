@@ -106,7 +106,8 @@ body[data-theme='dark'] input[type="text"],
 body[data-theme='dark'] input[type="email"],
 body[data-theme='dark'] input[type="password"],
 body[data-theme='dark'] textarea {
-    background-color: #334155 !important;
+    background: #1e293b !important;
+    background-color: #1e293b !important;
     border-color: #475569 !important;
     color: #f1f5f9 !important;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3) !important;
@@ -115,7 +116,7 @@ body[data-theme='dark'] textarea {
 body[data-theme='dark'] select:hover,
 body[data-theme='dark'] input:hover,
 body[data-theme='dark'] textarea:hover {
-    background-color: #3f4f5f !important;
+    background-color: #334155 !important;
     border-color: #64748b !important;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4) !important;
 }
@@ -123,7 +124,7 @@ body[data-theme='dark'] textarea:hover {
 body[data-theme='dark'] select:focus,
 body[data-theme='dark'] input:focus,
 body[data-theme='dark'] textarea:focus {
-    background-color: #3f4f5f !important;
+    background-color: #334155 !important;
     border-color: #6366f1 !important;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2), 0 1px 2px 0 rgba(0, 0, 0, 0.3) !important;
 }
@@ -197,6 +198,146 @@ body[data-theme='dark'] .text-green-400 {
 /* Form container backgrounds */
 body[data-theme='dark'] .bg-white.rounded-md {
     background-color: #1e293b !important;
+}
+
+/* Specific overrides for login/register form inputs */
+body[data-theme='dark'] input.appearance-none {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+}
+
+body[data-theme='dark'] input.appearance-none:hover {
+    background-color: #334155 !important;
+    border-color: #64748b !important;
+}
+
+body[data-theme='dark'] input.appearance-none:focus {
+    background-color: #334155 !important;
+    border-color: #6366f1 !important;
+}
+
+/* Override any white backgrounds in forms */
+body[data-theme='dark'] form input[type="text"],
+body[data-theme='dark'] form input[type="email"],
+body[data-theme='dark'] form input[type="password"] {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+}
+
+/* Additional specific overrides for registration form fields */
+body[data-theme='dark'] input.w-full,
+body[data-theme='dark'] .w-full input {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+}
+
+body[data-theme='dark'] input.w-full:hover,
+body[data-theme='dark'] .w-full input:hover {
+    background-color: #334155 !important;
+    border-color: #64748b !important;
+}
+
+body[data-theme='dark'] input.w-full:focus,
+body[data-theme='dark'] .w-full input:focus {
+    background-color: #334155 !important;
+    border-color: #6366f1 !important;
+}
+
+/* Override Tailwind specific input styling in dark mode */
+body[data-theme='dark'] input.border-gray-300 {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+}
+
+body[data-theme='dark'] input.text-gray-900 {
+    color: #f1f5f9 !important;
+}
+
+/* Force dark background even when input has content */
+body[data-theme='dark'] input:not(:placeholder-shown) {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+}
+
+body[data-theme='dark'] input:valid {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+}
+
+body[data-theme='dark'] input:invalid {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+}
+
+/* Override any autocomplete styling */
+body[data-theme='dark'] input:-webkit-autofill,
+body[data-theme='dark'] input:-webkit-autofill:hover,
+body[data-theme='dark'] input:-webkit-autofill:focus,
+body[data-theme='dark'] input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #1e293b inset !important;
+    -webkit-text-fill-color: #f1f5f9 !important;
+    background-color: #1e293b !important;
+}
+
+/* Additional specificity for all input states */
+body[data-theme='dark'] form input,
+body[data-theme='dark'] div input,
+body[data-theme='dark'] .bg-white input {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+}
+
+/* Nuclear option - override ALL input styling in dark theme */
+body[data-theme='dark'] input[type="email"],
+body[data-theme='dark'] input[type="password"],
+body[data-theme='dark'] input[type="text"] {
+    background: #1e293b !important;
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+}
+
+/* Ensure empty inputs are also dark */
+body[data-theme='dark'] input:placeholder-shown {
+    background: #1e293b !important;
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+}
+
+/* Target inputs in their default state */
+body[data-theme='dark'] input {
+    background: #1e293b !important;
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+}
+
+/* Super aggressive targeting for all possible input states */
+body[data-theme='dark'] * input,
+body[data-theme='dark'] form * input,
+body[data-theme='dark'] div * input {
+    background: #1e293b !important;
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+}
+
+body[data-theme='dark'] input[type="email"]:focus,
+body[data-theme='dark'] input[type="password"]:focus,
+body[data-theme='dark'] input[type="text"]:focus,
+body[data-theme='dark'] input[type="email"]:active,
+body[data-theme='dark'] input[type="password"]:active,
+body[data-theme='dark'] input[type="text"]:active {
+    background: #334155 !important;
+    background-color: #334155 !important;
+    color: #f1f5f9 !important;
+    border-color: #6366f1 !important;
 }
 
 /* Divider line colors */
@@ -292,6 +433,17 @@ body[data-theme='dark'] input[type="checkbox"] {
 }
 
 body[data-theme='dark'] input[type="checkbox"]:checked {
+    background-color: #6366f1 !important;
+    border-color: #6366f1 !important;
+}
+
+/* Additional checkbox overrides */
+body[data-theme='dark'] input.h-4.w-4 {
+    background-color: #334155 !important;
+    border-color: #475569 !important;
+}
+
+body[data-theme='dark'] input.h-4.w-4:checked {
     background-color: #6366f1 !important;
     border-color: #6366f1 !important;
 }
