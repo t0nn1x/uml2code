@@ -20,12 +20,14 @@ use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\DateTimeFilter;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('ROLE_ADMIN')]
 class UserCrudController extends AbstractCrudController
 {
     public function __construct(
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private TranslatorInterface $translator
     ) {
     }
 
@@ -37,8 +39,12 @@ class UserCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('User')
-            ->setEntityLabelInPlural('Users')
+            ->setEntityLabelInSingular($this->translator->trans('user.singular', [], 'admin'))
+            ->setEntityLabelInPlural($this->translator->trans('user.list', [], 'admin'))
+            ->setPageTitle(Crud::PAGE_INDEX, $this->translator->trans('user.list', [], 'admin'))
+            ->setPageTitle(Crud::PAGE_NEW, $this->translator->trans('user.create', [], 'admin'))
+            ->setPageTitle(Crud::PAGE_EDIT, $this->translator->trans('user.edit', [], 'admin'))
+            ->setPageTitle(Crud::PAGE_DETAIL, $this->translator->trans('user.details', [], 'admin'))
             ->setSearchFields(['email', 'firstName', 'lastName'])
             ->setDefaultSort(['createdAt' => 'DESC'])
             ->setPaginatorPageSize(20);
@@ -47,22 +53,22 @@ class UserCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         $fields = [
-            IdField::new('id')->hideOnForm(),
-            EmailField::new('email'),
-            TextField::new('firstName'),
-            TextField::new('lastName'),
-            ArrayField::new('roles')
+            IdField::new('id')->setLabel($this->translator->trans('table.headers.id', [], 'admin'))->hideOnForm(),
+            EmailField::new('email')->setLabel($this->translator->trans('table.headers.email', [], 'admin')),
+            TextField::new('firstName')->setLabel($this->translator->trans('table.headers.first_name', [], 'admin')),
+            TextField::new('lastName')->setLabel($this->translator->trans('table.headers.last_name', [], 'admin')),
+            ArrayField::new('roles')->setLabel($this->translator->trans('table.headers.roles', [], 'admin'))
                 ->setHelp('Available roles: ROLE_USER, ROLE_ADMIN, ROLE_PREMIUM'),
-            ChoiceField::new('subscriptionStatus')
+            ChoiceField::new('subscriptionStatus')->setLabel($this->translator->trans('table.headers.subscription_status', [], 'admin'))
                 ->setChoices([
-                    'Free' => 'free',
-                    'Premium' => 'premium',
-                    'Enterprise' => 'enterprise'
+                    $this->translator->trans('user.subscription.free', [], 'admin') => 'free',
+                    $this->translator->trans('user.subscription.premium', [], 'admin') => 'premium',
+                    $this->translator->trans('user.subscription.enterprise', [], 'admin') => 'enterprise'
                 ]),
-            BooleanField::new('isVerified'),
-            DateTimeField::new('lastLoginAt')->hideOnForm(),
-            DateTimeField::new('createdAt')->hideOnForm(),
-            DateTimeField::new('updatedAt')->hideOnForm(),
+            BooleanField::new('isVerified')->setLabel($this->translator->trans('table.headers.is_verified', [], 'admin')),
+            DateTimeField::new('lastLoginAt')->setLabel($this->translator->trans('table.headers.last_login_at', [], 'admin'))->hideOnForm(),
+            DateTimeField::new('createdAt')->setLabel($this->translator->trans('table.headers.created_at', [], 'admin'))->hideOnForm(),
+            DateTimeField::new('updatedAt')->setLabel($this->translator->trans('table.headers.updated_at', [], 'admin'))->hideOnForm(),
         ];
 
         return $fields;
@@ -94,9 +100,9 @@ class UserCrudController extends AbstractCrudController
             ->add(BooleanFilter::new('isVerified'))
             ->add(ChoiceFilter::new('subscriptionStatus')
                 ->setChoices([
-                    'Free' => 'free',
-                    'Premium' => 'premium',
-                    'Enterprise' => 'enterprise'
+                    'user.subscription.free' => 'free',
+                    'user.subscription.premium' => 'premium',
+                    'user.subscription.enterprise' => 'enterprise'
                 ]))
             ->add(DateTimeFilter::new('createdAt'))
             ->add(DateTimeFilter::new('lastLoginAt'));

@@ -19,10 +19,16 @@ use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\DateTimeFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('ROLE_ADMIN')]
 class ActionHistoryCrudController extends AbstractCrudController
 {
+    public function __construct(
+        private TranslatorInterface $translator
+    ) {
+    }
+
     public static function getEntityFqcn(): string
     {
         return ActionHistory::class;
@@ -31,8 +37,10 @@ class ActionHistoryCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('Action History')
-            ->setEntityLabelInPlural('Action History')
+            ->setEntityLabelInSingular($this->translator->trans('action_history.list', [], 'admin'))
+            ->setEntityLabelInPlural($this->translator->trans('action_history.list', [], 'admin'))
+            ->setPageTitle(Crud::PAGE_INDEX, $this->translator->trans('action_history.list', [], 'admin'))
+            ->setPageTitle(Crud::PAGE_DETAIL, $this->translator->trans('action_history.details', [], 'admin'))
             ->setSearchFields(['actionType', 'diagramType', 'programmingLanguage', 'diagramName'])
             ->setDefaultSort(['createdAt' => 'DESC'])
             ->setPaginatorPageSize(25)
@@ -42,29 +50,29 @@ class ActionHistoryCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         $fields = [
-            IdField::new('id')->hideOnForm(),
-            AssociationField::new('user', 'User')
+            IdField::new('id')->setLabel($this->translator->trans('table.headers.id', [], 'admin'))->hideOnForm(),
+            AssociationField::new('user')->setLabel($this->translator->trans('table.headers.user', [], 'admin'))
                 ->setRequired(false)
                 ->hideOnForm(),
-            ChoiceField::new('actionType', 'Action')
+            ChoiceField::new('actionType')->setLabel($this->translator->trans('table.headers.action', [], 'admin'))
                 ->setChoices([
-                    'Convert' => ActionHistory::ACTION_CONVERT,
-                    'Parse' => ActionHistory::ACTION_PARSE,
-                    'Generate' => ActionHistory::ACTION_GENERATE,
+                    $this->translator->trans('action_history.actions.convert', [], 'admin') => ActionHistory::ACTION_CONVERT,
+                    $this->translator->trans('action_history.actions.parse', [], 'admin') => ActionHistory::ACTION_PARSE,
+                    $this->translator->trans('action_history.actions.generate', [], 'admin') => ActionHistory::ACTION_GENERATE,
                 ])
                 ->hideOnForm(),
-            TextField::new('diagramType', 'Diagram Type')->hideOnForm(),
-            TextField::new('programmingLanguage', 'Language')->hideOnForm(),
-            TextField::new('diagramName', 'Diagram Name')->hideOnForm(),
-            IntegerField::new('diagramSize', 'Size (bytes)')->hideOnForm(),
-            IntegerField::new('totalLinesOfCode', 'Lines of Code')->hideOnForm(),
-            TextField::new('generatorVersion', 'Generator Version')->hideOnForm(),
-            DateTimeField::new('createdAt', 'Created At')->hideOnForm(),
+            TextField::new('diagramType')->setLabel($this->translator->trans('table.headers.diagram_type', [], 'admin'))->hideOnForm(),
+            TextField::new('programmingLanguage')->setLabel($this->translator->trans('table.headers.language', [], 'admin'))->hideOnForm(),
+            TextField::new('diagramName')->setLabel($this->translator->trans('table.headers.diagram_name', [], 'admin'))->hideOnForm(),
+            IntegerField::new('diagramSize')->setLabel($this->translator->trans('table.headers.size_bytes', [], 'admin'))->hideOnForm(),
+            IntegerField::new('totalLinesOfCode')->setLabel($this->translator->trans('table.headers.lines_of_code', [], 'admin'))->hideOnForm(),
+            TextField::new('generatorVersion')->setLabel($this->translator->trans('table.headers.generator_version', [], 'admin'))->hideOnForm(),
+            DateTimeField::new('createdAt')->setLabel($this->translator->trans('table.headers.created_at', [], 'admin'))->hideOnForm(),
         ];
 
         // Show files content only on detail page
         if ($pageName === Crud::PAGE_DETAIL) {
-            $fields[] = ArrayField::new('files', 'Generated Files')
+            $fields[] = ArrayField::new('files')->setLabel($this->translator->trans('action_history.fields.files', [], 'admin'))
                 ->setTemplatePath('admin/fields/files_viewer.html.twig')
                 ->hideOnForm()
                 ->hideOnIndex();
@@ -87,9 +95,9 @@ class ActionHistoryCrudController extends AbstractCrudController
             ->add(EntityFilter::new('user'))
             ->add(ChoiceFilter::new('actionType')
                 ->setChoices([
-                    'Convert' => ActionHistory::ACTION_CONVERT,
-                    'Parse' => ActionHistory::ACTION_PARSE,
-                    'Generate' => ActionHistory::ACTION_GENERATE,
+                    'action_history.actions.convert' => ActionHistory::ACTION_CONVERT,
+                    'action_history.actions.parse' => ActionHistory::ACTION_PARSE,
+                    'action_history.actions.generate' => ActionHistory::ACTION_GENERATE,
                 ]))
             ->add(ChoiceFilter::new('programmingLanguage')
                 ->setChoices([

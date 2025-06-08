@@ -20,10 +20,16 @@ use EasyCorp\Bundle\EasyAdminBundle\Filter\DateTimeFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\TextFilter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('ROLE_ADMIN')]
 class SystemLogCrudController extends AbstractCrudController
 {
+    public function __construct(
+        private TranslatorInterface $translator
+    ) {
+    }
+
     public static function getEntityFqcn(): string
     {
         return SystemLog::class;
@@ -32,8 +38,10 @@ class SystemLogCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('System Log')
-            ->setEntityLabelInPlural('System Logs')
+            ->setEntityLabelInSingular($this->translator->trans('system_logs.list', [], 'admin'))
+            ->setEntityLabelInPlural($this->translator->trans('system_logs.list', [], 'admin'))
+            ->setPageTitle(Crud::PAGE_INDEX, $this->translator->trans('system_logs.list', [], 'admin'))
+            ->setPageTitle(Crud::PAGE_DETAIL, $this->translator->trans('system_logs.details', [], 'admin'))
             ->setSearchFields(['message', 'channel', 'ipAddress', 'requestUri'])
             ->setDefaultSort(['createdAt' => 'DESC'])
             ->setPaginatorPageSize(50)
@@ -43,17 +51,17 @@ class SystemLogCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         $fields = [
-            IdField::new('id')->hideOnForm(),
-            ChoiceField::new('level', 'Level')
+            IdField::new('id')->setLabel($this->translator->trans('table.headers.id', [], 'admin'))->hideOnForm(),
+            ChoiceField::new('level')->setLabel($this->translator->trans('table.headers.level', [], 'admin'))
                 ->setChoices([
-                    'Emergency' => SystemLog::LEVEL_EMERGENCY,
-                    'Alert' => SystemLog::LEVEL_ALERT,
-                    'Critical' => SystemLog::LEVEL_CRITICAL,
-                    'Error' => SystemLog::LEVEL_ERROR,
-                    'Warning' => SystemLog::LEVEL_WARNING,
-                    'Notice' => SystemLog::LEVEL_NOTICE,
-                    'Info' => SystemLog::LEVEL_INFO,
-                    'Debug' => SystemLog::LEVEL_DEBUG,
+                    $this->translator->trans('system_logs.levels.emergency', [], 'admin') => SystemLog::LEVEL_EMERGENCY,
+                    $this->translator->trans('system_logs.levels.alert', [], 'admin') => SystemLog::LEVEL_ALERT,
+                    $this->translator->trans('system_logs.levels.critical', [], 'admin') => SystemLog::LEVEL_CRITICAL,
+                    $this->translator->trans('system_logs.levels.error', [], 'admin') => SystemLog::LEVEL_ERROR,
+                    $this->translator->trans('system_logs.levels.warning', [], 'admin') => SystemLog::LEVEL_WARNING,
+                    $this->translator->trans('system_logs.levels.notice', [], 'admin') => SystemLog::LEVEL_NOTICE,
+                    $this->translator->trans('system_logs.levels.info', [], 'admin') => SystemLog::LEVEL_INFO,
+                    $this->translator->trans('system_logs.levels.debug', [], 'admin') => SystemLog::LEVEL_DEBUG,
                 ])
                 ->renderAsBadges([
                     SystemLog::LEVEL_EMERGENCY => 'danger',
@@ -66,24 +74,24 @@ class SystemLogCrudController extends AbstractCrudController
                     SystemLog::LEVEL_DEBUG => 'secondary',
                 ])
                 ->hideOnForm(),
-            TextField::new('channel', 'Channel')->hideOnForm(),
-            TextareaField::new('message', 'Message')
+            TextField::new('channel')->setLabel($this->translator->trans('table.headers.channel', [], 'admin'))->hideOnForm(),
+            TextareaField::new('message')->setLabel($this->translator->trans('table.headers.message', [], 'admin'))
                 ->setMaxLength(200)
                 ->hideOnForm(),
-            AssociationField::new('user', 'User')
+            AssociationField::new('user')->setLabel($this->translator->trans('table.headers.user', [], 'admin'))
                 ->hideOnForm(),
-            TextField::new('ipAddress', 'IP Address')->hideOnForm(),
-            TextField::new('requestUri', 'Request URI')->hideOnForm(),
-            DateTimeField::new('createdAt', 'Created At')->hideOnForm(),
+            TextField::new('ipAddress')->setLabel($this->translator->trans('table.headers.ip_address', [], 'admin'))->hideOnForm(),
+            TextField::new('requestUri')->setLabel($this->translator->trans('table.headers.request_uri', [], 'admin'))->hideOnForm(),
+            DateTimeField::new('createdAt')->setLabel($this->translator->trans('table.headers.created_at', [], 'admin'))->hideOnForm(),
         ];
 
         // Show detailed context and extra data only on detail page
         if ($pageName === Crud::PAGE_DETAIL) {
-            $fields[] = TextareaField::new('message', 'Full Message')
+            $fields[] = TextareaField::new('message')->setLabel($this->translator->trans('system_logs.fields.message', [], 'admin'))
                 ->setNumOfRows(5)
                 ->hideOnForm();
             
-            $fields[] = CodeEditorField::new('context', 'Context')
+            $fields[] = CodeEditorField::new('context')->setLabel($this->translator->trans('system_logs.fields.context', [], 'admin'))
                 ->setLanguage('javascript')
                 ->hideOnForm()
                 ->setNumOfRows(10)
@@ -91,7 +99,7 @@ class SystemLogCrudController extends AbstractCrudController
                     return is_array($value) ? json_encode($value, JSON_PRETTY_PRINT) : $value;
                 });
             
-            $fields[] = CodeEditorField::new('extra', 'Extra Data')
+            $fields[] = CodeEditorField::new('extra')->setLabel($this->translator->trans('system_logs.fields.extra', [], 'admin'))
                 ->setLanguage('javascript')
                 ->hideOnForm()
                 ->setNumOfRows(10)
@@ -99,7 +107,7 @@ class SystemLogCrudController extends AbstractCrudController
                     return is_array($value) ? json_encode($value, JSON_PRETTY_PRINT) : $value;
                 });
             
-            $fields[] = TextField::new('userAgent', 'User Agent')->hideOnForm();
+            $fields[] = TextField::new('userAgent')->setLabel($this->translator->trans('system_logs.fields.user_agent', [], 'admin'))->hideOnForm();
         }
 
         return $fields;
