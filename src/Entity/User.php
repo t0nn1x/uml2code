@@ -252,6 +252,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getFullName(): string
     {
-        return trim($this->firstName . ' ' . $this->lastName) ?: 'User';
+        return trim(($this->firstName ?? '') . ' ' . ($this->lastName ?? '')) ?: $this->email ?? 'Unknown User';
+    }
+
+    /**
+     * String representation of the user for EasyAdmin filters and displays
+     */
+    public function __toString(): string
+    {
+        return $this->getFullName();
     }
 }

@@ -10,7 +10,7 @@ class LocaleListener implements EventSubscriberInterface
 {
     private string $defaultLocale;
 
-    public function __construct(string $defaultLocale = 'uk')
+    public function __construct(string $defaultLocale = 'en')
     {
         $this->defaultLocale = $defaultLocale;
     }
@@ -32,7 +32,7 @@ class LocaleListener implements EventSubscriberInterface
         }
 
         // Try to get locale from browser
-        $locale = $request->getPreferredLanguage(['uk', 'en']) ?: $this->defaultLocale;
+        $locale = $request->getPreferredLanguage(locales: ['en', 'uk']) ?: $this->defaultLocale;
         $request->setLocale($locale);
     }
 

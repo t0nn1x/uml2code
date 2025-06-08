@@ -1,0 +1,426 @@
+{% set files_data = field.value %}
+
+{# Include Prism.js for better syntax highlighting #}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-clike.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+<div class="files-viewer">
+    {% if files_data is defined and files_data is not empty %}
+        {% if files_data is iterable %}
+            {% set files_array = files_data %}
+            {% if files_array|length > 1 %}
+                {# Multiple files - show tabs #}
+                <div class="files-tabs">
+                    <nav class="nav nav-tabs" id="files-tab" role="tablist">
+                        {% for i, file in files_array %}
+                            <button class="nav-link {% if loop.first %}active{% endif %}" 
+                                    id="file-{{ i }}-tab" 
+                                    data-bs-toggle="tab" 
+                                    data-bs-target="#file-{{ i }}" 
+                                    type="button" 
+                                    role="tab" 
+                                    aria-controls="file-{{ i }}" 
+                                    aria-selected="{% if loop.first %}true{% else %}false{% endif %}">
+                                <i class="fas fa-file-code me-1"></i>
+                                {% if file.filename is defined %}
+                                    {{ file.filename }}
+                                {% else %}
+                                    File {{ loop.index }}
+                                {% endif %}
+                            </button>
+                        {% endfor %}
+                    </nav>
+                    <div class="tab-content" id="files-tab-content">
+                        {% for i, file in files_array %}
+                            <div class="tab-pane fade {% if loop.first %}show active{% endif %}" 
+                                 id="file-{{ i }}" 
+                                 role="tabpanel" 
+                                 aria-labelledby="file-{{ i }}-tab">
+                                <div class="file-content">
+                                    <div class="file-header">
+                                        <div class="file-info">
+                                            <strong>📁 {% if file.filename is defined %}{{ file.filename }}{% else %}Unknown{% endif %}</strong>
+                                            {% if file.path is defined %}
+                                                <span class="badge bg-secondary ms-2">{{ file.path }}</span>
+                                            {% endif %}
+                                            {% if file.content is defined and file.content is not empty %}
+                                                <span class="badge bg-info ms-1">{{ file.content|length }} chars</span>
+                                            {% endif %}
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary copy-btn" 
+                                                onclick="copyToClipboard('file-content-{{ i }}')">
+                                            <i class="fas fa-copy"></i> Copy
+                                        </button>
+                                    </div>
+                                    <pre class="code-block line-numbers"><code id="file-content-{{ i }}" class="language-{% if file.filename is defined %}{{ file.filename|getFileLanguage }}{% else %}text{% endif %}">{% if file.content is defined %}{{ file.content|e }}{% else %}[No content available]{% endif %}</code></pre>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                {# Single file #}
+                {% set file = files_array|first %}
+                <div class="single-file">
+                    <div class="file-header">
+                        <div class="file-info">
+                            <strong>📁 {% if file.filename is defined %}{{ file.filename }}{% else %}Generated File{% endif %}</strong>
+                            {% if file.path is defined %}
+                                <span class="badge bg-secondary ms-2">{{ file.path }}</span>
+                            {% endif %}
+                            {% if file.content is defined and file.content is not empty %}
+                                <span class="badge bg-info ms-1">{{ file.content|length }} chars</span>
+                            {% endif %}
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary copy-btn" 
+                                onclick="copyToClipboard('single-file-content')">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    <pre class="code-block line-numbers"><code id="single-file-content" class="language-{% if file.filename is defined %}{{ file.filename|getFileLanguage }}{% else %}text{% endif %}">{% if file.content is defined %}{{ file.content|e }}{% else %}[No content available]{% endif %}</code></pre>
+                </div>
+            {% endif %}
+        {% else %}
+            {# Handle non-iterable data #}
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Files data format is not supported. Raw data: 
+                <pre class="mt-2">{{ files_data|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            No files were generated for this action.
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.files-viewer {
+    margin: 20px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.files-tabs .nav-tabs {
+    border-bottom: 2px solid #dee2e6;
+    margin-bottom: 0;
+    background: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+    padding: 0 10px;
+}
+
+.files-tabs .nav-link {
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #6c757d;
+    font-weight: 500;
+    padding: 15px 20px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.files-tabs .nav-link:hover {
+    background: rgba(0, 123, 255, 0.1);
+    color: #007bff;
+    border-color: transparent;
+}
+
+.files-tabs .nav-link.active {
+    background: rgba(0, 123, 255, 0.1);
+    color: #007bff;
+    border-bottom-color: #007bff;
+}
+
+.file-content, .single-file {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.single-file {
+    border-radius: 12px;
+}
+
+.file-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.file-info strong {
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.file-info .badge {
+    font-size: 11px;
+    padding: 4px 8px;
+}
+
+.copy-btn {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    font-size: 12px;
+    padding: 8px 15px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.copy-btn:hover {
+    background: rgba(255,255,255,0.3);
+    border-color: rgba(255,255,255,0.5);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.code-block {
+    background: #f8f9fa !important;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    border-radius: 0;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.code-block code {
+    background: none !important;
+    padding: 5px 8px !important;
+    display: block;
+    color: #333;
+}
+
+/* Override Prism.js default red color */
+.code-block .token.tag,
+.code-block .token.keyword,
+.code-block .token.operator {
+    color: #007bff !important;
+}
+
+.code-block .token.string {
+    color: #28a745 !important;
+}
+
+.code-block .token.comment {
+    color: #6c757d !important;
+    font-style: italic;
+}
+
+.code-block .token.function {
+    color: #dc3545 !important;
+}
+
+.code-block .token.variable {
+    color: #6f42c1 !important;
+}
+
+.code-block .token.number {
+    color: #fd7e14 !important;
+}
+
+.code-block .token.class-name {
+    color: #20c997 !important;
+}
+
+/* Prism.js line numbers styling */
+.line-numbers .line-numbers-rows {
+    border-right: 1px solid #dee2e6;
+    background: #f1f3f4;
+    padding-right: 5px;
+}
+
+.line-numbers-rows > span:before {
+    color: #adb5bd;
+    padding-right: 5px;
+}
+
+/* Adjust line numbers position */
+.line-numbers .line-numbers-rows {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    font-size: 100%;
+    left: -3.8em;
+    width: 3em;
+    letter-spacing: -1px;
+    border-right: 1px solid #dee2e6;
+    user-select: none;
+}
+
+.line-numbers code {
+    position: relative;
+    padding-left: 3.8em !important;
+}
+
+/* Custom scrollbar */
+.code-block::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+.code-block::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.code-block::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 6px;
+}
+
+.code-block::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Toast notification styling */
+.copy-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    background: #28a745;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    font-weight: 500;
+    animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Dark theme adjustments */
+[data-bs-theme="dark"] .files-viewer {
+    color: #e9ecef;
+}
+
+[data-bs-theme="dark"] .file-content,
+[data-bs-theme="dark"] .single-file {
+    background: #212529;
+    border-color: #495057;
+}
+
+[data-bs-theme="dark"] .code-block {
+    background: #1e1e1e !important;
+}
+
+[data-bs-theme="dark"] .code-block code {
+    color: #e9ecef;
+}
+
+[data-bs-theme="dark"] .files-tabs .nav-tabs {
+    background: #343a40;
+    border-color: #495057;
+}
+
+[data-bs-theme="dark"] .line-numbers .line-numbers-rows {
+    background: #2d3748;
+    border-color: #4a5568;
+}
+</style>
+
+<script>
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    const text = element.textContent || element.innerText;
+    
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+            showCopySuccess();
+        }).catch(() => {
+            fallbackCopyTextToClipboard(text);
+        });
+    } else {
+        fallbackCopyTextToClipboard(text);
+    }
+}
+
+function fallbackCopyTextToClipboard(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+    textArea.style.opacity = "0";
+    
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        document.execCommand('copy');
+        showCopySuccess();
+    } catch (err) {
+        console.error('Fallback copy failed', err);
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+function showCopySuccess() {
+    // Remove existing toast if present
+    const existingToast = document.querySelector('.copy-toast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+    
+    // Create new success toast
+    const toast = document.createElement('div');
+    toast.className = 'copy-toast';
+    toast.innerHTML = '<i class="fas fa-check me-2"></i>Code copied to clipboard!';
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideInRight 0.3s ease reverse';
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.remove();
+            }
+        }, 300);
+    }, 2500);
+}
+
+// Initialize Prism highlighting after content loads
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof Prism !== 'undefined') {
+        Prism.highlightAll();
+    }
+});
+
+// Re-highlight when switching tabs
+document.addEventListener('shown.bs.tab', function() {
+    if (typeof Prism !== 'undefined') {
+        setTimeout(() => {
+            Prism.highlightAll();
+        }, 100);
+    }
+});
+</script> 

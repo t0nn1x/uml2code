@@ -1,0 +1,30 @@
+easy_admin:
+    # Set the admin path prefix to include locale
+    site_name: 'UML2Code Admin'
+    
+    # Configure the admin URL path
+    # This will make admin routes available at /{_locale}/admin/*
+    # We'll handle this through routing configuration instead
+    
+    # Enable translation
+    translation:
+        enabled: true
+        domain: 'admin'
+        
+    # Configure the design
+    design:
+        brand:
+            color: '#1976d2'
+        templates:
+            layout: 'admin/layout.html.twig'
+        
+    # Configure global settings
+    global_actions:
+        - 'ea.action.search'
+        
+    # Configure formats
+    formats:
+        date: 'Y-m-d'
+        time: 'H:i:s'
+        datetime: 'Y-m-d H:i:s'
+        number: '%.2f' 

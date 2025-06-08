@@ -4,6 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    default_log_retention: 30
+    default_auto_cleanup: true
     locale: 'en'
     kernel.default_locale: 'en'
     kernel.enabled_locales: ['en', 'uk']
@@ -49,3 +51,15 @@ services:
     app.converter_service:
         alias: App\Core\Converter\ClassDiagram\Application\Service\UmlCodeConverterService
         public: true
+
+    # Custom Monolog Database Handler
+    App\Service\DatabaseLogHandler:
+        arguments:
+            $entityManager: '@doctrine.orm.entity_manager'
+            $requestStack: '@request_stack'
+            $security: '@security.helper'
+
+    # Admin Panel Twig Extension
+    App\Twig\AdminExtension:
+        tags:
+            - { name: twig.extension }
