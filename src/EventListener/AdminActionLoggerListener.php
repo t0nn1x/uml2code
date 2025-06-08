@@ -53,7 +53,7 @@ class AdminActionLoggerListener
     private function isAdminRequest(Request $request): bool
     {
         $path = $request->getPathInfo();
-        return str_starts_with($path, '/admin');
+        return str_starts_with($path, '/en/admin') || str_starts_with($path, '/uk/admin');
     }
 
     private function getControllerName($controller): string
