@@ -1,0 +1,314 @@
+# Admin Panel Translations - English
+
+# Navigation & General
+nav:
+  dashboard: "Dashboard"
+  users: "Users"
+  action_history: "Action History"
+  system_logs: "System Logs"
+  log_management: "Log Management"
+  back_to_site: "Back to Site"
+  logout: "Logout"
+
+# Dashboard
+dashboard:
+  title: "UML2Code Admin Panel"
+  welcome: "Admin Dashboard"
+  stats:
+    total_users: "Total Users"
+    total_actions: "Total Actions"
+    error_logs: "Error Logs"
+    active_users: "Active Users (24h)"
+  
+  recent_activity:
+    title: "Recent Activity"
+    no_activity: "No recent activity"
+    by: "by"
+  
+  recent_errors:
+    title: "Recent Errors"
+    no_errors: "No recent errors"
+  
+  quick_actions:
+    title: "Quick Actions"
+    manage_users: "Manage Users"
+    view_actions: "View Actions"
+    system_logs: "System Logs"
+    back_to_site: "Back to Site"
+
+# User Management
+user:
+  title: "User Management"
+  list: "Users"
+  singular: "User"
+  create: "Create User"
+  edit: "Edit User"
+  delete: "Delete User"
+  details: "User Details"
+  
+  fields:
+    id: "ID"
+    email: "Email"  
+    first_name: "First Name"
+    last_name: "Last Name"
+    roles: "Roles"
+    is_verified: "Verified"
+    subscription_status: "Subscription"
+    created_at: "Created At"
+    last_login_at: "Last Login"
+  
+  subscription:
+    free: "Free"
+    premium: "Premium"
+    enterprise: "Enterprise"
+  
+  roles:
+    user: "User"
+    admin: "Admin"
+    premium: "Premium"
+    super_admin: "Super Admin"
+
+# Action History
+action_history:
+  title: "Action History"
+  list: "Action History"
+  details: "Action Details"
+  
+  fields:
+    id: "ID"
+    user: "User"
+    action_type: "Action"
+    diagram_type: "Diagram Type"
+    programming_language: "Language"
+    diagram_name: "Diagram Name"
+    diagram_size: "Size (bytes)" 
+    total_lines_of_code: "Lines of Code"
+    generator_version: "Generator Version"
+    created_at: "Created At"
+    files: "Generated Files"
+  
+  actions:
+    convert: "Convert"
+    parse: "Parse"
+    generate: "Generate"
+
+# System Logs
+system_logs:
+  title: "System Logs"
+  list: "System Logs"
+  details: "Log Details"
+  
+  fields:
+    id: "ID"
+    level: "Level"
+    channel: "Channel"
+    message: "Message"
+    context: "Context"
+    extra: "Extra Data"
+    user: "User"
+    ip_address: "IP Address"
+    request_uri: "Request URI"
+    user_agent: "User Agent"
+    created_at: "Created At"
+  
+  levels:
+    emergency: "Emergency"
+    alert: "Alert"
+    critical: "Critical"
+    error: "Error"
+    warning: "Warning"
+    notice: "Notice"
+    info: "Info"
+    debug: "Debug"
+
+# Log Management
+log_management:
+  title: "Log Management"
+  cleanup:
+    title: "Manual Cleanup"
+    description: "Remove old logs to free up database space"
+    retention_days: "Retention Days"
+    run_cleanup: "Run Cleanup"
+    force_cleanup: "Force Auto-Cleanup"
+    success: "Cleanup completed successfully"
+    error: "Cleanup failed"
+  
+  statistics:
+    title: "Log Statistics"
+    total_logs: "Total Logs"
+    logs_by_level: "Logs by Level"
+    database_size: "Database Size"
+  
+  auto_cleanup:
+    title: "Auto Cleanup Status"
+    last_run: "Last Run"
+    next_run: "Next Run"
+    status: "Status"
+    enabled: "Enabled"
+    disabled: "Disabled"
+  
+  # Enhanced log management translations
+  auto_cleanup_status: "Auto Cleanup Status"
+  interval: "Interval"
+  next_scheduled: "Next Scheduled"
+  should_run_now: "Should Run Now"
+  every_24_hours: "Every 24 hours"
+  old_logs: "Old Logs"
+  retention_period: "Retention Period"
+  cutoff_date: "Cutoff Date"
+  has_recent_errors: "Has Recent Errors"
+  days: "days"
+  manual_cleanup_actions: "Manual Cleanup Actions"
+  custom_cleanup: "Custom Cleanup"
+  force_auto_cleanup: "Force Auto Cleanup"
+  clean_logs_older_than: "Clean logs older than a specific number of days"
+  run_automatic_cleanup_now: "Run automatic cleanup now (uses default retention period)"
+  clean_logs: "Clean Logs"
+  force_cleanup_now: "Force Cleanup Now"
+  automatic_cleanup_information: "Automatic Cleanup Information"
+  how_it_works: "How it works:"
+  trigger: "Trigger:"
+  frequency: "Frequency:"
+  conditions: "Conditions:"
+  default_retention: "Default Retention:"
+  manual_setup_optional: "Manual Setup (Optional):"
+  for_guaranteed_cleanup_scheduling: "For guaranteed cleanup scheduling, add this to your crontab:"
+  this_runs_daily_at: "This runs daily at"
+  and_forces_cleanup_regardless: "and forces cleanup regardless of thresholds."
+  automatic_cleanup_runs_after: "Automatic cleanup runs after certain routes are accessed (admin panel, dashboard, main app features)"
+  maximum_once_every: "Maximum once every"
+  hours: "hours"
+  only_runs_when_more_than: "Only runs when there are more than"
+  old_logs_or_total_logs_exceed: "old logs OR total logs exceed"
+  logs_older_than: "Logs older than"
+  are_removed: "are removed"
+  days_to_keep: "Days to keep"
+
+# Common Actions
+actions:
+  create: "Create"
+  edit: "Edit"
+  delete: "Delete"
+  view: "View"
+  save: "Save"
+  cancel: "Cancel"
+  back: "Back"
+  search: "Search"
+  filter: "Filter"
+  export: "Export"
+  refresh: "Refresh"
+  confirm_delete: "Are you sure you want to delete this item?"
+
+# Messages
+messages:
+  success:
+    created: "Item created successfully"
+    updated: "Item updated successfully"
+    deleted: "Item deleted successfully"
+  
+  error:
+    create_failed: "Failed to create item"
+    update_failed: "Failed to update item"
+    delete_failed: "Failed to delete item"
+    access_denied: "Access denied"
+    not_found: "Item not found"
+  
+  confirm:
+    delete_user: "⚠️ WARNING: This will permanently delete the user and all related data (OAuth connections, reset password requests)!\\n\\nThis action cannot be undone. Are you sure?"
+
+# Table Headers & Labels
+table:
+  headers:
+    id: "ID"
+    email: "Email"
+    first_name: "First Name"
+    last_name: "Last Name"
+    roles: "Roles"
+    subscription_status: "Subscription Status"
+    is_verified: "Is Verified"
+    last_login_at: "Last Login At"
+    created_at: "Created At"
+    updated_at: "Updated At"
+    user: "User"
+    action: "Action"
+    diagram_type: "Diagram Type"
+    language: "Language"
+    diagram_name: "Diagram Name"
+    size_bytes: "Size (bytes)"
+    lines_of_code: "Lines of Code"
+    generator_version: "Generator Version"
+    level: "Level"
+    channel: "Channel"
+    message: "Message"
+    ip_address: "IP Address"
+    request_uri: "Request URI"
+  
+  filters:
+    filters: "Filters"
+    search: "Search"
+    show: "Show"
+    results: "results"
+    no_results: "No results found"
+    clear_filters: "Clear filters"
+  
+  pagination:
+    previous: "Previous"
+    next: "Next"
+    page: "Page"
+    of: "of"
+    showing: "Showing"
+    to: "to"
+    entries: "entries"
+
+# Status & Labels
+status:
+  enabled: "Enabled"
+  disabled: "Disabled"
+  active: "Active"
+  inactive: "Inactive"
+  verified: "Verified"
+  unverified: "Unverified"
+  yes: "Yes"
+  no: "No"
+  "null": "Null"
+  never: "Never"
+  not_scheduled: "Not scheduled"
+  
+
+
+# Programming Languages
+programming_languages:
+  c_sharp: "C#"
+  java: "Java"
+  python: "Python"
+  php: "PHP"
+  javascript: "JavaScript"
+  typescript: "TypeScript"
+  cpp: "C++"
+  go: "Go"
+  rust: "Rust"
+  kotlin: "Kotlin"
+
+# Action Types
+action_types:
+  convert: "Convert"
+  parse: "Parse"
+  generate: "Generate"
+  export: "Export"
+  import: "Import"
+
+# Entity Names
+entities:
+  user: "User"
+  action_history: "Action History"
+  system_log: "System Log"
+  user_list: "user.list"
+  action_history_list: "action_history.list"
+  system_logs_list: "system_logs.list"
+
+# Language Switcher
+language:
+  english: "English"
+  ukrainian: "Українська"
+  switch_language: "Switch Language"
+  switcher: "Language" 

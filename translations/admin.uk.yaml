@@ -1,0 +1,313 @@
+# Admin Panel Translations - Ukrainian
+
+# Navigation & General
+nav:
+  dashboard: "Панель управління"
+  users: "Користувачі"
+  action_history: "Історія дій"
+  system_logs: "Системні логи"
+  log_management: "Управління логами"
+  back_to_site: "Повернутися на сайт"
+  logout: "Вийти"
+
+# Dashboard
+dashboard:
+  title: "Адмін панель UML2Code"
+  welcome: "Панель адміністратора"
+  stats:
+    total_users: "Загальна кількість користувачів"
+    total_actions: "Загальна кількість дій"
+    error_logs: "Логи помилок"
+    active_users: "Активні користувачі (24 год)"
+  
+  recent_activity:
+    title: "Нещодавня активність"
+    no_activity: "Немає нещодавньої активності"
+    by: "від"
+  
+  recent_errors:
+    title: "Нещодавні помилки"
+    no_errors: "Немає нещодавніх помилок"
+  
+  quick_actions:
+    title: "Швидкі дії"
+    manage_users: "Управління користувачами"
+    view_actions: "Переглянути дії"
+    system_logs: "Системні логи"
+    back_to_site: "Повернутися на сайт"
+
+# User Management
+user:
+  title: "Управління користувачами"
+  list: "Користувачі"
+  singular: "користувача"
+  create: "Створити користувача"
+  edit: "Редагувати користувача"
+  delete: "Видалити користувача"
+  details: "Деталі користувача"
+  
+  fields:
+    id: "ID"
+    email: "Електронна пошта"  
+    first_name: "Ім'я"
+    last_name: "Прізвище"
+    roles: "Ролі"
+    is_verified: "Підтверджено"
+    subscription_status: "Підписка"
+    created_at: "Створено"
+    last_login_at: "Останній вхід"
+  
+  subscription:
+    free: "Безкоштовно"
+    premium: "Преміум"
+    enterprise: "Корпоративна"
+  
+  roles:
+    user: "Користувач"
+    admin: "Адміністратор"
+    premium: "Преміум"
+    super_admin: "Супер адміністратор"
+
+# Action History
+action_history:
+  title: "Історія дій"
+  list: "Історія дій"
+  details: "Деталі дії"
+  
+  fields:
+    id: "ID"
+    user: "Користувач"
+    action_type: "Дія"
+    diagram_type: "Тип діаграми"
+    programming_language: "Мова програмування"
+    diagram_name: "Назва діаграми"
+    diagram_size: "Розмір (байти)" 
+    total_lines_of_code: "Рядки коду"
+    generator_version: "Версія генератора"
+    created_at: "Створено"
+    files: "Згенеровані файли"
+  
+  actions:
+    convert: "Конвертувати"
+    parse: "Парсити"
+    generate: "Генерувати"
+
+# System Logs
+system_logs:
+  title: "Системні логи"
+  list: "Системні логи"
+  details: "Деталі логу"
+  
+  fields:
+    id: "ID"
+    level: "Рівень"
+    channel: "Канал"
+    message: "Повідомлення"
+    context: "Контекст"
+    extra: "Додаткові дані"
+    user: "Користувач"
+    ip_address: "IP адреса"
+    request_uri: "URI запиту"
+    user_agent: "User Agent"
+    created_at: "Створено"
+  
+  levels:
+    emergency: "Критично"
+    alert: "Сигнал"
+    critical: "Критично"
+    error: "Помилка"
+    warning: "Попередження"
+    notice: "Повідомлення"
+    info: "Інформація"
+    debug: "Налагодження"
+
+# Log Management
+log_management:
+  title: "Управління логами"
+  total_logs: "Усього логів"
+  cleanup:
+    title: "Ручне очищення"
+    description: "Видаліть старі логи для звільнення місця в базі даних"
+    retention_days: "Дні зберігання"
+    run_cleanup: "Запустити очищення"
+    force_cleanup: "Примусове авто-очищення"
+    success: "Очищення успішно завершено"
+    error: "Помилка очищення"
+  
+  statistics:
+    title: "Статистика логів"
+    total_logs: "Загалом логів"
+    logs_by_level: "Логи за рівнем"
+    database_size: "Розмір бази даних"
+  
+  auto_cleanup:
+    title: "Статус авто-очищення"
+    last_run: "Останній запуск"
+    next_run: "Наступний запуск"
+    status: "Статус"
+    enabled: "Увімкнено"
+    disabled: "Вимкнено"
+  
+  # Enhanced log management translations
+  auto_cleanup_status: "Статус авто-очищення"
+  interval: "Інтервал"
+  next_scheduled: "Наступний запланований"
+  should_run_now: "Потрібно запустити зараз"
+  every_24_hours: "Кожні 24 години"
+  old_logs: "Старі логи"
+  retention_period: "Період зберігання"
+  cutoff_date: "Дата ручного очищення"
+  has_recent_errors: "Є нещодавні помилки"
+  days: "днів"
+  manual_cleanup_actions: "Дії ручного очищення"
+  custom_cleanup: "Спеціальне очищення"
+  force_auto_cleanup: "Примусове авто-очищення"
+  clean_logs_older_than: "Очистити логи старші за вказану кількість днів"
+  run_automatic_cleanup_now: "Запустити автоматичне очищення зараз (використовує період зберігання за замовчуванням)"
+  clean_logs: "Очистити логи"
+  force_cleanup_now: "Примусове очищення зараз"
+  automatic_cleanup_information: "Інформація про автоматичне очищення"
+  how_it_works: "Як це працює:"
+  trigger: "Тригер:"
+  frequency: "Частота:"
+  conditions: "Умови:"
+  default_retention: "Зберігання за замовчуванням:"
+  manual_setup_optional: "Ручне налаштування (Опціонально):"
+  for_guaranteed_cleanup_scheduling: "Для гарантованого планування очищення, додайте це до вашого crontab:"
+  this_runs_daily_at: "Це запускається щодня о"
+  and_forces_cleanup_regardless: "і примушує очищення незалежно від порогів."
+  automatic_cleanup_runs_after: "Автоматичне очищення запускається після доступу до певних маршрутів (адмін панель, дашборд, основні функції додатку)"
+  maximum_once_every: "Максимум раз на"
+  hours: "годин"
+  only_runs_when_more_than: "Запускається тільки коли є більше ніж"
+  old_logs_or_total_logs_exceed: "старих логів АБО загальна кількість логів перевищує"
+  logs_older_than: "Логи старші за"
+  are_removed: "видаляються"
+  days_to_keep: "Днів для зберігання"
+
+# Common Actions
+actions:
+  create: "Створити"
+  edit: "Редагувати"
+  delete: "Видалити"
+  view: "Переглянути"
+  save: "Зберегти"
+  cancel: "Скасувати"
+  back: "Назад"
+  search: "Пошук"
+  filter: "Фільтр"
+  export: "Експорт"
+  refresh: "Оновити"
+  confirm_delete: "Ви впевнені, що хочете видалити цей елемент?"
+
+# Messages
+messages:
+  success:
+    created: "Елемент успішно створено"
+    updated: "Елемент успішно оновлено"
+    deleted: "Елемент успішно видалено"
+  
+  error:
+    create_failed: "Не вдалося створити елемент"
+    update_failed: "Не вдалося оновити елемент"
+    delete_failed: "Не вдалося видалити елемент"
+    access_denied: "Доступ заборонено"
+    not_found: "Елемент не знайдено"
+  
+  confirm:
+    delete_user: "⚠️ ПОПЕРЕДЖЕННЯ: Це назавжди видалить користувача та всі пов'язані дані (OAuth з'єднання, запити на скидання пароля)!\\n\\nЦю дію неможливо скасувати. Ви впевнені?"
+
+# Table Headers & Labels
+table:
+  headers:
+    id: "ID"
+    email: "Електронна пошта"
+    first_name: "Ім'я"
+    last_name: "Прізвище"
+    roles: "Ролі"
+    subscription_status: "Статус підписки"
+    is_verified: "Підтверджено"
+    last_login_at: "Останній вхід"
+    created_at: "Створено"
+    updated_at: "Оновлено"
+    user: "Користувач"
+    action: "Дія"
+    diagram_type: "Тип діаграми"
+    language: "Мова"
+    diagram_name: "Назва діаграми"
+    size_bytes: "Розмір (байти)"
+    lines_of_code: "Рядки коду"
+    generator_version: "Версія генератора"
+    level: "Рівень"
+    channel: "Канал"
+    message: "Повідомлення"
+    ip_address: "IP адреса"
+    request_uri: "URI запиту"
+  
+  filters:
+    filters: "Фільтри"
+    search: "Пошук"
+    show: "Показати"
+    results: "результатів"
+    no_results: "Результати не знайдено"
+    clear_filters: "Очистити фільтри"
+  
+  pagination:
+    previous: "Попередня"
+    next: "Наступна"
+    page: "Сторінка"
+    of: "з"
+    showing: "Показано"
+    to: "до"
+    entries: "записів"
+
+# Status & Labels
+status:
+  enabled: "Увімкнено"
+  disabled: "Вимкнено"
+  active: "Активний"
+  inactive: "Неактивний"
+  verified: "Підтверджено"
+  unverified: "Не підтверджено"
+  yes: "Так"
+  no: "Ні"
+  "null": "Null"
+  never: "Ніколи"
+  not_scheduled: "Не заплановано"
+
+# Programming Languages
+programming_languages:
+  c_sharp: "C#"
+  java: "Java"
+  python: "Python"
+  php: "PHP"
+  javascript: "JavaScript"
+  typescript: "TypeScript"
+  cpp: "C++"
+  go: "Go"
+  rust: "Rust"
+  kotlin: "Kotlin"
+
+# Action Types
+action_types:
+  convert: "Конвертувати"
+  parse: "Парсити"
+  generate: "Генерувати"
+  export: "Експорт"
+  import: "Імпорт"
+
+# Entity Names
+entities:
+  user: "Користувач"
+  action_history: "Історія дій"
+  system_log: "Системний лог"
+  user_list: "user.list"
+  action_history_list: "action_history.list"
+  system_logs_list: "system_logs.list"
+
+# Language Switcher
+language:
+  english: "English"
+  ukrainian: "Українська"
+  switch_language: "Змінити мову"
+  switcher: "Мова" 
