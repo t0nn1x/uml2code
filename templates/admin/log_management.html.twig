@@ -1,9 +1,9 @@
-{% extends '@EasyAdmin/page/content.html.twig' %}
+{% extends 'admin/base.html.twig' %}
 
 {% block content_title %}
     <h1 class="content-title">
         <i class="fas fa-cogs"></i>
-        Log Management & Cleanup
+        {{ 'log_management.title'|trans({}, 'admin') }}
     </h1>
 {% endblock %}
 
@@ -13,51 +13,51 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header bg-info text-white">
-                    <h5><i class="fas fa-clock"></i> Automatic Cleanup Status</h5>
+                    <h5><i class="fas fa-clock"></i> {{ 'log_management.auto_cleanup.title'|trans({}, 'admin') }}</h5>
                 </div>
                 <div class="card-body">
                     <table class="table table-sm">
                         <tr>
-                            <td><strong>Status:</strong></td>
+                            <td><strong>{{ 'log_management.auto_cleanup.status'|trans({}, 'admin') }}:</strong></td>
                             <td>
                                 {% if cleanup_info.auto_cleanup_enabled %}
-                                    <span class="badge badge-success">Enabled</span>
+                                    <span class="badge badge-success">{{ 'log_management.auto_cleanup.enabled'|trans({}, 'admin') }}</span>
                                 {% else %}
-                                    <span class="badge badge-warning">Disabled</span>
+                                    <span class="badge badge-warning">{{ 'log_management.auto_cleanup.disabled'|trans({}, 'admin') }}</span>
                                 {% endif %}
                             </td>
                         </tr>
                         <tr>
-                            <td><strong>Interval:</strong></td>
-                            <td>Every {{ cleanup_info.cleanup_interval_hours }} hours</td>
+                            <td><strong>{{ 'log_management.interval'|trans({}, 'admin') }}:</strong></td>
+                            <td>{{ 'log_management.every_24_hours'|trans({}, 'admin') }}</td>
                         </tr>
                         <tr>
-                            <td><strong>Last Run:</strong></td>
+                            <td><strong>{{ 'log_management.auto_cleanup.last_run'|trans({}, 'admin') }}:</strong></td>
                             <td>
                                 {% if cleanup_info.last_run %}
                                     {{ cleanup_info.last_run|date('Y-m-d H:i:s') }}
                                 {% else %}
-                                    <span class="text-muted">Never</span>
+                                    <span class="text-muted">{{ 'status.never'|trans({}, 'admin') }}</span>
                                 {% endif %}
                             </td>
                         </tr>
                         <tr>
-                            <td><strong>Next Scheduled:</strong></td>
+                            <td><strong>{{ 'log_management.next_scheduled'|trans({}, 'admin') }}:</strong></td>
                             <td>
                                 {% if cleanup_info.next_scheduled %}
                                     {{ cleanup_info.next_scheduled|date('Y-m-d H:i:s') }}
                                 {% else %}
-                                    <span class="text-muted">Not scheduled</span>
+                                    <span class="text-muted">{{ 'status.not_scheduled'|trans({}, 'admin') }}</span>
                                 {% endif %}
                             </td>
                         </tr>
                         <tr>
-                            <td><strong>Should Run Now:</strong></td>
+                            <td><strong>{{ 'log_management.should_run_now'|trans({}, 'admin') }}:</strong></td>
                             <td>
                                 {% if cleanup_info.should_run_now %}
-                                    <span class="badge badge-warning">Yes</span>
+                                    <span class="badge badge-warning">{{ 'status.yes'|trans({}, 'admin') }}</span>
                                 {% else %}
-                                    <span class="badge badge-success">No</span>
+                                    <span class="badge badge-success">{{ 'status.no'|trans({}, 'admin') }}</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -70,33 +70,33 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h5><i class="fas fa-chart-bar"></i> Log Statistics</h5>
+                    <h5><i class="fas fa-chart-bar"></i> {{ 'log_management.statistics.title'|trans({}, 'admin') }}</h5>
                 </div>
                 <div class="card-body">
                     <table class="table table-sm">
                         <tr>
-                            <td><strong>Total Logs:</strong></td>
+                            <td><strong>{{ 'log_management.total_logs'|trans({}, 'admin') }}:</strong></td>
                             <td><span class="badge badge-info">{{ statistics.total_logs|number_format }}</span></td>
                         </tr>
                         <tr>
-                            <td><strong>Old Logs:</strong></td>
+                            <td><strong>{{ 'log_management.old_logs'|trans({}, 'admin') }}:</strong></td>
                             <td><span class="badge badge-warning">{{ statistics.old_logs_count|number_format }}</span></td>
                         </tr>
                         <tr>
-                            <td><strong>Retention Period:</strong></td>
-                            <td>{{ statistics.retention_days }} days</td>
+                            <td><strong>{{ 'log_management.retention_period'|trans({}, 'admin') }}:</strong></td>
+                            <td>{{ statistics.retention_days }} {{ 'log_management.days'|trans({}, 'admin') }}</td>
                         </tr>
                         <tr>
-                            <td><strong>Cutoff Date:</strong></td>
+                            <td><strong>{{ 'log_management.cutoff_date'|trans({}, 'admin') }}:</strong></td>
                             <td>{{ statistics.cutoff_date|date('Y-m-d H:i:s') }}</td>
                         </tr>
                         <tr>
-                            <td><strong>Has Recent Errors:</strong></td>
+                            <td><strong>{{ 'log_management.has_recent_errors'|trans({}, 'admin') }}:</strong></td>
                             <td>
                                 {% if statistics.has_errors %}
-                                    <span class="badge badge-danger">Yes</span>
+                                    <span class="badge badge-danger">{{ 'status.yes'|trans({}, 'admin') }}</span>
                                 {% else %}
-                                    <span class="badge badge-success">No</span>
+                                    <span class="badge badge-success">{{ 'status.no'|trans({}, 'admin') }}</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -112,7 +112,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5><i class="fas fa-layer-group"></i> Logs by Level</h5>
+                    <h5><i class="fas fa-layer-group"></i> {{ 'log_management.logs_by_level'|trans({}, 'admin') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -123,7 +123,7 @@
                                         <h4 class="card-title">{{ stat.count|number_format }}</h4>
                                         <p class="card-text">
                                             <span class="badge badge-{% if stat.level in ['error', 'critical', 'alert', 'emergency'] %}danger{% elseif stat.level == 'warning' %}warning{% elseif stat.level == 'info' %}success{% else %}secondary{% endif %}">
-                                                {{ stat.level|upper }}
+                                                {{ ('system_logs.levels.' ~ stat.level)|trans({}, 'admin')|upper }}
                                             </span>
                                         </p>
                                     </div>
@@ -142,31 +142,33 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header bg-warning text-dark">
-                    <h5><i class="fas fa-tools"></i> Manual Cleanup Actions</h5>
+                    <h5><i class="fas fa-tools"></i> {{ 'log_management.manual_cleanup_actions'|trans({}, 'admin') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h6>Custom Cleanup</h6>
-                            <p class="text-muted">Clean logs older than a specific number of days</p>
+                            <h6>{{ 'log_management.custom_cleanup'|trans({}, 'admin') }}</h6>
+                            <p class="text-muted">{{ 'log_management.clean_logs_older_than'|trans({}, 'admin') }}</p>
                             <form id="manualCleanupForm">
                                 <div class="input-group mb-3">
                                     <input type="number" class="form-control" id="retentionDays" 
-                                           placeholder="Days to keep" value="{{ statistics.retention_days }}" min="1" max="365">
+                                           placeholder="{{ 'log_management.days_to_keep'|trans({}, 'admin') }}" value="{{ statistics.retention_days }}" min="1" max="365">
                                     <div class="input-group-append">
-                                        <button class="btn btn-warning" type="submit">
-                                            <i class="fas fa-trash"></i> Clean Logs
+                                        <button class="btn btn-warning btn-lg" type="submit" style="height: calc(1.5em + 0.75rem + 2px); line-height: 1.5;">
+                                            <i class="fas fa-trash"></i> {{ 'log_management.clean_logs'|trans({}, 'admin') }}
                                         </button>
                                     </div>
                                 </div>
                             </form>
                         </div>
                         <div class="col-md-6">
-                            <h6>Force Auto Cleanup</h6>
-                            <p class="text-muted">Run automatic cleanup now (uses default retention period)</p>
-                            <button id="forceCleanupBtn" class="btn btn-danger">
-                                <i class="fas fa-bolt"></i> Force Cleanup Now
-                            </button>
+                            <h6>{{ 'log_management.force_auto_cleanup'|trans({}, 'admin') }}</h6>
+                            <p class="text-muted">{{ 'log_management.run_automatic_cleanup_now'|trans({}, 'admin') }}</p>
+                            <div class="mb-3">
+                                <button id="forceCleanupBtn" class="btn btn-danger btn-lg" style="height: calc(1.5em + 0.75rem + 2px); line-height: 1.5;">
+                                    <i class="fas fa-bolt"></i> {{ 'log_management.force_cleanup_now'|trans({}, 'admin') }}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

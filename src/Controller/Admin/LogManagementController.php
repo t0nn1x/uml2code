@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/logs', name: 'admin_logs_')]
+#[Route('/logs', name: 'admin_logs_')]
 #[IsGranted('ROLE_ADMIN')]
 class LogManagementController extends AbstractController
 {
