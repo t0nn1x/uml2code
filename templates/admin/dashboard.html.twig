@@ -1,9 +1,9 @@
-{% extends '@EasyAdmin/page/content.html.twig' %}
+{% extends 'admin/layout.html.twig' %}
 
 {% block content_title %}
     <h1 class="content-title">
         <i class="fas fa-tachometer-alt"></i>
-        UML2Code Admin Dashboard
+        {{ 'dashboard.welcome'|trans({}, 'admin') }}
     </h1>
 {% endblock %}
 
@@ -15,7 +15,7 @@
                     <div class="d-flex justify-content-between">
                         <div>
                             <h4>{{ user_count ?? 0 }}</h4>
-                            <p>Total Users</p>
+                            <p>{{ 'dashboard.stats.total_users'|trans({}, 'admin') }}</p>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-users fa-2x"></i>
@@ -31,7 +31,7 @@
                     <div class="d-flex justify-content-between">
                         <div>
                             <h4>{{ action_count ?? 0 }}</h4>
-                            <p>Total Actions</p>
+                            <p>{{ 'dashboard.stats.total_actions'|trans({}, 'admin') }}</p>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-history fa-2x"></i>
@@ -47,7 +47,7 @@
                     <div class="d-flex justify-content-between">
                         <div>
                             <h4>{{ error_logs ?? 0 }}</h4>
-                            <p>Error Logs</p>
+                            <p>{{ 'dashboard.stats.error_logs'|trans({}, 'admin') }}</p>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-exclamation-triangle fa-2x"></i>
@@ -63,7 +63,7 @@
                     <div class="d-flex justify-content-between">
                         <div>
                             <h4>{{ active_users ?? 0 }}</h4>
-                            <p>Active Users (24h)</p>
+                            <p>{{ 'dashboard.stats.active_users'|trans({}, 'admin') }}</p>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-user-check fa-2x"></i>
@@ -78,7 +78,7 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    <h5><i class="fas fa-chart-line"></i> Recent Activity</h5>
+                    <h5><i class="fas fa-chart-line"></i> {{ 'dashboard.recent_activity.title'|trans({}, 'admin') }}</h5>
                 </div>
                 <div class="card-body">
                     {% if recent_actions is defined and recent_actions|length > 0 %}
@@ -88,7 +88,7 @@
                                     <div>
                                         <strong>{{ action.actionType|title }}</strong>
                                         {% if action.user %}
-                                            by {{ action.user.email }}
+                                            {{ 'dashboard.recent_activity.by'|trans({}, 'admin') }} {{ action.user.email }}
                                         {% endif %}
                                         <br>
                                         <small class="text-muted">{{ action.createdAt|date('Y-m-d H:i:s') }}</small>
@@ -98,7 +98,7 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        <p class="text-muted">No recent activity</p>
+                        <p class="text-muted">{{ 'dashboard.recent_activity.no_activity'|trans({}, 'admin') }}</p>
                     {% endif %}
                 </div>
             </div>
@@ -107,7 +107,7 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    <h5><i class="fas fa-exclamation-circle"></i> Recent Errors</h5>
+                    <h5><i class="fas fa-exclamation-circle"></i> {{ 'dashboard.recent_errors.title'|trans({}, 'admin') }}</h5>
                 </div>
                 <div class="card-body">
                     {% if recent_errors is defined and recent_errors|length > 0 %}
@@ -124,7 +124,7 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        <p class="text-muted">No recent errors</p>
+                        <p class="text-muted">{{ 'dashboard.recent_errors.no_errors'|trans({}, 'admin') }}</p>
                     {% endif %}
                 </div>
             </div>
@@ -135,28 +135,28 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5><i class="fas fa-tools"></i> Quick Actions</h5>
+                    <h5><i class="fas fa-tools"></i> {{ 'dashboard.quick_actions.title'|trans({}, 'admin') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3">
                             <a href="{{ ea_url().setController('App\\Controller\\Admin\\UserCrudController') }}" class="btn btn-primary btn-block">
-                                <i class="fas fa-users"></i> Manage Users
+                                <i class="fas fa-users"></i> {{ 'dashboard.quick_actions.manage_users'|trans({}, 'admin') }}
                             </a>
                         </div>
                         <div class="col-md-3">
                             <a href="{{ ea_url().setController('App\\Controller\\Admin\\ActionHistoryCrudController') }}" class="btn btn-success btn-block">
-                                <i class="fas fa-history"></i> View Actions
+                                <i class="fas fa-history"></i> {{ 'dashboard.quick_actions.view_actions'|trans({}, 'admin') }}
                             </a>
                         </div>
                         <div class="col-md-3">
                             <a href="{{ ea_url().setController('App\\Controller\\Admin\\SystemLogCrudController') }}" class="btn btn-warning btn-block">
-                                <i class="fas fa-file-alt"></i> System Logs
+                                <i class="fas fa-file-alt"></i> {{ 'dashboard.quick_actions.system_logs'|trans({}, 'admin') }}
                             </a>
                         </div>
                         <div class="col-md-3">
-                            <a href="{{ path('app_dashboard') }}" class="btn btn-info btn-block">
-                                <i class="fas fa-arrow-left"></i> Back to Site
+                            <a href="{{ path('app_dashboard', {'_locale': app.request.locale}) }}" class="btn btn-info btn-block">
+                                <i class="fas fa-arrow-left"></i> {{ 'dashboard.quick_actions.back_to_site'|trans({}, 'admin') }}
                             </a>
                         </div>
                     </div>

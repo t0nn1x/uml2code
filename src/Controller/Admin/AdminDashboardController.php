@@ -16,6 +16,9 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\RouterInterface;
 
 #[IsGranted('ROLE_ADMIN')]
 class AdminDashboardController extends AbstractDashboardController
@@ -24,11 +27,14 @@ class AdminDashboardController extends AbstractDashboardController
         private LoggerInterface $logger,
         private UserRepository $userRepository,
         private ActionHistoryRepository $actionHistoryRepository,
-        private SystemLogRepository $systemLogRepository
+        private SystemLogRepository $systemLogRepository,
+        private TranslatorInterface $translator,
+        private RequestStack $requestStack,
+        private RouterInterface $router
     ) {
     }
 
-    #[Route('/admin', name: 'admin')]
+    #[Route('/admin-panel', name: 'admin')]
     public function index(): Response
     {
         $request = $this->container->get('request_stack')->getCurrentRequest();
@@ -66,7 +72,7 @@ class AdminDashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('UML2Code Admin Panel')
+            ->setTitle($this->translator->trans('dashboard.title', [], 'admin'))
             ->setFaviconPath('favicon.ico')
             ->setDefaultColorScheme('dark')
             ->renderContentMaximized();
@@ -74,18 +80,30 @@ class AdminDashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
+        yield MenuItem::linkToDashboard($this->translator->trans('nav.dashboard', [], 'admin'), 'fa fa-home');
         
-        yield MenuItem::section('User Management');
-        yield MenuItem::linkToCrud('Users', 'fas fa-users', User::class);
+        yield MenuItem::section($this->translator->trans('user.title', [], 'admin'));
+        yield MenuItem::linkToCrud($this->translator->trans('nav.users', [], 'admin'), 'fas fa-users', User::class);
         
-        yield MenuItem::section('System Logs');
-        yield MenuItem::linkToCrud('Action History', 'fas fa-history', ActionHistory::class);
-        yield MenuItem::linkToCrud('System Logs', 'fas fa-file-alt', SystemLog::class);
-        yield MenuItem::linkToRoute('Log Management', 'fas fa-cogs', 'admin_logs_management');
+        yield MenuItem::section($this->translator->trans('system_logs.title', [], 'admin'));
+        yield MenuItem::linkToCrud($this->translator->trans('nav.action_history', [], 'admin'), 'fas fa-history', ActionHistory::class);
+        yield MenuItem::linkToCrud($this->translator->trans('nav.system_logs', [], 'admin'), 'fas fa-file-alt', SystemLog::class);
+        yield MenuItem::linkToRoute($this->translator->trans('nav.log_management', [], 'admin'), 'fas fa-cogs', 'admin_logs_management');
         
-        yield MenuItem::section('Application');
-        yield MenuItem::linkToRoute('Back to Site', 'fas fa-arrow-left', 'app_dashboard');
-        yield MenuItem::linkToLogout('Logout', 'fas fa-sign-out-alt');
+        yield MenuItem::section($this->translator->trans('language.switcher', [], 'admin'));
+        $currentRequest = $this->requestStack->getCurrentRequest();
+        $currentRoute = $currentRequest->attributes->get('_route');
+        $routeParams = $currentRequest->attributes->get('_route_params');
+        
+        yield MenuItem::linkToUrl('🇬🇧 ' . $this->translator->trans('language.english', [], 'admin'), 'fas fa-language', 
+            $this->router->generate($currentRoute, array_merge($routeParams, ['_locale' => 'en']))
+        );
+        yield MenuItem::linkToUrl('🇺🇦 ' . $this->translator->trans('language.ukrainian', [], 'admin'), 'fas fa-language', 
+            $this->router->generate($currentRoute, array_merge($routeParams, ['_locale' => 'uk']))
+        );
+        
+        yield MenuItem::section($this->translator->trans('nav.dashboard', [], 'admin'));
+        yield MenuItem::linkToRoute($this->translator->trans('nav.back_to_site', [], 'admin'), 'fas fa-arrow-left', 'app_dashboard', ['_locale' => $this->container->get('request_stack')->getCurrentRequest()->getLocale()]);
+        yield MenuItem::linkToLogout($this->translator->trans('nav.logout', [], 'admin'), 'fas fa-sign-out-alt');
     }
 } 
