@@ -1,24 +1,26 @@
-# OAuth Provider Setup Guide
+# OAuth Provider Configuration Documentation
 
-This guide provides step-by-step instructions for setting up OAuth providers for the UML2Code application.
+## Overview
+
+This document provides comprehensive instructions for configuring OAuth providers within the authentication system. The setup process enables integration with external authentication services including Google and GitHub.
 
 ## Prerequisites
 
-Before setting up OAuth providers, ensure that:
+Before configuring OAuth providers, ensure that:
 
-1. The base application is up and running
+1. The base application is operational
 2. The authentication system is properly installed
-3. You have access to create applications in Google Cloud Console and GitHub Developer Settings
+3. Administrative access to Google Cloud Console and GitHub Developer Settings is available
 
-## Google OAuth Setup
+## Google OAuth Configuration
 
-### 1. Create a Project in Google Cloud Console
+### 1. Project Setup in Google Cloud Console
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+1. Navigate to [Google Cloud Console](https://console.cloud.google.com/)
 2. Create a new project or select an existing one
 3. Navigate to "APIs & Services" > "Credentials"
 
-### 2. Configure OAuth Consent Screen
+### 2. OAuth Consent Screen Configuration
 
 1. Click on "OAuth consent screen" in the left menu
 2. Select the appropriate user type (External or Internal)
@@ -31,7 +33,7 @@ Before setting up OAuth providers, ensure that:
    - `profile`
 5. Save and continue
 
-### 3. Create OAuth 2.0 Client ID
+### 3. OAuth 2.0 Client ID Creation
 
 1. Navigate to "Credentials" in the left menu
 2. Click "Create Credentials" > "OAuth client ID"
@@ -46,7 +48,7 @@ Before setting up OAuth providers, ensure that:
 7. Click "Create"
 8. Note the Client ID and Client Secret
 
-### 4. Configure UML2Code Application
+### 4. Application Configuration
 
 1. Add the credentials to your `.env.local` file:
    ```
@@ -54,15 +56,15 @@ Before setting up OAuth providers, ensure that:
    OAUTH_GOOGLE_CLIENT_SECRET=your_client_secret
    ```
 
-## GitHub OAuth Setup
+## GitHub OAuth Configuration
 
-### 1. Create a New OAuth App
+### 1. OAuth Application Creation
 
-1. Go to [GitHub Developer Settings](https://github.com/settings/developers)
+1. Navigate to [GitHub Developer Settings](https://github.com/settings/developers)
 2. Click on "OAuth Apps" in the left menu
 3. Click "New OAuth App"
 
-### 2. Register the Application
+### 2. Application Registration
 
 1. Fill in the application details:
    - Application name: "UML2Code"
@@ -73,7 +75,7 @@ Before setting up OAuth providers, ensure that:
 3. On the next screen, click "Generate a new client secret"
 4. Note the Client ID and Client Secret
 
-### 3. Configure UML2Code Application
+### 3. Application Configuration
 
 1. Add the credentials to your `.env.local` file:
    ```
@@ -81,22 +83,22 @@ Before setting up OAuth providers, ensure that:
    OAUTH_GITHUB_CLIENT_SECRET=your_client_secret
    ```
 
-## Testing the OAuth Integration
+## Integration Testing
 
-### Test Google Login
+### Google Login Testing
 
-1. Start your application
+1. Start the application
 2. Navigate to the login page
 3. Click the "Sign in with Google" button
-4. You should be redirected to Google's authentication page
-5. After authentication, you should be redirected back to your application and logged in
+4. Verify redirection to Google's authentication page
+5. Complete authentication and verify successful return to application
 
-### Test GitHub Login
+### GitHub Login Testing
 
 1. Navigate to the login page
 2. Click the "Sign in with GitHub" button
-3. You should be redirected to GitHub's authentication page
-4. After authentication, you should be redirected back to your application and logged in
+3. Verify redirection to GitHub's authentication page
+4. Complete authentication and verify successful return to application
 
 ## Troubleshooting
 
@@ -118,7 +120,7 @@ Before setting up OAuth providers, ensure that:
    - Error: "Access denied" or "Insufficient permission"
    - Solution: Ensure you've configured the proper scopes in your OAuth provider settings
 
-### Debug Logging
+### Debug Configuration
 
 To enable debug logging for OAuth-related issues:
 
@@ -133,17 +135,22 @@ To enable debug logging for OAuth-related issues:
 
 ## Security Considerations
 
-1. **Never commit OAuth credentials to version control**
+1. **Credential Management**
+   - Never commit OAuth credentials to version control
    - Always use environment variables or a secrets management system
 
-2. **Restrict redirect URIs**
+2. **URI Restrictions**
    - Only allow redirect URIs that belong to your application
+   - Implement strict validation of redirect parameters
 
-3. **Limit OAuth scopes**
+3. **Scope Limitations**
    - Only request the minimum scopes necessary for your application
+   - Regularly review and audit requested permissions
 
-4. **Implement CSRF protection**
+4. **CSRF Protection**
    - The KnpUOAuth2ClientBundle handles this automatically
+   - Implement additional validation if custom flows are used
 
-5. **Monitor OAuth usage**
+5. **Usage Monitoring**
    - Regularly review authentication logs for suspicious activity
+   - Implement rate limiting for authentication attempts

@@ -1,17 +1,17 @@
-# UML2Code Admin Panel
+# Admin Panel Documentation
 
 ## Overview
 
-The admin panel has been successfully implemented using EasyAdmin bundle with comprehensive user management and logging capabilities.
+The admin panel provides comprehensive user management and logging capabilities using the EasyAdmin bundle. It offers a complete administrative interface for monitoring system activity and managing user accounts.
 
 ## Features
 
-### 🔐 Admin Panel Access
+### Admin Panel Access
 - **URL**: `/admin`
 - **Authentication**: Requires `ROLE_ADMIN` or `ROLE_SUPER_ADMIN`
-- **Dark Theme**: Modern dark theme with responsive design
+- **Interface**: Modern dark theme with responsive design
 
-### 👥 User Management
+### User Management
 - **View Users**: Complete user listing with search and filters
 - **Edit Users**: Modify user details, roles, and subscription status
 - **User Roles**: Support for `ROLE_USER`, `ROLE_ADMIN`, `ROLE_PREMIUM`, `ROLE_SUPER_ADMIN`
@@ -19,14 +19,14 @@ The admin panel has been successfully implemented using EasyAdmin bundle with co
 - **User Verification**: Track email verification status
 - **Activity Tracking**: Last login timestamps
 
-### 📊 Dashboard Analytics
+### Dashboard Analytics
 - **User Statistics**: Total users, active users (24h)
 - **Action Metrics**: Total actions performed
 - **Error Monitoring**: Error log counts and recent errors
 - **Recent Activity**: Latest user actions with details
 - **Quick Actions**: Direct links to management sections
 
-### 📝 Comprehensive Logging System
+### Comprehensive Logging System
 
 #### Action History Logs
 - **User Actions**: Convert, Parse, Generate operations
@@ -42,7 +42,7 @@ The admin panel has been successfully implemented using EasyAdmin bundle with co
 - **Admin Actions**: Automatic logging of all admin panel activities
 - **Error Tracking**: Detailed error logs with stack traces
 
-### 🛠 Management Tools
+### Management Tools
 
 #### Console Commands
 ```bash
@@ -159,7 +159,7 @@ when@dev:
 
 ## Automatic Log Cleanup
 
-### 🔄 Automated Cleanup Features
+### Automated Cleanup Features
 
 **Smart Triggers**
 - Automatically runs after accessing admin panel or main application routes
@@ -179,7 +179,7 @@ AUTO_LOG_CLEANUP_ENABLED=true      # Enable/disable automatic cleanup
 - **Manual Cleanup**: Custom retention periods and force cleanup
 - **Monitoring**: Track last run, next scheduled, cleanup history
 
-### 📅 Scheduled Cleanup (Optional)
+### Scheduled Cleanup (Optional)
 
 For guaranteed cleanup scheduling, set up cron jobs:
 
@@ -191,7 +191,7 @@ For guaranteed cleanup scheduling, set up cron jobs:
 0 */6 * * * /usr/bin/php /path/to/project/bin/console app:auto-cleanup-logs
 ```
 
-### 🛠 Commands Available
+### Commands Available
 
 ```bash
 # Smart automatic cleanup (respects thresholds)
@@ -210,7 +210,7 @@ php bin/console app:auto-cleanup-logs --retention-days=60
 php bin/console app:clean-logs 30
 ```
 
-### 📊 Cleanup Thresholds
+### Cleanup Thresholds
 
 **Automatic triggers when:**
 - Old logs count > 1,000 entries
@@ -231,4 +231,4 @@ php bin/console app:clean-logs 30
 - **API Access**: REST API for external monitoring tools
 - **Two-Factor Authentication**: Enhanced security for admin access
 - **Log Archiving**: Archive old logs instead of deleting
-- **Real-time Monitoring**: WebSocket-based real-time log monitoring 
+- **Real-time Monitoring**: WebSocket-based real-time log monitoring

@@ -1,36 +1,12 @@
-# UML2Code Authentication System
-
-This document outlines the authentication system implemented for the UML2Code application. The system supports both traditional email/password authentication and OAuth-based social logins.
-
-## Table of Contents
-
-- [UML2Code Authentication System](#uml2code-authentication-system)
-  - [Table of Contents](#table-of-contents)
-  - [Overview](#overview)
-  - [Authentication Methods](#authentication-methods)
-    - [Email/Password Authentication](#emailpassword-authentication)
-    - [OAuth Authentication](#oauth-authentication)
-  - [User Entity Structure](#user-entity-structure)
-    - [User Entity (`User.php`)](#user-entity-userphp)
-    - [OAuthConnection Entity (`OAuthConnection.php`)](#oauthconnection-entity-oauthconnectionphp)
-  - [Authentication Flow](#authentication-flow)
-    - [Registration Process](#registration-process)
-    - [Login Process](#login-process)
-  - [OAuth Integration](#oauth-integration)
-    - [OAuth Authentication Flow](#oauth-authentication-flow)
-  - [Email Verification Process](#email-verification-process)
-    - [Verification Flow](#verification-flow)
-  - [Password Reset Flow](#password-reset-flow)
-    - [Reset Flow](#reset-flow)
-  - [Security Configuration](#security-configuration)
-  - [Development Notes](#development-notes)
-    - [Testing Emails](#testing-emails)
-    - [OAuth Provider Setup](#oauth-provider-setup)
-    - [Security Considerations](#security-considerations)
+# Authentication Component Documentation
 
 ## Overview
 
-The UML2Code authentication system is built using Symfony Security Bundle and provides:
+The authentication system provides comprehensive user management capabilities including traditional email/password authentication and OAuth-based social logins. The system is built using Symfony Security Bundle and implements industry-standard security practices.
+
+## Features
+
+The authentication system provides:
 
 - Traditional email/password authentication
 - Social login via OAuth (Google, GitHub)
