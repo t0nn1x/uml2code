@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Reset your UML2Code password</title>
+    <title>{{ 'auth.reset_password.email.subject'|trans }} - UML2Code</title>
     <style>
         @media only screen and (max-width: 620px) {
             table.body h1 {
@@ -50,9 +50,9 @@
                                     <tr>
                                         <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
                                             <h1 style="color: #4f46e5; font-family: sans-serif; font-weight: 800; line-height: 1.4; margin: 0; margin-bottom: 30px; font-size: 35px; text-align: center;">UML2Code</h1>
-                                            <h2 style="color: #000000; font-family: sans-serif; font-weight: 400; line-height: 1.4; margin: 0; margin-bottom: 30px; font-size: 24px; text-align: center;">Password Reset Request</h2>
-                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">Hi!</p>
-                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">We received a request to reset your password. Click the button below to choose a new password:</p>
+                                            <h2 style="color: #000000; font-family: sans-serif; font-weight: 400; line-height: 1.4; margin: 0; margin-bottom: 30px; font-size: 24px; text-align: center;">{{ 'auth.reset_password.email.subject'|trans }}</h2>
+                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">{{ 'auth.reset_password.email.greeting'|trans }}</p>
+                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">{{ 'auth.reset_password.email.message'|trans }}</p>
                                             <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; width: 100%; box-sizing: border-box;">
                                                 <tbody>
                                                     <tr>
@@ -61,7 +61,7 @@
                                                                 <tbody>
                                                                     <tr>
                                                                         <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; border-radius: 5px; text-align: center; background-color: #4f46e5;">
-                                                                            <a href="{{ url('app_reset_password', {token: resetToken.token}) }}" target="_blank" style="border: solid 1px #4f46e5; border-radius: 5px; box-sizing: border-box; cursor: pointer; display: inline-block; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-decoration: none; text-transform: capitalize; background-color: #4f46e5; border-color: #4f46e5; color: #ffffff;">Reset Password</a>
+                                                                            <a href="{{ url('app_reset_password', {token: resetToken.token}) }}" target="_blank" style="border: solid 1px #4f46e5; border-radius: 5px; box-sizing: border-box; cursor: pointer; display: inline-block; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-decoration: none; text-transform: capitalize; background-color: #4f46e5; border-color: #4f46e5; color: #ffffff;">{{ 'auth.reset_password.email.button_text'|trans }}</a>
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>
@@ -70,8 +70,8 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
-                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">This password reset link will expire in {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.</p>
-                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">If you did not request a password reset, please ignore this email.</p>
+                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">{{ 'auth.reset_password.email.expire_notice'|trans }}</p>
+                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">{{ 'auth.reset_password.email.ignore_notice'|trans }}</p>
                                             <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0;">Best regards,<br>The UML2Code Team</p>
                                         </td>
                                     </tr>

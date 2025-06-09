@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Reset your password - UML2Code{% endblock %}
+{% block title %}{{ 'auth.reset_password.reset.title'|trans }}{% endblock %}
 
 {% block body %}
     <div class="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-md w-full space-y-8">
             <div>
                 <h1 class="text-center text-3xl font-extrabold text-indigo-600">UML2Code</h1>
-                <h2 class="mt-6 text-center text-2xl font-bold text-gray-900">Reset your password</h2>
+                <h2 class="mt-6 text-center text-2xl font-bold text-gray-900">{{ 'auth.reset_password.reset.heading'|trans }}</h2>
             </div>
 
             <div class="rounded-md shadow-sm bg-white p-6">
@@ -15,12 +15,12 @@
                     <div class="space-y-4">
                         {# First password field #}
                         <div>
-                            {{ form_label(resetForm.plainPassword.first, 'New Password', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                            {{ form_label(resetForm.plainPassword.first, 'auth.reset_password.reset.new_password_label'|trans, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
                             <div class="mt-1">
                                 {{ form_widget(resetForm.plainPassword.first, {
                                     'attr': {
                                         'class': 'appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm',
-                                        'placeholder': 'Enter your new password'
+                                        'placeholder': 'auth.reset_password.reset.new_password_placeholder'|trans
                                     }
                                 }) }}
                                 {{ form_errors(resetForm.plainPassword.first) }}
@@ -29,12 +29,12 @@
 
                         {# Second password field (confirmation) #}
                         <div>
-                            {{ form_label(resetForm.plainPassword.second, 'Repeat Password', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                            {{ form_label(resetForm.plainPassword.second, 'auth.reset_password.reset.repeat_password_label'|trans, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
                             <div class="mt-1">
                                 {{ form_widget(resetForm.plainPassword.second, {
                                     'attr': {
                                         'class': 'appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm',
-                                        'placeholder': 'Confirm your new password'
+                                        'placeholder': 'auth.reset_password.reset.repeat_password_placeholder'|trans
                                     }
                                 }) }}
                                 {{ form_errors(resetForm.plainPassword.second) }}
@@ -61,7 +61,7 @@
 
                     <div class="pt-4">
                         <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Reset password
+                            {{ 'auth.reset_password.reset.reset_button'|trans }}
                         </button>
                     </div>
                 {{ form_end(resetForm) }}
