@@ -55,6 +55,12 @@ security:
     access_control:
         - { path: ^/(en|uk)/admin, roles: ROLE_ADMIN }
         - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/(en|uk)/parser, roles: ROLE_USER }
+        - { path: ^/(en|uk)/converter, roles: ROLE_USER }
+        - { path: ^/(en|uk)/generator, roles: ROLE_USER }
+        - { path: ^/parser, roles: ROLE_USER }
+        - { path: ^/converter, roles: ROLE_USER }
+        - { path: ^/generator, roles: ROLE_USER }
         - { path: ^/profile, roles: ROLE_USER }
         - { path: ^/dashboard, roles: ROLE_USER }
         - { path: ^/connect, roles: PUBLIC_ACCESS }

@@ -176,9 +176,96 @@ common:
   
 # Import errors
 import:
-  error:
+  errors:
     invalid_puml_file: "Please select a valid PlantUML file (.puml, .plantuml, or .txt)"
     invalid_json_file: "Please select a valid JSON file (.json or .txt)"
     file_too_large: "File size must be less than 1MB"
     invalid_json_syntax: "Invalid JSON syntax"
     read_error: "Error reading file"
+
+# Error pages
+error:
+  # Common
+  go_home: "Go Home"
+  go_back: "Go Back"
+  login: "Login"
+  register: "Register"
+  try_again: "Try Again"
+  helpful_links: "Helpful Links"
+  error_code: "Error Code"
+  status_text: "Status"
+  timestamp: "Timestamp"
+  reference_id: "Reference ID"
+  error_time: "Error occurred at"
+  error_id: "Error ID"
+  support_message: "If you continue to experience issues, please contact support with the reference ID above."
+  current_time: "Current time"
+  logged_in_as: "Logged in as"
+
+  # 404 Not Found
+  404:
+    title: "Page Not Found"
+    heading: "Page Not Found"
+    message: "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable."
+
+  # 403 Access Denied
+  403:
+    title: "Access Denied"
+    heading: "Access Denied"
+    message: "You do not have permission to access this resource. Please contact an administrator if you believe this is an error."
+    login_required: "You need to log in to access this page."
+    need_access: "Need Access?"
+    contact_admin: "If you believe you should have access to this resource, please contact your system administrator."
+
+  # 401 Unauthorized
+  401:
+    title: "Authentication Required"
+    heading: "Authentication Required"
+    message: "You need to be authenticated to access this resource. Please log in to continue."
+    why_login: "Why do I need to log in?"
+    security: "Security"
+    security_desc: "This resource is protected to ensure the security of our application and your data."
+    personalized: "Personalized Experience"
+    personalized_desc: "Logging in provides you with a personalized experience and access to your saved data."
+    features: "Full Features"
+    features_desc: "Access all UML2Code features including converter, parser, and generator tools."
+
+  # 500 Internal Server Error
+  500:
+    title: "Internal Server Error"
+    heading: "Internal Server Error"
+    message: "Something went wrong on our end. We're working to fix this issue. Please try again later."
+    what_happened: "What happened?"
+    technical_issue: "Technical Issue"
+    technical_desc: "A server error occurred while processing your request."
+    automatic_report: "Automatic Report"
+    report_desc: "This error has been automatically logged and our team has been notified."
+    temporary: "Temporary Issue"
+    temporary_desc: "This is likely a temporary issue. Please try refreshing the page."
+    auto_refresh: "This page will be automatically refreshed. Click OK to continue or Cancel to stay."
+
+  # Generic Error
+  generic:
+    title: "Error"
+    heading: "Oops! Something went wrong"
+    message: "An unexpected error occurred. Please try again or contact support if the problem persists."
+    details: "Error Details"
+
+# Maintenance page
+maintenance:
+  title: "Maintenance"
+  heading: "We'll be right back!"
+  message: "UML2Code is currently undergoing scheduled maintenance to improve your experience. We apologize for any inconvenience."
+  progress: "Maintenance in progress..."
+  estimated_time: "Estimated Time"
+  started_at: "Maintenance started at"
+  what_happening: "What's happening?"
+  performance_improvements: "Performance Improvements"
+  performance_desc: "Optimizing our servers for faster UML processing and code generation."
+  database_updates: "Database Updates"
+  database_desc: "Updating our database structure to support new features and improvements."
+  security_updates: "Security Updates"
+  security_desc: "Installing the latest security patches to keep your data safe."
+  questions: "Questions? Contact us at"
+  follow_updates: "Follow us for real-time updates on our maintenance progress."
+  refresh: "Check if we're back"

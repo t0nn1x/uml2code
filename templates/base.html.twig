@@ -59,14 +59,25 @@
                         </button>
                         <div id="language-menu" class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                             <div class="py-1">
-                                <a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_locale': 'en'})) }}" 
+                                {% if app.request.attributes.get('_route') %}
+                                <a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|default({})|merge({'_locale': 'en'})) }}" 
                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                     🇬🇧 English
                                 </a>
-                                <a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_locale': 'uk'})) }}" 
+                                <a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|default({})|merge({'_locale': 'uk'})) }}" 
                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                     🇺🇦 Українська
                                 </a>
+                                {% else %}
+                                <a href="{{ path('app_home', {'_locale': 'en'}) }}" 
+                                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    🇬🇧 English
+                                </a>
+                                <a href="{{ path('app_home', {'_locale': 'uk'}) }}" 
+                                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    🇺🇦 Українська
+                                </a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -210,16 +221,30 @@
                         </h3>
                         <ul class="mt-4 space-y-3">
                             <li>
-                                <a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_locale': 'en'})) }}" 
+                                {% if app.request.attributes.get('_route') %}
+                                <a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|default({})|merge({'_locale': 'en'})) }}" 
                                    class="text-sm text-gray-500 hover:text-gray-900">
                                     🇬🇧 English
                                 </a>
+                                {% else %}
+                                <a href="{{ path('app_home', {'_locale': 'en'}) }}" 
+                                   class="text-sm text-gray-500 hover:text-gray-900">
+                                    🇬🇧 English
+                                </a>
+                                {% endif %}
                             </li>
                             <li>
-                                <a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_locale': 'uk'})) }}" 
+                                {% if app.request.attributes.get('_route') %}
+                                <a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|default({})|merge({'_locale': 'uk'})) }}" 
                                    class="text-sm text-gray-500 hover:text-gray-900">
                                     🇺🇦 Українська
                                 </a>
+                                {% else %}
+                                <a href="{{ path('app_home', {'_locale': 'uk'}) }}" 
+                                   class="text-sm text-gray-500 hover:text-gray-900">
+                                    🇺🇦 Українська
+                                </a>
+                                {% endif %}
                             </li>
                         </ul>
                     </div>
