@@ -269,3 +269,79 @@ maintenance:
   questions: "Questions? Contact us at"
   follow_updates: "Follow us for real-time updates on our maintenance progress."
   refresh: "Check if we're back"
+
+# Authentication
+auth:
+  # Login page
+  login:
+    title: "Log in - UML2Code"
+    heading: "Sign in to your account"
+    email_label: "Email address"
+    password_label: "Password"
+    remember_me: "Remember me"
+    forgot_password: "Forgot your password?"
+    sign_in_button: "Sign in"
+    create_account: "create a new account"
+    or_text: "Or"
+    continue_with: "Or continue with"
+    
+  # Register page
+  register:
+    title: "Register - UML2Code"
+    heading: "Create your account"
+    email_label: "Email address"
+    first_name_label: "First Name"
+    last_name_label: "Last Name"
+    password_label: "Password"
+    agree_terms: "I agree to the Terms and Conditions"
+    register_button: "Register"
+    sign_in_existing: "sign in to your existing account"
+    or_text: "Or"
+    continue_with: "Or register with"
+    
+  # Password Reset
+  reset_password:
+    request:
+      title: "Reset your password - UML2Code"
+      heading: "Reset your password"
+      description: "Enter your email address and we'll send you a link to reset your password."
+      email_label: "Email address"
+      send_button: "Send password reset email"
+      
+    check_email:
+      title: "Password Reset Email Sent - UML2Code"
+      heading: "Check your email"
+      message: "If an account matching your email exists, then an email was just sent that contains a link that you can use to reset your password. This link will expire in %time%."
+      no_email: "If you don't receive an email please check your spam folder or"
+      try_again: "try again"
+      
+    reset:
+      title: "Reset your password - UML2Code"
+      heading: "Reset your password"
+      new_password_label: "New Password"
+      repeat_password_label: "Repeat Password"
+      new_password_placeholder: "Enter your new password"
+      repeat_password_placeholder: "Confirm your new password"
+      reset_button: "Reset password"
+      
+    email:
+      subject: "Your password reset request"
+      greeting: "Hi!"
+      message: "To reset your password, please visit the following link:"
+      button_text: "Reset my password"
+      expire_notice: "This link will expire in 1 hour."
+      ignore_notice: "If you did not request a password reset, you can safely ignore this email."
+      
+  # Email Confirmation
+  confirmation:
+    title: "Email Confirmation - UML2Code"
+    heading: "Confirm your email address"
+    greeting: "Hi %name%"
+    greeting_default: "Hi there"
+    welcome_message: "Welcome to UML2Code! Please confirm your email address by clicking the button below."
+    purpose_message: "This ensures we have the right email in case you need to reset your password or receive notifications."
+    confirm_button: "Confirm Email"
+    expire_notice: "This confirmation link will expire in %time%."
+    ignore_notice: "If you didn't create an account with us, you can safely ignore this email."
+    best_regards: "Best regards"
+    team_signature: "The UML2Code Team"

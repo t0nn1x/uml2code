@@ -269,3 +269,79 @@ maintenance:
   questions: "Питання? Зверніться до нас за адресою"
   follow_updates: "Слідкуйте за нами для отримання оновлень про прогрес обслуговування в реальному часі."
   refresh: "Перевірити, чи ми повернулися"
+
+# Authentication
+auth:
+  # Login page
+  login:
+    title: "Увійти - UML2Code"
+    heading: "Увійдіть у свій акаунт"
+    email_label: "Адреса електронної пошти"
+    password_label: "Пароль"
+    remember_me: "Запам'ятати мене"
+    forgot_password: "Забули пароль?"
+    sign_in_button: "Увійти"
+    create_account: "створити новий акаунт"
+    or_text: "Або"
+    continue_with: "Або продовжити з"
+    
+  # Register page
+  register:
+    title: "Реєстрація - UML2Code"
+    heading: "Створіть свій акаунт"
+    email_label: "Адреса електронної пошти"
+    first_name_label: "Ім'я"
+    last_name_label: "Прізвище"
+    password_label: "Пароль"
+    agree_terms: "Я погоджуюся з Умовами та Положеннями"
+    register_button: "Зареєструватися"
+    sign_in_existing: "увійти в існуючий акаунт"
+    or_text: "Або"
+    continue_with: "Або зареєструватися через"
+    
+  # Password Reset
+  reset_password:
+    request:
+      title: "Скинути пароль - UML2Code"
+      heading: "Скинути пароль"
+      description: "Введіть свою адресу електронної пошти, і ми надішлемо вам посилання для скидання пароля."
+      email_label: "Адреса електронної пошти"
+      send_button: "Надіслати лист для скидання пароля"
+      
+    check_email:
+      title: "Лист для скидання пароля надіслано - UML2Code"
+      heading: "Перевірте свою пошту"
+      message: "Якщо акаунт з вашою електронною поштою існує, то було надіслано лист з посиланням для скидання пароля. Це посилання буде дійсним протягом %time%."
+      no_email: "Якщо ви не отримали лист, перевірте папку спам або"
+      try_again: "спробуйте ще раз"
+      
+    reset:
+      title: "Скинути пароль - UML2Code"
+      heading: "Скинути пароль"
+      new_password_label: "Новий пароль"
+      repeat_password_label: "Повторіть пароль"
+      new_password_placeholder: "Введіть новий пароль"
+      repeat_password_placeholder: "Підтвердіть новий пароль"
+      reset_button: "Скинути пароль"
+      
+    email:
+      subject: "Ваш запит на скидання пароля"
+      greeting: "Привіт!"
+      message: "Щоб скинути пароль, перейдіть за наступним посиланням:"
+      button_text: "Скинути мій пароль"
+      expire_notice: "Це посилання буде дійсним протягом 1 години."
+      ignore_notice: "Якщо ви не запитували скидання пароля, можете спокійно ігнорувати цей лист."
+      
+  # Email Confirmation
+  confirmation:
+    title: "Підтвердження електронної пошти - UML2Code"
+    heading: "Підтвердіть вашу адресу електронної пошти"
+    greeting: "Привіт, %name%"
+    greeting_default: "Привіт"
+    welcome_message: "Ласкаво просимо до UML2Code! Будь ласка, підтвердьте вашу адресу електронної пошти, натиснувши кнопку нижче."
+    purpose_message: "Це забезпечує правильність електронної пошти на випадок, якщо вам потрібно буде скинути пароль або отримувати повідомлення."
+    confirm_button: "Підтвердити електронну пошту"
+    expire_notice: "Це посилання для підтвердження буде дійсним протягом %time%."
+    ignore_notice: "Якщо ви не створювали акаунт у нас, можете спокійно ігнорувати цей лист."
+    best_regards: "З найкращими побажаннями"
+    team_signature: "Команда UML2Code"

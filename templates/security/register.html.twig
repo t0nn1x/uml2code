@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register - UML2Code
+{% block title %}{{ 'auth.register.title'|trans }}
 {% endblock %}
 
 {% block body %}
@@ -8,11 +8,11 @@
 		<div class="max-w-md w-full space-y-8">
 			<div>
 				<h1 class="text-center text-3xl font-extrabold text-indigo-600">UML2Code</h1>
-				<h2 class="mt-6 text-center text-2xl font-bold text-gray-900">Create your account</h2>
+				<h2 class="mt-6 text-center text-2xl font-bold text-gray-900">{{ 'auth.register.heading'|trans }}</h2>
 				<p class="mt-2 text-center text-sm text-gray-600">
-					Or
+					{{ 'auth.register.or_text'|trans }}
 					<a href="{{ path('app_login') }}" class="font-medium text-indigo-600 hover:text-indigo-500">
-						sign in to your existing account
+						{{ 'auth.register.sign_in_existing'|trans }}
 					</a>
 				</p>
 			</div>
@@ -36,7 +36,7 @@
 				<div class="px-6 py-6">
 					{{ form_start(registrationForm, {'attr': {'class': 'space-y-6'}}) }}
 					<div>
-						{{ form_label(registrationForm.email, 'Email address', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+						{{ form_label(registrationForm.email, 'auth.register.email_label'|trans, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
 						<div class="mt-1">
 							{{ form_widget(registrationForm.email) }}
 							{{ form_errors(registrationForm.email) }}
@@ -45,14 +45,14 @@
 
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
-							{{ form_label(registrationForm.firstName, 'First Name', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+							{{ form_label(registrationForm.firstName, 'auth.register.first_name_label'|trans, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
 							<div class="mt-1">
 								{{ form_widget(registrationForm.firstName) }}
 								{{ form_errors(registrationForm.firstName) }}
 							</div>
 						</div>
 						<div>
-							{{ form_label(registrationForm.lastName, 'Last Name', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+							{{ form_label(registrationForm.lastName, 'auth.register.last_name_label'|trans, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
 							<div class="mt-1">
 								{{ form_widget(registrationForm.lastName) }}
 								{{ form_errors(registrationForm.lastName) }}
@@ -61,7 +61,7 @@
 					</div>
 
 					<div>
-						{{ form_label(registrationForm.plainPassword, 'Password', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+						{{ form_label(registrationForm.plainPassword, 'auth.register.password_label'|trans, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
 						<div class="mt-1">
 							{{ form_widget(registrationForm.plainPassword) }}
 							{{ form_errors(registrationForm.plainPassword) }}
@@ -71,14 +71,14 @@
 					<div class="flex items-center">
 						{{ form_widget(registrationForm.agreeTerms) }}
 						<div class="ml-2">
-							{{ form_label(registrationForm.agreeTerms, 'I agree to the Terms and Conditions', {'label_attr': {'class': 'text-sm text-gray-900'}}) }}
+							{{ form_label(registrationForm.agreeTerms, 'auth.register.agree_terms'|trans, {'label_attr': {'class': 'text-sm text-gray-900'}}) }}
 							<p class="text-red-800 text-sm">{{ form_errors(registrationForm.agreeTerms) }}</p>
 						</div>
 					</div>
 
 					<div>
 						<button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-							Register
+							{{ 'auth.register.register_button'|trans }}
 						</button>
 					</div>
 					{{ form_end(registrationForm) }}
@@ -90,7 +90,7 @@
 							</div>
 							<div class="relative flex justify-center text-sm">
 								<span class="px-2 bg-white text-gray-500">
-									Or register with
+									{{ 'auth.register.continue_with'|trans }}
 								</span>
 							</div>
 						</div>

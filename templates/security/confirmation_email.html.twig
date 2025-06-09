@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Email Confirmation - UML2Code
+{% block title %}{{ 'auth.confirmation.title'|trans }}
 {% endblock %}
 
 {% block body %}
@@ -11,37 +11,38 @@
 
 		<div class="flex-grow flex items-center justify-center p-6">
 			<div class="max-w-lg w-full bg-white rounded-lg shadow-md p-8">
-				<h2 class="text-xl font-bold text-gray-800 mb-6">Confirm your email address</h2>
+				<h2 class="text-xl font-bold text-gray-800 mb-6">{{ 'auth.confirmation.heading'|trans }}</h2>
 
 				<p class="text-gray-600 mb-6">
-					Hi
-					{{ user is defined and user.firstName ? user.firstName : 'there' }},
-
+					{% if user is defined and user.firstName %}
+						{{ 'auth.confirmation.greeting'|trans({'%name%': user.firstName}) }},
+					{% else %}
+						{{ 'auth.confirmation.greeting_default'|trans }},
+					{% endif %}
 				</p>
 
 				<p class="text-gray-600 mb-6">
-					Welcome to UML2Code! Please confirm your email address by clicking the button below.
-										                This ensures we have the right email in case you need to reset your password or receive notifications.
+					{{ 'auth.confirmation.welcome_message'|trans }}
+					{{ 'auth.confirmation.purpose_message'|trans }}
 				</p>
 
 				<div class="bg-gray-50 p-4 rounded-md border border-gray-200 text-center mb-6">
 					<a href="{{ signedUrl }}" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-md">
-						Confirm Email
+						{{ 'auth.confirmation.confirm_button'|trans }}
 					</a>
 				</div>
 
 				<p class="text-gray-600 mb-2">
-					This confirmation link will expire in
-					{{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.
+					{{ 'auth.confirmation.expire_notice'|trans({'%time%': expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle')}) }}
 				</p>
 
 				<p class="text-gray-600 mb-6">
-					If you didn't create an account with us, you can safely ignore this email.
+					{{ 'auth.confirmation.ignore_notice'|trans }}
 				</p>
 
 				<p class="text-gray-600">
-					Best regards,<br>
-					The UML2Code Team
+					{{ 'auth.confirmation.best_regards'|trans }},<br>
+					{{ 'auth.confirmation.team_signature'|trans }}
 				</p>
 			</div>
 		</div>
