@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'error.generic.title'|trans }} - {{ parent() }}{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4">
+    <div class="max-w-2xl mx-auto text-center">
+        <!-- Error Code -->
+        <div class="mb-8">
+            <h1 class="text-9xl font-bold text-gray-600 mb-4">{{ status_code|default('???') }}</h1>
+            <div class="w-32 h-1 bg-gray-600 mx-auto rounded-full"></div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                {{ 'error.generic.heading'|trans|default('Oops! Something went wrong') }}
+            </h2>
+            <p class="text-lg text-gray-600 mb-6">
+                {% if status_text %}
+                    {{ status_text }}
+                {% else %}
+                    {{ 'error.generic.message'|trans|default('An unexpected error occurred. Please try again or contact support if the problem persists.') }}
+                {% endif %}
+            </p>
+        </div>
+
+        <!-- Visual Element -->
+        <div class="mb-8">
+            <div class="w-48 h-48 mx-auto bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+                <!-- Exclamation circle from Heroicons -->
+                <svg class="w-24 h-24 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{{ path('app_home') }}" 
+               class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                {{ 'error.go_home'|trans|default('Go Home') }}
+            </a>
+            
+            <button onclick="history.back()" 
+                    class="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                {{ 'error.go_back'|trans|default('Go Back') }}
+            </button>
+        </div>
+
+        <!-- Error Details -->
+        <div class="mt-6 pt-4 border-t border-gray-200 mb-12">
+            <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    {{ 'error.generic.details'|trans|default('Error Details') }}
+                </h3>
+                
+                <div class="space-y-3 text-sm text-gray-600">
+                    <div class="flex justify-between">
+                        <span class="font-medium">{{ 'error.error_code'|trans|default('Error Code') }}:</span>
+                        <span>{{ status_code|default('Unknown') }}</span>
+                    </div>
+                    
+                    {% if status_text %}
+                    <div class="flex justify-between">
+                        <span class="font-medium">{{ 'error.status_text'|trans|default('Status') }}:</span>
+                        <span>{{ status_text }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="flex justify-between">
+                        <span class="font-medium">{{ 'error.timestamp'|trans|default('Timestamp') }}:</span>
+                        <span>{{ 'now'|date('Y-m-d H:i:s') }}</span>
+                    </div>
+                    
+                    <div class="flex justify-between">
+                        <span class="font-medium">{{ 'error.reference_id'|trans|default('Reference ID') }}:</span>
+                        <span class="font-mono">{{ random(10000, 99999) }}-{{ 'now'|date('ymdHis') }}</span>
+                    </div>
+                </div>
+                
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                    <p class="text-sm text-gray-500 text-center">
+                        {{ 'error.support_message'|trans|default('If you continue to experience issues, please contact support with the reference ID above.') }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

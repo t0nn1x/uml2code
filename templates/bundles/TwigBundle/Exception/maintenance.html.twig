@@ -1,0 +1,131 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'maintenance.title'|trans }} - {{ parent() }}{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 flex items-center justify-center px-4">
+    <div class="max-w-2xl mx-auto text-center">
+        <!-- Maintenance Icon -->
+        <div class="mb-8">
+            <div class="w-48 h-48 mx-auto bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mb-6">
+                <!-- Cog/Settings icon from Heroicons -->
+                <svg class="w-24 h-24 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+            </div>
+            <div class="w-32 h-1 bg-purple-600 mx-auto rounded-full"></div>
+        </div>
+
+        <!-- Maintenance Message -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                {{ 'maintenance.heading'|trans|default('We\'ll be right back!') }}
+            </h1>
+            <p class="text-lg text-gray-600 mb-6">
+                {{ 'maintenance.message'|trans|default('UML2Code is currently undergoing scheduled maintenance to improve your experience. We apologize for any inconvenience.') }}
+            </p>
+        </div>
+
+        <!-- Progress Animation -->
+        <div class="mb-8">
+            <div class="relative">
+                <div class="flex justify-center space-x-2">
+                    <div class="w-3 h-3 bg-purple-600 rounded-full animate-bounce"></div>
+                    <div class="w-3 h-3 bg-purple-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                    <div class="w-3 h-3 bg-purple-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                </div>
+                <p class="text-sm text-gray-500 mt-4">
+                    {{ 'maintenance.progress'|trans|default('Maintenance in progress...') }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Estimated Time -->
+        <div class="mb-8">
+            <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                    {{ 'maintenance.estimated_time'|trans|default('Estimated Time') }}
+                </h3>
+                <p class="text-purple-600 font-medium text-xl">
+                    {{ estimated_duration|default('15 minutes') }}
+                </p>
+                <p class="text-sm text-gray-500 mt-2">
+                    {{ 'maintenance.started_at'|trans|default('Maintenance started at') }}: {{ 'now'|date('H:i') }}
+                </p>
+            </div>
+        </div>
+
+        <!-- What's Happening -->
+        <div class="mb-8">
+            <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    {{ 'maintenance.what_happening'|trans|default('What\'s happening?') }}
+                </h3>
+                
+                <div class="space-y-3 text-left">
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div>
+                            <h4 class="font-medium text-gray-900">{{ 'maintenance.performance_improvements'|trans|default('Performance Improvements') }}</h4>
+                            <p class="text-sm text-gray-600">{{ 'maintenance.performance_desc'|trans|default('Optimizing our servers for faster UML processing and code generation.') }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-blue-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 002 2H4a2 2 0 01-2-2V5zm3 1h6v4H5V6zm6 6H5v2h6v-2z" clip-rule="evenodd"></path>
+                            <path d="M15 7h1a2 2 0 012 2v5.5a1.5 1.5 0 01-3 0V9a1 1 0 00-1-1h-1v-1z"></path>
+                        </svg>
+                        <div>
+                            <h4 class="font-medium text-gray-900">{{ 'maintenance.database_updates'|trans|default('Database Updates') }}</h4>
+                            <p class="text-sm text-gray-600">{{ 'maintenance.database_desc'|trans|default('Updating our database structure to support new features and improvements.') }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-purple-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div>
+                            <h4 class="font-medium text-gray-900">{{ 'maintenance.security_updates'|trans|default('Security Updates') }}</h4>
+                            <p class="text-sm text-gray-600">{{ 'maintenance.security_desc'|trans|default('Installing the latest security patches to keep your data safe.') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="mt-6 text-sm text-gray-500">
+            <p class="mb-2">
+                {{ 'maintenance.questions'|trans|default('Questions? Contact us at') }}
+                <a href="mailto:support@uml2code.com" class="text-purple-600 hover:text-purple-700">support@uml2code.com</a>
+            </p>
+            <p>
+                {{ 'maintenance.follow_updates'|trans|default('Follow us for real-time updates on our maintenance progress.') }}
+            </p>
+        </div>
+
+        <!-- Auto-refresh -->
+        <div class="mt-6">
+            <button onclick="location.reload()" 
+                    class="inline-flex items-center px-4 py-2 border border-purple-300 text-sm font-medium rounded-md text-purple-700 bg-white hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                {{ 'maintenance.refresh'|trans|default('Check if we\'re back') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-refresh every 30 seconds
+setInterval(function() {
+    location.reload();
+}, 30000);
+</script>
+{% endblock %} 

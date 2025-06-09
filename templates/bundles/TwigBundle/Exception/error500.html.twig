@@ -1,0 +1,109 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'error.500.title'|trans }} - {{ parent() }}{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-100 flex items-center justify-center px-4">
+    <div class="max-w-2xl mx-auto text-center">
+        <!-- Error Code -->
+        <div class="mb-8">
+            <h1 class="text-9xl font-bold text-yellow-600 mb-4">500</h1>
+            <div class="w-32 h-1 bg-yellow-600 mx-auto rounded-full"></div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                {{ 'error.500.heading'|trans|default('Internal Server Error') }}
+            </h2>
+            <p class="text-lg text-gray-600 mb-6">
+                {{ 'error.500.message'|trans|default('Something went wrong on our end. We\'re working to fix this issue. Please try again later.') }}
+            </p>
+        </div>
+
+        <!-- Visual Element -->
+        <div class="mb-8">
+            <div class="w-48 h-48 mx-auto bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center">
+                <!-- Exclamation triangle from Heroicons -->
+                <svg class="w-24 h-24 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+            <button onclick="location.reload()" 
+                    class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                {{ 'error.try_again'|trans|default('Try Again') }}
+            </button>
+            
+            <a href="{{ path('app_home') }}" 
+               class="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                {{ 'error.go_home'|trans|default('Go Home') }}
+            </a>
+        </div>
+
+        <!-- Status Information -->
+        <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-200 mb-12">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                {{ 'error.500.what_happened'|trans|default('What happened?') }}
+            </h3>
+            
+            <div class="space-y-4 text-left">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-yellow-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div>
+                        <h4 class="font-medium text-gray-900">{{ 'error.500.technical_issue'|trans|default('Technical Issue') }}</h4>
+                        <p class="text-sm text-gray-600">{{ 'error.500.technical_desc'|trans|default('A server error occurred while processing your request.') }}</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-blue-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div>
+                        <h4 class="font-medium text-gray-900">{{ 'error.500.automatic_report'|trans|default('Automatic Report') }}</h4>
+                        <p class="text-sm text-gray-600">{{ 'error.500.report_desc'|trans|default('This error has been automatically logged and our team has been notified.') }}</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div>
+                        <h4 class="font-medium text-gray-900">{{ 'error.500.temporary'|trans|default('Temporary Issue') }}</h4>
+                        <p class="text-sm text-gray-600">{{ 'error.500.temporary_desc'|trans|default('This is likely a temporary issue. Please try refreshing the page.') }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 pt-4 border-t border-gray-200 text-sm text-gray-500">
+                <div class="flex flex-col sm:flex-row justify-between gap-2">
+                    <span>{{ 'error.error_time'|trans|default('Error occurred at') }}: {{ 'now'|date('Y-m-d H:i:s') }}</span>
+                    <span>{{ 'error.error_id'|trans|default('Error ID') }}: {{ random(10000, 99999) }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-reload suggestion after 30 seconds
+setTimeout(function() {
+    if (confirm("{{ 'error.500.auto_refresh'|trans|default('This page will be automatically refreshed. Click OK to continue or Cancel to stay.') }}")) {
+        location.reload();
+    }
+}, 30000);
+</script>
+{% endblock %} 
