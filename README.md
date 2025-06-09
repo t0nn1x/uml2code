@@ -39,7 +39,7 @@ UML2Code simplifies software development by automatically generating clean, well
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/uml2code.git
+git clone https://github.com/t0nn1x/uml2code/
 cd uml2code
 
 # Start the application
@@ -158,7 +158,7 @@ src/
 
 ```bash
 # Clone and setup
-git clone https://github.com/your-org/uml2code.git
+git clone https://github.com/t0nn1x/uml2code/
 cd uml2code
 
 # Copy environment file
@@ -201,7 +201,7 @@ The API supports multiple authentication methods:
 
 ## Contributing
 
-We welcome contributions! Please see our [Development Guide](doc/DEVELOPMENT_GUIDE.md) for detailed information.
+We welcome contributions! Please open an issue or a pull request.
 
 ### Quick Contribution Steps
 

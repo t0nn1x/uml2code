@@ -1,10 +1,12 @@
-# Custom Error Pages for UML2Code
+# Error Pages Documentation
 
-This project now includes beautiful, responsive custom error pages that match the application's design and provide a great user experience even when things go wrong.
+## Overview
 
-## 🎨 Features
+The application includes comprehensive custom error pages that provide a consistent user experience during error conditions. These pages are designed to be responsive, informative, and aligned with the application's visual design system.
 
-- **Beautiful Design**: Error pages match application's Tailwind CSS design
+## Features
+
+- **Consistent Design**: Error pages match application's Tailwind CSS design
 - **Responsive**: Works perfectly on all devices
 - **Multilingual**: Supports English and Ukrainian translations
 - **Smart Routing**: Different behaviors for admin areas, API requests, and regular pages
@@ -13,14 +15,14 @@ This project now includes beautiful, responsive custom error pages that match th
 - **Logging**: Automatic error logging for debugging and monitoring
 - **User-Friendly**: Helpful actions and information for users
 
-## 📄 Error Pages Included
+## Error Pages Included
 
 ### 1. 404 - Page Not Found (`error404.html.twig`)
 - **Color Scheme**: Indigo gradient
 - **Features**: 
   - Helpful links to main application features (for logged-in users)
   - Go home and go back buttons
-  - Beautiful visual elements
+  - Visual elements for enhanced user experience
 
 ### 2. 403 - Access Denied (`error403.html.twig`)
 - **Color Scheme**: Red gradient
@@ -60,7 +62,7 @@ This project now includes beautiful, responsive custom error pages that match th
   - Auto-refresh every 30 seconds
   - Contact information
 
-## 🔧 Configuration
+## Configuration
 
 The error pages are automatically configured through:
 
@@ -76,7 +78,7 @@ The error pages are automatically configured through:
        exception_controller: App\Controller\ErrorController::show
    ```
 
-## 🎯 Smart Error Handling
+## Smart Error Handling
 
 ### Access Denied Listener
 The `AccessDeniedListener` provides intelligent handling:
@@ -94,7 +96,7 @@ The `ErrorController` provides:
 - **Error IDs**: Generates unique reference IDs for support
 - **Context Enrichment**: Adds useful variables to templates
 
-## 🌍 Translations
+## Translations
 
 Error messages are fully translatable and included in:
 - `translations/messages.en.yaml` - English translations
@@ -108,7 +110,7 @@ To add support for a new language:
 3. Translate all the messages
 4. Add the locale to `config/packages/framework.yaml` in `enabled_locales`
 
-## 🧪 Testing Error Pages
+## Testing Error Pages
 
 Test routes are available (remove in production):
 
@@ -117,7 +119,7 @@ Test routes are available (remove in production):
 - `/test/error/500` - Test 500 page
 - `/test/error/maintenance` - Test maintenance page
 
-## 🚀 Usage Examples
+## Usage Examples
 
 ### Throwing Custom Errors in Controllers
 
@@ -149,14 +151,14 @@ public function maintenance(): Response
 }
 ```
 
-## 🔒 Security Considerations
+## Security Considerations
 
-- **Error Information**: Production error pages don't expose sensitive information
+- **Error Information**: Production error pages do not expose sensitive information
 - **Logging**: Errors are logged with appropriate detail levels
 - **Admin Protection**: Special handling for admin area access attempts
 - **Rate Limiting**: Consider adding rate limiting for error pages to prevent abuse
 
-## 🎨 Customization
+## Customization
 
 ### Styling
 Error pages use existing Tailwind CSS classes and can be customized by:
@@ -172,7 +174,7 @@ Error pages use existing Tailwind CSS classes and can be customized by:
 - **Contact Info**: Update support email addresses
 - **Branding**: Add your logo or brand elements
 
-## 📊 Monitoring
+## Monitoring
 
 The error pages automatically log errors with context:
 
@@ -191,4 +193,3 @@ Monitor these logs to:
 - Identify problematic areas
 - Monitor security attempts
 - Improve user experience
-
