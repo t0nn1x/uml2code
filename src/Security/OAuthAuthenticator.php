@@ -42,12 +42,25 @@ class OAuthAuthenticator extends OAuth2Authenticator implements AuthenticationEn
     private function safeFlush(EntityManagerInterface $em): void
     {
         try {
+            if (!$em->isOpen()) {
+                // EntityManager is closed, get a fresh one
+                $this->doctrine->resetManager();
+                $em = $this->doctrine->getManager();
+            }
             $em->flush();
         } catch (\Exception $e) {
             // If flush fails, try to reset the EntityManager and flush again
             $this->doctrine->resetManager();
             $newEm = $this->doctrine->getManager();
-            $newEm->flush();
+            
+            // Re-persist any pending entities if needed
+            // Since we're in OAuth flow, we need to be careful about detached entities
+            try {
+                $newEm->flush();
+            } catch (\Exception $e2) {
+                // If still failing, throw the original exception
+                throw new AuthenticationException('Failed to persist OAuth data: ' . $e->getMessage());
+            }
         }
     }
 
@@ -107,14 +120,25 @@ class OAuthAuthenticator extends OAuth2Authenticator implements AuthenticationEn
                         }
                     }
 
+                    // Get a fresh EntityManager to avoid closed EM issues
                     $em = $this->getEntityManager();
+                    if (!$em->isOpen()) {
+                        $this->doctrine->resetManager();
+                        $em = $this->getEntityManager();
+                    }
 
                     // Check if we already have this OAuth connection
                     $existingConnection = $this->oauthConnectionRepository->findOneByProviderAndUserId($provider, $userId);
 
                     if ($existingConnection) {
                         // User exists, update the token
+                        // Make sure the entity is managed
+                        if (!$em->contains($existingConnection)) {
+                            $existingConnection = $em->find(OAuthConnection::class, $existingConnection->getId());
+                        }
+                        
                         $existingConnection->setAccessToken($accessToken->getToken());
+                        $existingConnection->setUpdatedAt(new \DateTime());
 
                         if ($accessToken->getRefreshToken()) {
                             $existingConnection->setRefreshToken($accessToken->getRefreshToken());
@@ -133,6 +157,11 @@ class OAuthAuthenticator extends OAuth2Authenticator implements AuthenticationEn
 
                     // No existing connection, create a new user or connect to existing user
                     $user = $this->userRepository->findOrCreateFromOauth($email, $firstName, $lastName);
+                    
+                    // Make sure the user is managed by the current EM
+                    if (!$em->contains($user)) {
+                        $user = $em->find(User::class, $user->getId());
+                    }
 
                     // Create the OAuth connection
                     $connection = new OAuthConnection();

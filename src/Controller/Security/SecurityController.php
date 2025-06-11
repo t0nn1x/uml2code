@@ -9,9 +9,17 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Psr\Log\LoggerInterface;
 
 class SecurityController extends AbstractController
 {
+    private LoggerInterface $logger;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
     #[Route('/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
@@ -36,37 +44,105 @@ class SecurityController extends AbstractController
 
     public function connectGoogle(ClientRegistry $clientRegistry): RedirectResponse
     {
-        return $clientRegistry
-            ->getClient('google')
-            ->redirect([
+        try {
+            $this->logger->info('OAuth Google: Starting Google OAuth flow');
+            
+            $client = $clientRegistry->getClient('google');
+            $this->logger->info('OAuth Google: Client retrieved successfully');
+            
+            $redirectResponse = $client->redirect([
                 'email',
                 'profile'
             ], []);
+            
+            $this->logger->info('OAuth Google: Redirect URL generated', [
+                'url' => $redirectResponse->getTargetUrl()
+            ]);
+            
+            return $redirectResponse;
+        } catch (\Exception $e) {
+            $this->logger->error('OAuth Google: Error in connectGoogle', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            $this->addFlash('error', 'OAuth Google Error: ' . $e->getMessage());
+            return $this->redirectToRoute('app_login');
+        }
     }
 
     public function connectGoogleCheck(Request $request): RedirectResponse
     {
-        // This is handled by the OAuthAuthenticator
-        // Get locale from session or default
-        $locale = $request->getSession()->get('_locale', 'uk');
-        return $this->redirectToRoute('app_dashboard', ['_locale' => $locale]);
+        try {
+            $this->logger->info('OAuth Google: Check callback started');
+            
+            // This is handled by the OAuthAuthenticator
+            // Get locale from session or default
+            $locale = $request->getSession()->get('_locale', 'uk');
+            
+            $this->logger->info('OAuth Google: Redirecting to dashboard', ['locale' => $locale]);
+            
+            return $this->redirectToRoute('app_dashboard', ['_locale' => $locale]);
+        } catch (\Exception $e) {
+            $this->logger->error('OAuth Google: Error in connectGoogleCheck', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            $this->addFlash('error', 'OAuth Google Check Error: ' . $e->getMessage());
+            return $this->redirectToRoute('app_login');
+        }
     }
 
     public function connectGithub(ClientRegistry $clientRegistry): RedirectResponse
     {
-        return $clientRegistry
-            ->getClient('github')
-            ->redirect([
+        try {
+            $this->logger->info('OAuth GitHub: Starting GitHub OAuth flow');
+            
+            $client = $clientRegistry->getClient('github');
+            $this->logger->info('OAuth GitHub: Client retrieved successfully');
+            
+            $redirectResponse = $client->redirect([
                 'user:email',
                 'read:user'
             ], []);
+            
+            $this->logger->info('OAuth GitHub: Redirect URL generated', [
+                'url' => $redirectResponse->getTargetUrl()
+            ]);
+            
+            return $redirectResponse;
+        } catch (\Exception $e) {
+            $this->logger->error('OAuth GitHub: Error in connectGithub', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            $this->addFlash('error', 'OAuth GitHub Error: ' . $e->getMessage());
+            return $this->redirectToRoute('app_login');
+        }
     }
 
     public function connectGithubCheck(Request $request): RedirectResponse
     {
-        // This is handled by the OAuthAuthenticator
-        // Get locale from session or default
-        $locale = $request->getSession()->get('_locale', 'uk');
-        return $this->redirectToRoute('app_dashboard', ['_locale' => $locale]);
+        try {
+            $this->logger->info('OAuth GitHub: Check callback started');
+            
+            // This is handled by the OAuthAuthenticator
+            // Get locale from session or default
+            $locale = $request->getSession()->get('_locale', 'uk');
+            
+            $this->logger->info('OAuth GitHub: Redirecting to dashboard', ['locale' => $locale]);
+            
+            return $this->redirectToRoute('app_dashboard', ['_locale' => $locale]);
+        } catch (\Exception $e) {
+            $this->logger->error('OAuth GitHub: Error in connectGithubCheck', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            $this->addFlash('error', 'OAuth GitHub Check Error: ' . $e->getMessage());
+            return $this->redirectToRoute('app_login');
+        }
     }
 }
